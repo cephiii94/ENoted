@@ -1,9 +1,18 @@
-// Toggle menu pada mobile
 document.addEventListener("DOMContentLoaded", function () {
     const menuToggle = document.querySelector(".menu-toggle");
-    const menu = document.getElementById("menu");
+    const navMenu = document.querySelector("nav ul");
 
-    menuToggle.addEventListener("click", function () {
-        menu.classList.toggle("active");
-    });
+    if (menuToggle && navMenu) {
+        menuToggle.onclick = function () {
+            navMenu.classList.toggle("active");
+        };
+    }
+
+    // Dropdown Menu
+    const dropdown = document.querySelector(".dropdown");
+    if (dropdown) {
+        dropdown.onclick = function () {
+            this.classList.toggle("active");
+        };
+    }
 });
