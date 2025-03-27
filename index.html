@@ -3,51 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidMe - Streaming Gratis</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Tap4Share</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: url("bg.jpg");
+        }
+        .container {
+            width: 50%;
+            max-width: 400px;
+            background: rgba(248, 248, 248, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            padding: 20px;
+            margin-right: 20px;
+            margin-left: 20px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .post {
+            background: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .post-title {
+            font-weight: bold;
+        }
+        .detail-container {
+            width: 50%;
+            max-width: 400px;
+            background: rgb(253, 253, 253);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: none;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .detail-container.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .detail-container.hide {
+            opacity: 0;
+            transform: scale(0.95) translateY(50px);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        iframe {
+            width: 100%;
+            max-height: 80vh;
+            height: 650px;
+            border: none;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .full-view-btn {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+            .detail-container {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-
-    <header>
-        <h1>VidMe</h1>
-        <nav>
-            <div class="menu-toggle">☰</div>
-            <ul id="menu">
-                <li><a href="#">Home</a></li>
-                <li class="dropdown">
-                    <a href="#">Kategori</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Drama</a></li>
-                        <li><a href="#">Komedi</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">News</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <h2>Streaming Video</h2>
-        <div class="video-container">
-            <iframe src="https://drive.google.com/file/d/ID_VIDEO_GOOGLE_DRIVE/preview" allowfullscreen></iframe>
+    <div class="container">
+        <h2>Tap4Share</h2>
+        <div class="post" onclick="openPost('post1.html')">
+            <p class="post-title">Judul Post 1</p>
+            <p>Isi post</p>
         </div>
-    </main>
-
-    <script src="script.js"></script>
-
-    <footer>
-        <div class="footer-container">
-            <p>&copy; 2025 VidMe - Streaming Gratis. All Rights Reserved.</p>
-            <div class="social-links">
-                <a href="#" class="social-icon">📘 Facebook</a>
-                <a href="#" class="social-icon">🐦 Twitter</a>
-                <a href="#" class="social-icon">📺 YouTube</a>
-            </div>
+        <div class="post" onclick="openPost('post2.html')">
+            <p class="post-title">Judul Post 2</p>
+            <p>Isi post</p>
         </div>
-    </footer>
-    
-    <script src="script.js"></script>
+        <div class="post" onclick="openPost('post3.html')">
+            <p class="post-title">Judul Post 3</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post4.html')">
+            <p class="post-title">Judul Post 4</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post5.html')">
+            <p class="post-title">Judul Post 5</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post6.html')">
+            <p class="post-title">Judul Post 6</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post7.html')">
+            <p class="post-title">Judul Post 7</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post8.html')">
+            <p class="post-title">Judul Post 8</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post9.html')">
+            <p class="post-title">Judul Post 9</p>
+            <p>Isi post</p>
+        </div>
+        <div class="post" onclick="openPost('post10.html')">
+            <p class="post-title">Judul Post 10</p>
+            <p>Isi post</p>
+        </div>
+    </div>
+    <div class="detail-container" id="detailContainer">
+        <button class="close-btn" onclick="closePost()">X</button>
+        <button class="full-view-btn" id="fullViewBtn" onclick="openFullView()">Full View</button>
+        <iframe id="postFrame"></iframe>
+    </div>
+
+    <script>
+        // Menyimpan URL postingan saat ini
+        let currentPostUrl = '';
+
+        function openPost(url) {
+            currentPostUrl = url; // Simpan URL untuk digunakan oleh tombol Full View
+            
+            if (window.innerWidth > 600) {
+                document.getElementById('postFrame').src = url;
+                document.getElementById('detailContainer').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('detailContainer').classList.add('show');
+                }, 10);
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        function closePost() {
+            let container = document.getElementById('detailContainer');
+            container.classList.add('hide');
+            container.classList.remove('show');
+            
+            setTimeout(() => {
+                container.classList.remove('hide');
+                container.style.display = 'none';
+                document.getElementById('postFrame').src = "";
+                currentPostUrl = '';
+            }, 300);
+        }
+        
+        function openFullView() {
+            if (currentPostUrl) {
+                window.open(currentPostUrl, '_blank');
+            }
+        }
+    </script>
 </body>
 </html>
-
