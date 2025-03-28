@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<!--head-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tambahkan meta description -->
+    <meta name="description" content="ENoted - Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <!-- Tambahkan meta keywords -->
+    <meta name="keywords" content="enoted, noted me, sedekah, tutorial, artikel inspiratif, berbagi">
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <!-- Perbaiki title yang lebih deskriptif -->
+    <title>ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Tambahkan canonical link -->
+    <link rel="canonical" href="https://www.enoted.netifly.app">
+
+    <!-- Open Graph untuk berbagi di media sosial -->
+    <meta property="og:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
+    <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta property="og:image" content="https://www.enoted.netifly.app/img/og-image.jpg">
+    <meta property="og:url" content="https://www.enoted.netifly.app">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
+    <meta name="twitter:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta name="twitter:image" content="https://www.enoted.netifly.app/img/og-image.jpg">
+    </head>
+
+<!--body-->
+<body class="home-page">
+    <div class="container">
+        <header>
+            <h1>ENoted</h1>
+        </header>
+        
+        <main>
+            <article class="post" onclick="openPost('post/post1.html')">
+                <h3 class="post-title">Manfaat Bersedekah</h3>
+                <p>Keajaiban Berbagi dalam Kehidupan</p>
+            </article>
+            
+            <article class="post" onclick="openPost('post/post2.html')">
+                <h3 class="post-title">Cara Download Youtube</h3>
+                <p>Cara Download Youtube Tanpa Aplikasi</p>
+            </article>
+
+            <article class="post" onclick="openPost('post/post3.html')">
+                <h3 class="post-title">Cara Download Youtube</h3>
+                <p>Cara Download Youtube Tanpa Aplikasi</p>
+            </article>
+            
+            <!-- Artikel lainnya -->
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 ENoted. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <!-- Detail container tetap sama -->
+    <div class="detail-container" id="detailContainer">
+        <button class="close-btn" onclick="closePost()">X</button>
+        <button class="full-view-btn" id="fullViewBtn" onclick="openFullView()">Full View</button>
+        <iframe id="postFrame"></iframe>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
