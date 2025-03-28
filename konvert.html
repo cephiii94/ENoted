@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter Teks ke HTML</title>
+</head>
+<body>
+    <textarea id="inputTeks" rows="5" cols="50">Masukkan teks biasa di sini...</textarea>
+    <button onclick="konversi()">Konversi ke HTML</button>
+    <div id="outputHTML"></div>
+
+    <script>
+        function konversi() {
+            let teks = document.getElementById("inputTeks").value;
+            let hasil = "<p>" + teks.replace(/\n/g, "</p><p>") + "</p>";
+            document.getElementById("outputHTML").innerHTML = hasil;
+        }
+    </script>
+</body>
+</html>

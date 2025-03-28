@@ -1,193 +1,73 @@
 <!DOCTYPE html>
 <html lang="id">
+
+<!--head-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tap2Share</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: url("/img/bg.jpg");
-        }
-        .container {
-            width: 50%;
-            max-width: 400px;
-            background: rgba(248, 248, 248, 0.8);
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            padding: 20px;
-            margin-right: 20px;
-            margin-left: 20px;
-            overflow-y: auto;
-            max-height: 80vh;
-        }
+    <!-- Tambahkan meta description -->
+    <meta name="description" content="ENoted - Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <!-- Tambahkan meta keywords -->
+    <meta name="keywords" content="enoted, noted me, sedekah, tutorial, artikel inspiratif, berbagi">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <!-- Perbaiki title yang lebih deskriptif -->
+    <title>ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif</title>
+    <link rel="stylesheet" href="style2.css">
+    <!-- Tambahkan canonical link -->
+    <link rel="canonical" href="https://www.enoted.com/">
 
-        .post {
-            background: white;
-            border: 2px solid black;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 10px 0;
-            cursor: pointer;
-        }
-        .post-title {
-            font-weight: bold;
-        }
-        .detail-container {
-            width: 50%;
-            max-width: 400px;
-            background: rgb(253, 253, 253);
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            display: none;
-            position: relative;
-            opacity: 0;
-            transform: scale(0.95) translateY(20px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        .detail-container.show {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-        .detail-container.hide {
-            opacity: 0;
-            transform: scale(0.95) translateY(50px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
+    <!-- Open Graph untuk berbagi di media sosial -->
+    <meta property="og:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
+    <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta property="og:image" content="https://www.enoted.com/img/og-image.jpg">
+    <meta property="og:url" content="https://www.enoted.com/">
+    <meta property="og:type" content="website">
 
-        iframe {
-            width: 100%;
-            max-height: 80vh;
-            height: 650px;
-            border: none;
-        }
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        
-        .full-view-btn {
-            position: absolute;
-            top: 10px;
-            right: 60px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
+    <meta name="twitter:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta name="twitter:image" content="https://www.enoted.com/img/og-image.jpg">
+    </head>
 
-        @media (max-width: 600px) {
-            .container {
-                width: 90%;
-            }
-            .detail-container {
-                display: none;
-            }
-        }
-    </style>
-</head>
-<body>
+<!--body-->
+<body class="home-page">
     <div class="container">
-        <h2>Tap2Share</h2>
-        <div class="post" onclick="openPost('post/post1.html')">
-            <p class="post-title">Manfaat Bersedekah</p>
-            <p>Keajaiban Berbagi dalam Kehidupan</p>
-        </div>
-        <div class="post" onclick="openPost('post/post2.html')">
-            <p class="post-title">Cara Download Youtube</p>
-            <p>Cara Download Youtube Tanpa Aplikasi</p>
-        </div>
-        <div class="post" onclick="openPost('post/post3.html')">
-            <p class="post-title">Judul Post 3</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post4.html')">
-            <p class="post-title">Judul Post 4</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post5.html')">
-            <p class="post-title">Judul Post 5</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post6.html')">
-            <p class="post-title">Judul Post 6</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post7.html')">
-            <p class="post-title">Judul Post 7</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post8.html')">
-            <p class="post-title">Judul Post 8</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post9.html')">
-            <p class="post-title">Judul Post 9</p>
-            <p>Isi post</p>
-        </div>
-        <div class="post" onclick="openPost('post/post10.html')">
-            <p class="post-title">Judul Post 10</p>
-            <p>Isi post</p>
-        </div>
+        <header>
+            <h1>ENoted</h1>
+        </header>
+        
+        <main>
+            <article class="post" onclick="openPost('post/post1.html')">
+                <h3 class="post-title">Manfaat Bersedekah</h3>
+                <p>Keajaiban Berbagi dalam Kehidupan</p>
+            </article>
+            
+            <article class="post" onclick="openPost('post/post2.html')">
+                <h3 class="post-title">Cara Download Youtube</h3>
+                <p>Cara Download Youtube Tanpa Aplikasi</p>
+            </article>
+
+            <article class="post" onclick="openPost('post/post2.html')">
+                <h3 class="post-title">Cara Download Youtube</h3>
+                <p>Cara Download Youtube Tanpa Aplikasi</p>
+            </article>
+            
+            <!-- Artikel lainnya -->
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 ENoted. All rights reserved.</p>
+        </footer>
     </div>
+    
+    <!-- Detail container tetap sama -->
     <div class="detail-container" id="detailContainer">
         <button class="close-btn" onclick="closePost()">X</button>
         <button class="full-view-btn" id="fullViewBtn" onclick="openFullView()">Full View</button>
         <iframe id="postFrame"></iframe>
     </div>
 
-    <script>
-        // Menyimpan URL postingan saat ini
-        let currentPostUrl = '';
-
-        function openPost(url) {
-            currentPostUrl = url; // Simpan URL untuk digunakan oleh tombol Full View
-            
-            if (window.innerWidth > 600) {
-                document.getElementById('postFrame').src = url;
-                document.getElementById('detailContainer').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('detailContainer').classList.add('show');
-                }, 10);
-            } else {
-                window.location.href = url;
-            }
-        }
-
-        function closePost() {
-            let container = document.getElementById('detailContainer');
-            container.classList.add('hide');
-            container.classList.remove('show');
-            
-            setTimeout(() => {
-                container.classList.remove('hide');
-                container.style.display = 'none';
-                document.getElementById('postFrame').src = "";
-                currentPostUrl = '';
-            }, 300);
-        }
-        
-        function openFullView() {
-            if (currentPostUrl) {
-                window.open(currentPostUrl, '_blank');
-            }
-        }
-    </script>
+    <script src="js.js"></script>
 </body>
 </html>
