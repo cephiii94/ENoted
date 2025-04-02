@@ -3,19 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konverter Teks ke HTML</title>
+    <title>Text to Structured HTML</title>
+    <style>
+        textarea { width: 100%; height: 200px; }
+        pre { background: #f4f4f4; padding: 10px; white-space: pre-wrap; }
+        blockquote { border-left: 4px solid #ccc; padding-left: 10px; color: #555; }
+        code { background: #eee; padding: 2px 4px; border-radius: 4px; }
+        pre code { display: block; padding: 10px; background: #222; color: #fff; }
+    </style>
 </head>
 <body>
-    <textarea id="inputTeks" rows="5" cols="50">Masukkan teks biasa di sini...</textarea>
-    <button onclick="konversi()">Konversi ke HTML</button>
-    <div id="outputHTML"></div>
+
+    <h2>Masukkan Artikel</h2>
+    <textarea id="inputText" placeholder="Tulis artikel di sini..."></textarea>
+    <button onclick="convertToHTML()">Convert</button>
+
+    <h2>Hasil Konversi:</h2>
+    <pre id="outputHtml"></pre>
+    <h2>Preview:</h2>
+    <div id="preview"></div>
 
     <script>
-        function konversi() {
-            let teks = document.getElementById("inputTeks").value;
-            let hasil = "<p>" + teks.replace(/\n/g, "</p><p>") + "</p>";
-            document.getElementById("outputHTML").innerHTML = hasil;
+        function convertToHTML() {
+            let text = document.getElementById("inputText").value;
+            let lines = text.split("\n");
+            let htmlOutput = "";
+            let inUl = false, inOl = false, inCodeBlock = false;
+
+            lines.forEach((line, index) => {
+                line = line.trim();
+
+                // Code Block (``` di awal dan akhir)
+                if (line.startsWith("```")) {
+                    if (inCodeBlock) {
+                        htmlOutput += "</code></pre>\n";
+                    } else {
+                        htmlOutput += "<pre><code>\n";
+                    }
+                    inCodeBlock = !inCodeBlock;
+                    return;
+                }
+
+                if (inCodeBlock) {
+                    htmlOutput += line + "\n";
+                    return;
+                }
+
+                // Judul utama (baris pertama)
+                if (index === 0) {
+                    htmlOutput += `<h1>${line}</h1>\n`;
+                } 
+                // Subjudul (## di awal)
+                else if (line.startsWith("##")) {
+                    htmlOutput += `<h2>${line.replace(/^##\s*/, '')}</h2>\n`;
+                } 
+                // Blockquote (> di awal)
+                else if (line.startsWith(">")) {
+                    htmlOutput += `<blockquote>${line.replace(/^>\s*/, '')}</blockquote>\n`;
+                } 
+                // Ordered List (1. di awal)
+                else if (/^\d+\.\s/.test(line)) {
+                    if (!inOl) {
+                        htmlOutput += "<ol>\n"; // Mulai Ordered List
+                        inOl = true;
+                    }
+                    htmlOutput += `<li>${line.replace(/^\d+\.\s*/, '')}</li>\n`;
+                }
+                // Unordered List (- di awal)
+                else if (line.startsWith("- ")) {
+                    if (!inUl) {
+                        htmlOutput += "<ul>\n"; // Mulai Unordered List
+                        inUl = true;
+                    }
+                    htmlOutput += `<li>${line.replace(/^- /, '')}</li>\n`;
+                } 
+                // Paragraf biasa
+                else {
+                    if (inUl) {
+                        htmlOutput += "</ul>\n"; // Tutup Unordered List
+                        inUl = false;
+                    }
+                    if (inOl) {
+                        htmlOutput += "</ol>\n"; // Tutup Ordered List
+                        inOl = false;
+                    }
+                    htmlOutput += `<p>${line}</p>\n`;
+                }
+            });
+
+            // Pastikan daftar ditutup jika akhir teks masih dalam <ul> atau <ol>
+            if (inUl) htmlOutput += "</ul>\n";
+            if (inOl) htmlOutput += "</ol>\n";
+
+            // Ganti format teks inline
+            htmlOutput = htmlOutput
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // Bold
+                .replace(/\*(.*?)\*/g, "<em>$1</em>")  // Italic
+                .replace(/__(.*?)__/g, "<u>$1</u>")  // Underline
+                .replace(/~~(.*?)~~/g, "<s>$1</s>")  // Strikethrough
+                .replace(/`([^`]+)`/g, "<code>$1</code>")  // Inline Code
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')  // Link
+                .replace(/!\[([^\]]+)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;">'); // Gambar
+
+            document.getElementById("outputHtml").textContent = htmlOutput; // Menampilkan kode HTML
+            document.getElementById("preview").innerHTML = htmlOutput; // Menampilkan preview HTML
         }
     </script>
+
 </body>
 </html>
