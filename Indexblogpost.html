@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENoted - Generator Postingan</title>
+    <link rel="stylesheet" href="Style.css">
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+</head>
+<body>
+    <div class="generator-container">
+        <h1>ENoted - Generator Postingan</h1>
+        
+        <form id="htmlForm">
+            <div class="form-group">
+                <label for="judul">Judul Postingan:</label>
+                <input type="text" id="judul" name="judul" required placeholder="Contoh: Membuat AI Sendiri" aria-label="Judul Postingan">
+            </div>
+
+            <div class="form-group">
+                <label for="kategori">Kategori:</label>
+                <input type="text" id="kategori" name="kategori" required placeholder="Contoh: Tips & Trik" aria-label="Kategori">
+            </div>
+
+            <div class="form-group">
+                <label for="isi">Isi Konten:</label>
+                <div class="format-guide">
+                    <details>
+                        <summary>Panduan Format</summary>
+                        <div class="format-examples">
+                            <p><strong>Judul:</strong> # Judul atau ## Subjudul</p>
+                            <p><strong>Bold:</strong> **teks bold**</p>
+                            <p><strong>Italic:</strong> *teks italic*</p>
+                            <p><strong>Underline:</strong> __teks underline__</p>
+                            <p><strong>Daftar Berurut:</strong> 1. Item satu</p>
+                            <p><strong>Daftar Tak Berurut:</strong> - Item satu</p>
+                            <p><strong>Kutipan:</strong> > Teks kutipan</p>
+                            <p><strong>Kode:</strong> `kode inline` atau blok kode dengan ```</p>
+                            <p><strong>Link:</strong> [teks link](https://example.com)</p>
+                            <p><strong>Gambar:</strong> ![alt text](https://example.com/image.jpg)</p>
+                        </div>
+                    </details>
+                </div>
+                <textarea id="isi" name="isi" required rows="10" placeholder="Tulis konten postingan Anda di sini... Gunakan format markdown seperti pada panduan format" aria-label="Isi Konten"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi Singkat (untuk SEO):</label>
+                <textarea id="deskripsi" name="deskripsi" required rows="3" placeholder="Deskripsi yang akan muncul di hasil pencarian" aria-label="Deskripsi Singkat"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="keywords">Kata Kunci (pisahkan dengan koma):</label>
+                <input type="text" id="keywords" name="keywords" required placeholder="Contoh: tips & trik, manfaat, teknologi" aria-label="Kata Kunci">
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-generate" onclick="generateHTML()">Buat Postingan</button>
+                <button type="reset" class="btn-reset">Reset Form</button>
+            </div>
+        </form>
+
+        <h2>Preview Postingan:</h2>
+        <div id="preview" class="preview-container"></div>
+        
+        <div id="error-message" class="error-message"></div>
+    </div>
+
+    <script src="Js.js"></script>
+</body>
+</html>
