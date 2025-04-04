@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENoted - Kategori Tutorial</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+</head>
+<body class="category-page">
+    <div class="category-post">
+    
+    <h1>Kategori - Tutorial</h1>
+    
+    <div class="filter-buttons">
+        <button class="filter-button" onclick="filterArticles('semua')">Semua</button>
+        <button class="filter-button" onclick="filterArticles('tutorial')">Tutorial</button>
+        <button class="filter-button" onclick="filterArticles('tips')">Tips </button>
+        <button class="filter-button" onclick="filterArticles('html')">HTML</button>
+        <button class="filter-button" onclick="filterArticles('kehidupan')">Kehidupan</button>
+        <!-- Tambahkan tombol untuk kategori lainnya -->
+    </div>
+    
+    <div id="category-container">
+        <!-- Artikel dengan kategori tutorial -->
+        <div class="article" data-category="tips tutorial">
+            <h3><a href="/kategori/tutorial/download-yt-tanpa-app.html">Download YT tanpa aplikasi</a></h3>
+            <p>download youtube mudah menggunakan website</p>
+            <small>20 Maret 2025</small>
+        </div>
+        
+        <div class="article" data-category="tips">
+            <h3><a href="/kategori/islam/manfaat-sedekah.html">Cara Membuat Website Sederhana dengan HTML</a></h3>
+            <p>Panduan langkah demi langkah membuat website sederhana menggunakan HTML untuk pemula.</p>
+            <small>25 Maret 2025</small>
+        </div>
+        
+        <!-- Artikel dengan kategori islam -->
+        <div class="article" data-category="html">
+            <h3><a href="/kategori/islam/manfaat-sedekah.html">Terjemahan Surah Al-Baqarah</a></h3>
+            <p>Mempelajari berbagai manfaat sedekah dalam kehidupan dan bagaimana sedekah dapat membawa kebaikan.</p>
+            <small>20 Maret 2025</small>
+        </div>
+        
+        <!-- Tambahkan artikel lainnya di sini -->
+    </div>
+    </div>
+
+    
+    <script>
+ // Tampilkan semua artikel saat halaman dimuat
+window.onload = function() {
+    filterArticles('semua');
+};
+
+// Fungsi untuk memfilter artikel
+function filterArticles(category) {
+    const articles = document.querySelectorAll('.article');
+    
+    articles.forEach(article => {
+        if (category === 'semua') {
+            article.style.display = 'block'; // Tampilkan semua
+        } else {
+            // Ambil data kategori dan pecah menjadi array (berdasarkan spasi)
+            const articleCategories = article.getAttribute('data-category').split(' ');
+            
+            // Cek apakah array kategori artikel mengandung kategori yang dipilih
+            if (articleCategories.includes(category)) {
+                article.style.display = 'block'; // Tampilkan yang sesuai kategori
+            } else {
+                article.style.display = 'none'; // Sembunyikan yang tidak sesuai
+            }
+        }
+    });
+}
+    </script>
+</body>
+</html>
