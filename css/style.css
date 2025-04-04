@@ -53,6 +53,19 @@
     height: auto;
     min-height: 100vh;
   }
+
+    /* Style khusus untuk category post */
+    body.category-page {
+      padding: var(--spacing-medium);
+      background-color: var(--color-background);
+      background-image: url("/img/bg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: block;
+      height: auto;
+      min-height: 100vh;
+    }
   
   /* ===== CONTAINER STYLES ===== */
   .container {
@@ -78,7 +91,74 @@
     box-shadow: var(--shadow-small);
     position: relative;
   }
+
+    /* Style untuk kategori post */
+    .category-post {
+   
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--color-white);
+      padding: var(--spacing-large);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-small);
+      position: relative;
+    }
   
+/* ===== NAVBAR STYLES ===== */
+.navbar {
+  background-color: transparent; /* Background transparan */
+  box-shadow: none; /* Tanpa shadow */
+  padding: 5px 12px;
+  margin-bottom: 0px; /* Sudah benar - tidak ada jarak ke bawah */
+  border: none; /* Tanpa border */
+  border-radius: 0; /* Tanpa border-radius */
+}
+
+.navbar ul {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  justify-content: center ; /* Anda mungkin ingin mengubah ini jika item nav tidak perlu terlalu jauh */
+}
+
+.navbar li {
+  margin-right: 10px; /* Mengurangi jarak antar item navigasi */
+  display: inline;
+}
+
+.navbar li:last-child {
+  margin-right: 0;
+}
+
+.navbar a {
+  color: var(--color-text);
+  text-decoration: none;
+  padding: 5px 8px; /* Mengurangi padding untuk mendekatkan item */
+  display: block;
+  transition: color 0.2s;
+}
+
+.navbar a:hover {
+  color: var(--color-primary);
+}
+
+/* Responsive navbar */
+@media (max-width: 600px) {
+  .navbar ul {
+    flex-wrap: wrap; /* Perbaikan dari warp menjadi wrap */
+  }
+  
+  .navbar li {
+    margin-right: 0;
+    margin-bottom: 5px; /* Mengurangi jarak vertikal */
+  }
+  
+  .navbar li:last-child {
+    margin-bottom: 0;
+  }
+}
+
   /* ===== BREADCRUMB ===== */
   .breadcrumb {
     margin-bottom: var(--spacing-large);
@@ -118,6 +198,87 @@
     font-weight: normal;
   }
   
+  /* Styling untuk kategori dan tag */
+  .post-categories {
+    margin: 15px 0;
+    font-size: 0.9rem;
+  }
+
+  .category-label, .tags-label {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+
+  .category-link {
+    background-color: #4CAF50;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+
+  .tag-link {
+    background-color: #f1f1f1;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-decoration: none;
+    margin-right: 5px;
+    font-size: 0.8rem;
+  }
+
+  .category-link:hover, .tag-link:hover {
+    opacity: 0.8;
+  }
+
+  .category-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  .category-list li {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+  .category-list a {
+    text-decoration: none;
+    color: #0066cc;
+  }
+  .category-list a:hover {
+    text-decoration: underline;
+  }
+  .category-buttons {
+    margin-bottom: 20px;
+  }
+  .category-button {
+    background-color: #f1f1f1;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .category-button:hover {
+    background-color: #ddd;
+  }
+
+  .filter-buttons {
+    margin-bottom: 20px;
+}
+.filter-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.article {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+    display: none; /* Sembunyikan semua artikel awalnya */
+}
+
   /* ===== POST META ===== */
   .post-meta {
     color: var(--color-text-light);
