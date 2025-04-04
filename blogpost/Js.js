@@ -37,14 +37,18 @@ function generateHTML() {
     <meta name="keywords" content="${keywords}">
     <meta name="author" content="ENoted">
     <meta name="robots" content="index, follow">
+
+    <!-- Meta tag kategori untuk filter konten -->
+    <meta name="${kategori}" content="${kategori}">
+
     
-    <link rel="canonical" href="https://www.enoted.netifly.app/post/${slug}.html">
+    <link rel="canonical" href="https://www.enoted.netifly.app/kategori/${kategori}/${slug}.html">
     
     <!-- Open Graph tags -->
     <meta property="og:title" content="${judul}">
     <meta property="og:description" content="${deskripsi}">
     <meta property="og:image" content="https://www.enoted.netifly.app/img/default-thumbnail.jpg">
-    <meta property="og:url" content="https://www.enoted.netifly.app/post/${slug}.html">
+    <meta property="og:url" content="https://www.enoted.netifly.app/kategori/${kategori}/${slug}.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="ENoted">
     
@@ -70,7 +74,7 @@ function generateHTML() {
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
                 <li><a href="/index.html">Beranda</a></li>
-                <li><a href="/kategori/${kategoriSlug}.html">${kategori}</a></li>
+                <li><a href="/kategori/${kategori}/01.index.html">${kategori}</a></li>
                 <li aria-current="page">${judul}</li>
             </ol>
         </nav>
@@ -148,13 +152,13 @@ function generateHTML() {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "${kategori}",
-                "item": "https://www.enoted.netifly.app/kategori/${kategoriSlug}.html"
+                "item": "https://www.enoted.netifly.app/kategori/${kategoriSlug}/01.index.html"
             },
             {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "${judul}",
-                "item": "https://www.enoted.netifly.app/post/${slug}.html"
+                "item": "https://www.enoted.netifly.app/kategori/${kategorislug}/${slug}.html"
             }
         ]
     }
