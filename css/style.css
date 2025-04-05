@@ -20,6 +20,7 @@
     --spacing-large: 20px;
   }
   
+  
   /* ===== RESET & BASE STYLES ===== */
   body {
     font-family: Arial, sans-serif;
@@ -262,22 +263,63 @@
     background-color: #ddd;
   }
 
+
+  /*filer post*/
   .filter-buttons {
     margin-bottom: 20px;
-}
-.filter-button {
+  }
+  .filter-button {
     background-color: #4CAF50;
     color: white;
     border: none;
     padding: 8px 16px;
     margin-right: 10px;
     cursor: pointer;
-}
-.article {
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
-    display: none; /* Sembunyikan semua artikel awalnya */
-}
+  }
+
+  /* Gaya untuk filter teks */
+  .filter-links {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .filter-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 0 10px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  .filter-link:hover {
+    color: #000;
+  }
+
+  .filter-link.active {
+    color: #007bff;
+    font-weight: bold;
+  }
+
+  .separator {
+    color: #ccc;
+    margin: 0 5px;
+  }
+
+  /* ===== ARTICLE STYLES ===== */
+  .article {
+    border-bottom: 0px solid #eee;
+    padding: 0px 0;
+    margin-bottom: 5px;
+    /* Sembunyikan semua artikel awalnya, tetapi akan ditampilkan oleh JS saat halaman dimuat */
+    display: none;
+    transition: all 0.3s ease; /* Tambahkan animasi transisi saat tampil/sembunyi */
+  }
+  
+   /* Untuk artikel terakhir, hapus border bawah */
+  .article:last-child {
+    border-bottom: none;
+  }
 
   /* ===== POST META ===== */
   .post-meta {
