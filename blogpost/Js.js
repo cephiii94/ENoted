@@ -62,43 +62,6 @@ function generateHTML() {
     <title>ENoted - ${judul}</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        blockquote { border-left: 4px solid #ccc; padding-left: 10px; color: #555; margin: 15px 0; }
-        code { background: #eee; padding: 2px 4px; border-radius: 4px; }
-        pre code { display: block; padding: 10px; background: #222; color: #fff; overflow-x: auto; }
-        
-        /* Style untuk mode hanya isi */
-        .content-only-mode .breadcrumb,
-        .content-only-mode .post-meta,
-        .content-only-mode .share-btn,
-        .content-only-mode .share-menu,
-        .content-only-mode .back-btn {
-            display: none;
-        }
-        
-        .content-only-mode .post-content {
-            margin-top: 20px;
-        }
-        
-        /* Style untuk tombol hanya isi */
-        .content-view-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .content-view-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            background-color: #3498db;
-            color: white;
-        }
-        
-        .content-view-btn.active {
-            background-color: #2c3e50;
-        }
     </style>
 </head>
 
@@ -118,14 +81,7 @@ function generateHTML() {
         <div class="post-meta">
             <time datetime="${isoDate}" class="post-date">${formattedDate}</time>
         </div>
-        
-        <!-- Tombol tampilan konten -->
-        <div class="content-view-controls">
-            <button class="content-view-btn active" id="fullViewBtn">Tampilan Lengkap</button>
-            <button class="content-view-btn" id="contentOnlyBtn">Hanya Isi</button>
-            <button class="share-btn" id="shareButton">Bagikan</button>
-        </div>
-        
+                
         <div class="share-menu" id="shareMenu">
             <a href="#" onclick="shareViaWhatsApp()">WhatsApp</a>
             <a href="#" onclick="shareViaFacebook()">Facebook</a>
@@ -419,4 +375,32 @@ function previewIsi() {
 // Fungsi untuk menutup preview isi
 function closePreviewIsi() {
     document.getElementById("preview-isi-container").style.display = "none";
+}
+
+// Function to copy HTML preview to clipboard
+function copyHtmlPreview() {
+    // Get the HTML content from the preview
+    const previewContent = document.getElementById("preview-isi-content").querySelector("code").textContent;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(previewContent)
+        .then(() => {
+            // Show success message
+            const copyBtn = document.getElementById("copy-preview-btn");
+            const originalText = copyBtn.textContent;
+            
+            // Change button text temporarily
+            copyBtn.textContent = "Disalin!";
+            copyBtn.classList.add("copied");
+            
+            // Reset button text after 2 seconds
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove("copied");
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Gagal menyalin kode: ', err);
+            alert('Gagal menyalin kode. Silakan coba lagi.');
+        });
 }

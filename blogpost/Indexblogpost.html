@@ -62,9 +62,16 @@
         </form>
 
         <div id="preview-isi-container" class="preview-isi-container">
-            <h2>Preview Kode HTML:</h2>
+            <div class="preview-header">
+                <h2>Preview Kode HTML:</h2>
+                <button type="button" id="copy-preview-btn" class="btn-copy-preview" onclick="copyHtmlPreview()">
+                    <i class="copy-icon"></i> Salin Kode
+                </button>
+            </div>
             <div id="preview-isi-content" class="preview-isi-content"></div>
-            <button type="button" class="btn-close-preview" onclick="closePreviewIsi()">Tutup Preview</button>
+            <div class="preview-actions">
+                <button type="button" class="btn-close-preview" onclick="closePreviewIsi()">Tutup Preview</button>
+            </div>
         </div>
 
         <h2>Preview Postingan:</h2>

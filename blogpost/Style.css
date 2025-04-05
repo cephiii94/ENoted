@@ -3,9 +3,16 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f5f5f5;
     margin: 0;
     padding: 20px;
+    background-color: var(--color-background);
+    background-image: url("/img/bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: block;
+    height: auto;
+    min-height: 100vh;
 }
 
 h1, h2, h3 {
@@ -379,4 +386,78 @@ pre code {
 
 .btn-close-preview:hover {
     background-color: #c0392b;
+}
+
+/* Blackquote */
+blockquote { 
+    border-left: 4px solid #ccc; 
+    padding-left: 10px; 
+    color: #555; 
+    margin: 15px 0; 
+}
+
+code { 
+    background: #eee; 
+    padding: 2px 4px; 
+    border-radius: 4px; 
+}
+
+pre code { 
+    display: block; 
+    padding: 10px; 
+    background: #222; 
+    color: #fff; 
+    overflow-x: auto;
+}
+
+
+/* Copy button styling */
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.preview-header h2 {
+    margin: 0;
+}
+
+.preview-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.btn-copy-preview {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-copy-preview:hover {
+    background-color: #2980b9;
+}
+
+.btn-copy-preview.copied {
+    background-color: #27ae60;
+}
+
+/* Copy icon */
+.copy-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
