@@ -71,7 +71,7 @@ function generateHTML() {
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
                 <li><a href="/index.html">Beranda</a></li>
-                <li><a href="/kategori/${kategori}/01.index.html">${kategori}</a></li>
+                <li class="category" onclick="showPopup('${kategori}')">${kategori}</li>
                 <li aria-current="page">${judul}</li>
             </ol>
         </nav>
@@ -81,7 +81,10 @@ function generateHTML() {
         <div class="post-meta">
             <time datetime="${isoDate}" class="post-date">${formattedDate}</time>
         </div>
-                
+        
+        <!-- Tombol Share -->
+        <button class="share-btn" id="shareButton">Bagikan</button>
+        <!-- Menu Share -->
         <div class="share-menu" id="shareMenu">
             <a href="#" onclick="shareViaWhatsApp()">WhatsApp</a>
             <a href="#" onclick="shareViaFacebook()">Facebook</a>
@@ -96,56 +99,14 @@ function generateHTML() {
         <button class="back-btn" id="backButton" onclick="goBack()">Kembali</button>
     </div>
 
-    <script>
-    // Fungsi berbagi dan navigasi
-    function shareViaWhatsApp() {
-        let postUrl = window.location.href;
-        window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${judul} - ' + postUrl), '_blank');
-    }
-    
-    function shareViaFacebook() {
-        let postUrl = window.location.href;
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(postUrl), '_blank');
-    }
-    
-    function shareViaTelegram() {
-        let postUrl = window.location.href;
-        window.open('https://t.me/share/url?url=' + encodeURIComponent(postUrl) + '&text=' + encodeURIComponent('${judul}'), '_blank');
-    }
-    
-    function copyLink() {
-        let postUrl = window.location.href;
-        navigator.clipboard.writeText(postUrl).then(() => {
-            alert('Link berhasil disalin!');
-        }).catch(err => {
-            console.error('Gagal menyalin link: ', err);
-        });
-    }
-    
-    function goBack() {
-        window.history.back();
-    }
-    
-    // Fungsi untuk tampilan konten
-    document.getElementById('fullViewBtn').addEventListener('click', function() {
-        document.getElementById('mainContent').classList.remove('content-only-mode');
-        document.getElementById('fullViewBtn').classList.add('active');
-        document.getElementById('contentOnlyBtn').classList.remove('active');
-    });
-    
-    document.getElementById('contentOnlyBtn').addEventListener('click', function() {
-        document.getElementById('mainContent').classList.add('content-only-mode');
-        document.getElementById('contentOnlyBtn').classList.add('active');
-        document.getElementById('fullViewBtn').classList.remove('active');
-        
-        // Scroll ke atas konten
-        window.scrollTo(0, document.querySelector('.post-content').offsetTop - 20);
-    });
-    
-    document.getElementById('shareButton').addEventListener('click', function() {
-        document.getElementById('shareMenu').classList.toggle('active');
-    });
-    </script>
+            <!-- Popup Notification -->
+        <div class="popup-overlay" id="popupOverlay"></div>
+        <div class="popup-notification" id="popupNotification">
+            <p id="popupMessage"></p>
+            <button class="close-popup" onclick="closePopup()">Tutup</button>
+        </div>
+
+        <script src="/js/script.js"></script>
 
     <!-- Script Schema.org -->
     <script type="application/ld+json">

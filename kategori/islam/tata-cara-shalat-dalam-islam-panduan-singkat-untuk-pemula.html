@@ -43,7 +43,7 @@
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
                 <li><a href="/index.html">Beranda</a></li>
-                <li><a href="/kategori/islam.html">islam</a></li>
+                <li class="category" onclick="showPopup('Islam')">Islam</li>
                 <li aria-current="page">Tata Cara Shalat dalam Islam: Panduan Singkat untuk Pemula</li>
             </ol>
         </nav>
@@ -102,40 +102,13 @@
         <button class="back-btn" id="backButton" onclick="goBack()">Kembali</button>
     </div>
 
-    <script>
-    // Fungsi berbagi dan navigasi
-    function shareViaWhatsApp() {
-        let postUrl = window.location.href;
-        window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('Tata Cara Shalat dalam Islam: Panduan Singkat untuk Pemula - ' + postUrl), '_blank');
-    }
-    
-    function shareViaFacebook() {
-        let postUrl = window.location.href;
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(postUrl), '_blank');
-    }
-    
-    function shareViaTelegram() {
-        let postUrl = window.location.href;
-        window.open('https://t.me/share/url?url=' + encodeURIComponent(postUrl) + '&text=' + encodeURIComponent('Tata Cara Shalat dalam Islam: Panduan Singkat untuk Pemula'), '_blank');
-    }
-    
-    function copyLink() {
-        let postUrl = window.location.href;
-        navigator.clipboard.writeText(postUrl).then(() => {
-            alert('Link berhasil disalin!');
-        }).catch(err => {
-            console.error('Gagal menyalin link: ', err);
-        });
-    }
-    
-    function goBack() {
-        window.history.back();
-    }
-    
-    document.getElementById('shareButton').addEventListener('click', function() {
-        document.getElementById('shareMenu').classList.toggle('active');
-    });
-    </script>
+    <div class="popup-overlay" id="popupOverlay"></div>
+            <div class="popup-notification" id="popupNotification">
+                <p id="popupMessage"></p>
+                <button class="close-popup" onclick="closePopup()">Tutup</button>
+            </div>
+
+    <script src="/js/script.js"></script>
 
     <!-- Script Schema.org -->
     <script type="application/ld+json">

@@ -41,7 +41,7 @@
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
                 <li><a href="/index.html">Beranda</a></li>
-                <li><a href="/kategori/tutorial/01.index.html">Tutorial</a></li>
+                <li class="category" onclick="showPopup('tutorial')">Tutorial</li>
                 <li aria-current="page">Cara Download Youtube Tanpa Aplikasi</li>
              </ol>
         </nav>
@@ -118,6 +118,13 @@
         
         <button class="back-btn" id="backButton" onclick="goBack()">Kembali</button>
     </div>
+
+        <!-- Popup Notification -->
+        <div class="popup-overlay" id="popupOverlay"></div>
+        <div class="popup-notification" id="popupNotification">
+            <p id="popupMessage"></p>
+            <button class="close-popup" onclick="closePopup()">Tutup</button>
+        </div>
 
     <script src="/js/script.js"></script>
 
