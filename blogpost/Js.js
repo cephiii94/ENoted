@@ -65,11 +65,45 @@ function generateHTML() {
         blockquote { border-left: 4px solid #ccc; padding-left: 10px; color: #555; margin: 15px 0; }
         code { background: #eee; padding: 2px 4px; border-radius: 4px; }
         pre code { display: block; padding: 10px; background: #222; color: #fff; overflow-x: auto; }
+        
+        /* Style untuk mode hanya isi */
+        .content-only-mode .breadcrumb,
+        .content-only-mode .post-meta,
+        .content-only-mode .share-btn,
+        .content-only-mode .share-menu,
+        .content-only-mode .back-btn {
+            display: none;
+        }
+        
+        .content-only-mode .post-content {
+            margin-top: 20px;
+        }
+        
+        /* Style untuk tombol hanya isi */
+        .content-view-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .content-view-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .content-view-btn.active {
+            background-color: #2c3e50;
+        }
     </style>
 </head>
 
 <body class="post-page">
-    <div class="content">
+    <div class="content" id="mainContent">
         <!-- Breadcrumb navigation -->
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
@@ -85,7 +119,12 @@ function generateHTML() {
             <time datetime="${isoDate}" class="post-date">${formattedDate}</time>
         </div>
         
-        <button class="share-btn" id="shareButton">Bagikan</button>
+        <!-- Tombol tampilan konten -->
+        <div class="content-view-controls">
+            <button class="content-view-btn active" id="fullViewBtn">Tampilan Lengkap</button>
+            <button class="content-view-btn" id="contentOnlyBtn">Hanya Isi</button>
+            <button class="share-btn" id="shareButton">Bagikan</button>
+        </div>
         
         <div class="share-menu" id="shareMenu">
             <a href="#" onclick="shareViaWhatsApp()">WhatsApp</a>
@@ -131,6 +170,22 @@ function generateHTML() {
         window.history.back();
     }
     
+    // Fungsi untuk tampilan konten
+    document.getElementById('fullViewBtn').addEventListener('click', function() {
+        document.getElementById('mainContent').classList.remove('content-only-mode');
+        document.getElementById('fullViewBtn').classList.add('active');
+        document.getElementById('contentOnlyBtn').classList.remove('active');
+    });
+    
+    document.getElementById('contentOnlyBtn').addEventListener('click', function() {
+        document.getElementById('mainContent').classList.add('content-only-mode');
+        document.getElementById('contentOnlyBtn').classList.add('active');
+        document.getElementById('fullViewBtn').classList.remove('active');
+        
+        // Scroll ke atas konten
+        window.scrollTo(0, document.querySelector('.post-content').offsetTop - 20);
+    });
+    
     document.getElementById('shareButton').addEventListener('click', function() {
         document.getElementById('shareMenu').classList.toggle('active');
     });
@@ -158,7 +213,7 @@ function generateHTML() {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "${judul}",
-                "item": "https://www.enoted.netifly.app/kategori/${kategorislug}/${slug}.html"
+                "item": "https://www.enoted.netifly.app/kategori/${kategoriSlug}/${slug}.html"
             }
         ]
     }
@@ -322,4 +377,46 @@ function sanitizeInput(input) {
     return div.innerHTML
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
+}
+
+// Fungsi untuk menampilkan preview isi dalam bentuk kode HTML
+function previewIsi() {
+    // Ambil isi konten dari textarea
+    let isi = document.getElementById("isi").value;
+    
+    if (!isi.trim()) {
+        alert("Harap isi konten terlebih dahulu sebelum melihat preview");
+        return;
+    }
+    
+    // Konversi konten ke HTML
+    let kontenHTML = convertToStructuredHTML(isi);
+    
+    // Tampilkan kode HTML (bukan hasil rendernya)
+    let previewIsiContent = document.getElementById("preview-isi-content");
+    
+    // Bersihkan konten sebelumnya
+    previewIsiContent.innerHTML = "";
+    
+    // Buat elemen pre dan code untuk menampilkan kode HTML
+    let preElement = document.createElement("pre");
+    let codeElement = document.createElement("code");
+    
+    // Escape karakter khusus HTML agar tampil sebagai teks
+    codeElement.textContent = kontenHTML;
+    
+    // Tambahkan elemen ke DOM
+    preElement.appendChild(codeElement);
+    previewIsiContent.appendChild(preElement);
+    
+    // Tampilkan container preview isi
+    document.getElementById("preview-isi-container").style.display = "block";
+    
+    // Scroll ke preview isi
+    document.getElementById("preview-isi-container").scrollIntoView({ behavior: 'smooth' });
+}
+
+// Fungsi untuk menutup preview isi
+function closePreviewIsi() {
+    document.getElementById("preview-isi-container").style.display = "none";
 }

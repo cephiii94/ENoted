@@ -42,6 +42,7 @@
                     </details>
                 </div>
                 <textarea id="isi" name="isi" required rows="10" placeholder="Tulis konten postingan Anda di sini... Gunakan format markdown seperti pada panduan format" aria-label="Isi Konten"></textarea>
+                <button type="button" class="btn-preview-isi" onclick="previewIsi()">Preview Kode HTML</button>
             </div>
 
             <div class="form-group">
@@ -59,6 +60,12 @@
                 <button type="reset" class="btn-reset">Reset Form</button>
             </div>
         </form>
+
+        <div id="preview-isi-container" class="preview-isi-container">
+            <h2>Preview Kode HTML:</h2>
+            <div id="preview-isi-content" class="preview-isi-content"></div>
+            <button type="button" class="btn-close-preview" onclick="closePreviewIsi()">Tutup Preview</button>
+        </div>
 
         <h2>Preview Postingan:</h2>
         <div id="preview" class="preview-container"></div>

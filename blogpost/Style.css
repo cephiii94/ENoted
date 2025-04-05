@@ -292,3 +292,91 @@ pre code {
         width: 100%;
     }
 }
+
+/* Style untuk preview isi dalam bentuk kode */
+.preview-isi-content pre {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    border: none;
+}
+
+.preview-isi-content code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: block;
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Style untuk menyoroti tag HTML */
+.preview-isi-content code .html-tag {
+    color: #0066cc;
+}
+
+.preview-isi-content code .html-attr {
+    color: #cc6600;
+}
+
+.preview-isi-content code .html-content {
+    color: #000;
+}
+
+/* Container untuk preview isi */
+.preview-isi-container {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-isi-content {
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+/* Tombol-tombol */
+.btn-preview-isi {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-preview-isi:hover {
+    background-color: #219653;
+}
+
+.btn-close-preview {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-close-preview:hover {
+    background-color: #c0392b;
+}
