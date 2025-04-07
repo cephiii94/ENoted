@@ -5,6 +5,11 @@ function generateHTML() {
     let kategori = document.getElementById("kategori").value;
     let deskripsi = document.getElementById("deskripsi").value;
     let keywords = document.getElementById("keywords").value;
+
+    // Set kategori jadi "uncategorized" jika tidak di isi
+    if (!kategori || kategori.trim() === "") {
+    kategori = "uncategorized";
+    }
     
     // Sanitasi input
     judul = sanitizeInput(judul);
@@ -107,6 +112,7 @@ function generateHTML() {
         </div>
 
         <script src="/js/script.js"></script>
+           <script src="/js/popup-category.js"></script>
 
     <!-- Script Schema.org -->
     <script type="application/ld+json">
