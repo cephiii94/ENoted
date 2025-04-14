@@ -47,13 +47,13 @@ function generateHTML() {
     <meta name="${kategori}" content="${kategori}">
 
     
-    <link rel="canonical" href="https://www.enoted.netifly.app/kategori/${kategori}/${slug}.html">
+    <link rel="canonical" href="https://www.enoted.netifly.app/kategori/${kategoriSlug}/${slug}.html">
     
     <!-- Open Graph tags -->
     <meta property="og:title" content="${judul}">
     <meta property="og:description" content="${deskripsi}">
     <meta property="og:image" content="https://www.enoted.netifly.app/img/default-thumbnail.jpg">
-    <meta property="og:url" content="https://www.enoted.netifly.app/kategori/${kategori}/${slug}.html">
+    <meta property="og:url" content="https://www.enoted.netifly.app/kategori/${kategoriSlug}/${slug}.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="ENoted">
     
