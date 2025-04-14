@@ -6,6 +6,9 @@
     <title>ENoted - Generator Postingan</title>
     <link rel="stylesheet" href="Style.css">
     <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+
 </head>
 <body>
     <div class="generator-container">
@@ -81,5 +84,12 @@
     </div>
 
     <script src="Js.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("/service-worker.js")
+            .then(() => console.log("Service Worker registered"));
+        }
+      </script>
+      
 </body>
 </html>
