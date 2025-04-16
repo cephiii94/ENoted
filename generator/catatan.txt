@@ -1,0 +1,2 @@
+saya ingin membuat web site tentang generator prompt AI, buatkan halaman utamanya, nanti akan terlink ke beberapa halaman/kategori yaitu 
+kategori prompt generator image di kategori ini ada generator char/karakter, generator komik, generator toy of the person, generate sticker, generate pixel art game. bisa bantu saya buatkan html css dan js nya saja dulu untuk halaman utamanya?

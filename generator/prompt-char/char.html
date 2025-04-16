@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Generator Gambar</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #2c4f7c;
+      --accent-color: #6da6e2;
+      --light-bg: #f5f9ff;
+      --dark-text: #333;
+      --light-text: #f5f5f5;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+      color: var(--dark-text);
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      position: relative;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2.2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 100px;
+      background: var(--accent-color);
+    }
+    
+    .intro {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #666;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    textarea, input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: var(--light-bg);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(109, 166, 226, 0.2);
+    }
+    
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+    
+    button {
+      padding: 0.8rem 1.5rem;
+      background-color: var(--primary-color);
+      color: var(--light-text);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.secondary {
+      background-color: #6c757d;
+    }
+    
+    button.accent {
+      background-color: var(--accent-color);
+    }
+    
+    #output-container {
+      margin-top: 2rem;
+      display: none;
+    }
+    
+    #output-container.visible {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    #output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    #output-title {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    #output {
+      background-color: var(--light-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      white-space: pre-wrap;
+      border-left: 4px solid var(--accent-color);
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      position: relative;
+    }
+    
+    .copy-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .copy-notification.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Back Button Styles */
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background-color: tra;
+      color: var(--light-text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      border: none;
+      z-index: 10;
+    }
+    
+    .back-button:hover {
+      background-color: var(--secondary-color);
+      transform: translateX(-2px);
+    }
+    
+    .back-button:active {
+      transform: translateX(0);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+      
+      body {
+        padding: 1rem;
+      }
+      
+      .container {
+        padding: 1.5rem;
+      }
+      
+      .back-button {
+        top: 0.7rem;
+        left: 0.7rem;
+        width: 36px;
+        height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-button" onclick="goBack()" title="Kembali">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    
+    
+    
+    <h1>AI Prompt Generator Gambar</h1>
+    <p class="intro">Buat prompt detail untuk AI image generator dengan mengisi form berikut.</p>
+    
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label for="karakter">Deskripsi Karakter</label>
+        <textarea id="karakter" placeholder="Contoh: Seorang ksatria muda dengan jubah biru dan pedang besar"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="emosi">Emosi/Perasaan</label>
+        <input type="text" id="emosi" placeholder="Contoh: penuh semangat, sedih, marah">
+      </div>
+      
+      <div class="form-group">
+        <label for="aksi">Aksi/Tindakan</label>
+        <input type="text" id="aksi" placeholder="Contoh: berlari melawan angin, menatap langit">
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="background">Background / Latar</label>
+        <textarea id="background" placeholder="Contoh: gunung bersalju saat matahari terbit"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="suasana">Suasana</label>
+        <input type="text" id="suasana" placeholder="Contoh: epik, melankolis, damai">
+      </div>
+      
+      <div class="form-group">
+        <label for="dialog">Dialog (opsional)</label>
+        <input type="text" id="dialog" placeholder="Contoh: Ayo kita mulai petualangan ini!">
+      </div>
+      
+      <div class="form-group">
+        <label for="gaya">Gaya Seni</label>
+        <input type="text" id="gaya" placeholder="Contoh: anime, realistis 3D, lukisan digital">
+      </div>
+      
+      <div class="form-group">
+        <label for="format">Resolusi / Format</label>
+        <input type="text" id="format" placeholder="Contoh: 1080p horizontal, square, vertical poster">
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="warna">Cahaya & Warna</label>
+        <input type="text" id="warna" placeholder="Contoh: neon terang, warna pastel, gelap dengan kontras tinggi">
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="tambahan">Tambahan Khusus</label>
+        <textarea id="tambahan" placeholder="Contoh: Ada naga terbang di latar belakang, efek partikel cahaya"></textarea>
+      </div>
+    </div>
+    
+    <div class="buttons">
+      <button onclick="generatePrompt()" id="generateBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        Buat Prompt
+      </button>
+      <button onclick="copyPrompt()" id="copyBtn" class="accent">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Salin Prompt
+      </button>
+      <button onclick="resetForm()" id="resetBtn" class="secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Reset
+      </button>
+      <button onclick="randomizeForm()" id="randomBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+          <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+          <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        Contoh Random
+      </button>
+    </div>
+    
+    <div id="output-container">
+      <div id="output-header">
+        <div id="output-title">Prompt yang dihasilkan:</div>
+      </div>
+      <div id="output"></div>
+    </div>
+    
+    <footer>
+      AI Prompt Generator &copy; 2025 - Buat prompt gambar menarik dengan mudah
+    </footer>
+  </div>
+  
+  <div class="copy-notification" id="copyNotification">
+    Prompt berhasil disalin!
+  </div>
+
+  <script>
+    function generatePrompt() {
+      const karakter = document.getElementById("karakter").value;
+      const emosi = document.getElementById("emosi").value;
+      const aksi = document.getElementById("aksi").value;
+      const background = document.getElementById("background").value;
+      const suasana = document.getElementById("suasana").value;
+      const dialog = document.getElementById("dialog").value;
+      const gaya = document.getElementById("gaya").value;
+      const format = document.getElementById("format").value;
+      const warna = document.getElementById("warna").value;
+      const tambahan = document.getElementById("tambahan").value;
+
+      if (!karakter) {
+        alert("Silakan isi deskripsi karakter terlebih dahulu!");
+        return;
+      }
+
+      let prompt = `${karakter}. `;
+      if (emosi) prompt += `Emosi: ${emosi}. `;
+      if (aksi) prompt += `Aksi: ${aksi}. `;
+      if (background) prompt += `Latar: ${background}. `;
+      if (suasana) prompt += `Suasana: ${suasana}. `;
+      if (dialog) prompt += `Dialog: "${dialog}". `;
+      if (gaya) prompt += `Gaya seni: ${gaya}. `;
+      if (format) prompt += `Format: ${format}. `;
+      if (warna) prompt += `Warna dan pencahayaan: ${warna}. `;
+      if (tambahan) prompt += `Detail tambahan: ${tambahan}.`;
+
+      document.getElementById("output").textContent = prompt;
+      document.getElementById("output-container").classList.add("visible");
+      
+      // Scroll to output
+      document.getElementById("output-container").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyPrompt() {
+      const output = document.getElementById("output").textContent;
+      if (output.trim() !== "") {
+        navigator.clipboard.writeText(output);
+        
+        // Show notification
+        const notification = document.getElementById("copyNotification");
+        notification.classList.add("visible");
+        
+        // Hide notification after 2 seconds
+        setTimeout(() => {
+          notification.classList.remove("visible");
+        }, 2000);
+      } else {
+        alert("Belum ada prompt untuk disalin.");
+      }
+    }
+
+    function resetForm() {
+      document.querySelectorAll("textarea, input").forEach(el => el.value = "");
+      document.getElementById("output-container").classList.remove("visible");
+    }
+
+    function randomizeForm() {
+      const contoh = {
+        karakter: [
+          "Seorang ksatria muda dengan jubah biru dan pedang besar",
+          "Gadis kecil berpakaian tradisional Jepang dengan payung",
+          "Robot kucing futuristik dengan mata neon",
+          "Seorang samurai dengan perisai bercahaya dan katana kembar",
+          "Putri elf dengan mahkota bunga dan tongkat sihir kristal"
+        ],
+        emosi: ["penuh semangat", "sedih", "marah", "tenang", "terkejut", "bahagia", "penasaran", "tegang"],
+        aksi: [
+          "berlari melawan angin", 
+          "menatap langit", 
+          "berdiri di tebing", 
+          "melompat di tengah kota", 
+          "mengayunkan pedang",
+          "merapal mantra",
+          "merentangkan sayap",
+          "menari di tengah hujan"
+        ],
+        background: [
+          "gunung bersalju saat matahari terbit",
+          "jalan kota cyberpunk malam hari",
+          "padang rumput dengan langit senja",
+          "hutan sakura dengan kelopak bunga berterbangan",
+          "istana kristal di tengah lautan awan",
+          "gua bawah tanah dengan kristal bercahaya"
+        ],
+        suasana: ["epik", "melankolis", "damai", "seram", "hangat", "misterius", "romantis", "tegang"],
+        dialog: [
+          "Ayo kita mulai petualangan ini!", 
+          "Aku tidak akan menyerah.", 
+          "Apa itu di langit?",
+          "Kekuatan sejati ada di dalam hatimu.",
+          "Hari ini adalah hari di mana takdir berubah!",
+          "Sampai kapan kita harus bertarung seperti ini?"
+        ],
+        gaya: [
+          "anime", 
+          "realistis 3D", 
+          "lukisan digital", 
+          "gaya Pixar", 
+          "ukiyo-e Jepang", 
+          "seni konsep game",
+          "gaya Studio Ghibli",
+          "seni fantasi"
+        ],
+        format: ["1080p horizontal", "square", "vertical poster", "panorama lebar", "4K detail tinggi"],
+        warna: [
+          "neon terang", 
+          "warna pastel", 
+          "gelap dengan kontras tinggi", 
+          "hangat keemasan", 
+          "dingin kebiruan",
+          "monokrom dengan aksen warna merah"
+        ],
+        tambahan: [
+          "Ada naga terbang di latar belakang",
+          "Efek partikel cahaya di sekitar karakter",
+          "Langit penuh bintang dengan aurora",
+          "Refleksi di permukaan air",
+          "Ambient occlusion untuk kedalaman",
+          "Depth of field dengan fokus pada wajah karakter",
+          "Kabut tipis di sekitar kaki"
+        ]
+      };
+
+      function random(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      document.getElementById("karakter").value = random(contoh.karakter);
+      document.getElementById("emosi").value = random(contoh.emosi);
+      document.getElementById("aksi").value = random(contoh.aksi);
+      document.getElementById("background").value = random(contoh.background);
+      document.getElementById("suasana").value = random(contoh.suasana);
+      document.getElementById("dialog").value = random(contoh.dialog);
+      document.getElementById("gaya").value = random(contoh.gaya);
+      document.getElementById("format").value = random(contoh.format);
+      document.getElementById("warna").value = random(contoh.warna);
+      document.getElementById("tambahan").value = random(contoh.tambahan);
+
+      generatePrompt();
+    }
+    
+    function goBack() {
+      // You can replace this with your actual navigation logic
+      history.back();
+      // Alternative: window.location.href = 'your-previous-page.html';
+    }
+  </script>
+</body>
+</html>
