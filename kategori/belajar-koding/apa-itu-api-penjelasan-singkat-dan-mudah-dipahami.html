@@ -44,7 +44,7 @@
         <nav aria-label="breadcrumb" class="breadcrumb">
             <ol>
                 <li><a href="/index.html">Beranda</a></li>
-                <li class="category" data-category="Belajar Koding">Belajar Koding</li>
+                <li class="category" onclick="showPopup('belajar-koding')">Belajar Koding</li>
                 <li aria-current="page">Apa Itu API? Penjelasan Singkat dan Mudah Dipahami</li>
             </ol>
         </nav>
@@ -90,14 +90,14 @@
 
         </div>
         
-        <button class="back-btn" id="backButton">Kembali</button>
+        <button class="back-btn" id="backButton" onclick="goBack()">Kembali</button>
     </div>
 
             <!-- Popup Notification -->
         <div class="popup-overlay" id="popupOverlay"></div>
         <div class="popup-notification" id="popupNotification">
             <p id="popupMessage"></p>
-            <button class="close-popup" id="closePopupBtn">Tutup</button>
+            <button class="close-popup" onclick="closePopup()">Tutup</button>
         </div>
 
         <script src="/js/script.js"></script>
