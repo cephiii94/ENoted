@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar - AI Prompt Generator</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #2c4f7c;
+      --accent-color: #6da6e2;
+      --light-bg: #f5f9ff;
+      --dark-text: #333;
+      --light-text: #f5f5f5;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+      color: var(--dark-text);
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2.5rem;
+      position: relative;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 80px;
+      background: var(--accent-color);
+    }
+    
+    .intro {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #666;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: var(--light-bg);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(109, 166, 226, 0.2);
+    }
+    
+    button {
+      width: 100%;
+      padding: 0.8rem 1.5rem;
+      background-color: var(--primary-color);
+      color: var(--light-text);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .login-link {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    
+    .login-link a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    
+    .login-link a:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      background-color: #ffe6e6;
+      color: #d63031;
+      padding: 0.8rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #d63031;
+      display: none;
+    }
+    
+    .error-message.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background-color: transparent;
+      color: var(--secondary-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+      cursor: pointer;
+      border: none;
+    }
+    
+    .back-button:hover {
+      background-color: var(--light-bg);
+      transform: translateX(-2px);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Logo styling */
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .logo svg {
+      width: 80px;
+      height: 80px;
+      color: var(--primary-color);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-button" onclick="window.location.href='formlogin.html'" title="Kembali ke Login">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+        <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+        <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+        <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+        <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+        <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+      </svg>
+    </div>
+    
+    <h1>Daftar Akun</h1>
+    <p class="intro">Buat akun baru untuk mengakses AI Prompt Generator</p>
+    
+    <div class="error-message" id="error-message">
+      Username sudah digunakan!
+    </div>
+    
+    <form id="register-form">
+      <div class="form-group">
+        <label for="fullname">Nama Lengkap</label>
+        <input type="text" id="fullname" placeholder="Masukkan nama lengkap anda" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username yang diinginkan" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Masukkan email anda" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm-password">Konfirmasi Password</label>
+        <input type="password" id="confirm-password" placeholder="Konfirmasi password anda" required>
+      </div>
+      
+      <button type="submit" id="register-button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <line x1="20" y1="8" x2="20" y2="14"></line>
+          <line x1="23" y1="11" x2="17" y2="11"></line>
+        </svg>
+        Daftar
+      </button>
+    </form>
+    
+    <div class="login-link">
+      Sudah punya akun? <a href="formlogin.html">Masuk sekarang</a>
+    </div>
+  </div>
+
+  <script>
+    // Untuk keperluan demo, kita menggunakan localStorage untuk simulasi database
+    // Pada aplikasi nyata, ini akan berada di server
+    
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const fullname = document.getElementById('fullname').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const errorMessage = document.getElementById('error-message');
+      
+      // Validasi input
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Password dan konfirmasi password tidak sama!";
+        errorMessage.classList.add('visible');
+        return;
+      }
+      
+      // Cek apakah username sudah ada di "database" kita
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      if (users.some(user => user.username === username)) {
+        errorMessage.textContent = "Username sudah digunakan!";
+        errorMessage.classList.add('visible');
+        return;
+      }
+      
+      // Tambahkan pengguna baru ke "database"
+      users.push({
+        fullname: fullname,
+        username: username,
+        email: email,
+        password: password // Pada aplikasi nyata, ini akan di-hash!
+      });
+      
+      localStorage.setItem('users', JSON.stringify(users));
+      
+      // Set pengguna awal jika belum ada
+      if (!localStorage.getItem('initialUsersSet')) {
+        const initialUsers = [
+          { username: "admin", password: "admin123" },
+          { username: "user", password: "user123" }
+        ];
+        
+        // Gabungkan dengan pengguna yang ada, hindari duplikat
+        const mergedUsers = [...users];
+        initialUsers.forEach(initialUser => {
+          if (!mergedUsers.some(u => u.username === initialUser.username)) {
+            mergedUsers.push(initialUser);
+          }
+        });
+        
+        localStorage.setItem('users', JSON.stringify(mergedUsers));
+        localStorage.setItem('initialUsersSet', 'true');
+      }
+      
+      // Tampilkan pesan sukses dan arahkan ke halaman login
+      alert("Pendaftaran berhasil! Silakan login.");
+      window.location.href = "formlogin.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prompt Generator</title>
+</head>
+<body>
+  <h1>Welcome to Prompt Generator</h1>
+  <button onclick="logout()">Logout</button>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!localStorage.getItem('loggedIn')) {
+      alert("Harus login dulu.");
+      window.location.href = "formlogin.html";
+    }
+  </script>
+</body>
+</html>

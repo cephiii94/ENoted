@@ -216,13 +216,81 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
+    /* User Profile Area */
+    .user-profile {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    
+    .user-menu {
+      position: relative;
+    }
+    
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 150px;
+      z-index: 100;
+      display: none;
+    }
+    
+    .user-dropdown.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .user-dropdown-item {
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-dropdown-item:hover {
+      background-color: var(--light-bg);
+    }
+    
+    .user-dropdown-item:first-child {
+      border-top-left-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
+    }
+    
+    .user-dropdown-item:last-child {
+      border-bottom-left-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+    }
+    
     /* Back Button Styles */
     .back-button {
       position: absolute;
       top: 1rem;
       left: 1rem;
-      background-color: tra;
-      color: var(--light-text);
+      background-color: transparent;
+      color: var(--primary-color);
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -239,6 +307,7 @@
     .back-button:hover {
       background-color: var(--secondary-color);
       transform: translateX(-2px);
+      color: white;
     }
     
     .back-button:active {
@@ -263,11 +332,16 @@
         padding: 1.5rem;
       }
       
-      .back-button {
-        top: 0.7rem;
-        left: 0.7rem;
-        width: 36px;
-        height: 36px;
+      .back-button, .user-profile {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin-bottom: 1rem;
+      }
+      
+      .user-profile {
+        justify-content: flex-end;
       }
     }
   </style>
@@ -280,7 +354,28 @@
       </svg>
     </button>
     
-    
+    <div class="user-profile">
+      <div class="user-avatar" id="user-initial">U</div>
+      <div class="user-menu">
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-item" id="username-display">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="username-text">Username</span>
+          </div>
+          <div class="user-dropdown-item" onclick="logout()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
     
     <h1>AI Prompt Generator Gambar</h1>
     <p class="intro">Buat prompt detail untuk AI image generator dengan mengisi form berikut.</p>
@@ -387,6 +482,57 @@
   </div>
 
   <script>
+    // Check login state when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      checkLoginState();
+      setupUserMenu();
+    });
+    
+    function checkLoginState() {
+      const isLoggedIn = localStorage.getItem('loggedIn');
+      const username = localStorage.getItem('username');
+      
+      if (!isLoggedIn || !username) {
+        // Redirect to login page if not logged in
+        window.location.href = "/weblogin/formlogin.html";
+      } else {
+        // Update UI with username
+        document.getElementById('username-text').textContent = username;
+        
+        // Set user initial
+        if (username) {
+          document.getElementById('user-initial').textContent = username.charAt(0).toUpperCase();
+        }
+      }
+    }
+    
+    function setupUserMenu() {
+      const avatar = document.getElementById('user-initial');
+      const dropdown = document.getElementById('user-dropdown');
+      
+      // Toggle dropdown on avatar click
+      avatar.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+      });
+      
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (dropdown.classList.contains('active') && e.target !== avatar) {
+          dropdown.classList.remove('active');
+        }
+      });
+    }
+    
+    function logout() {
+      // Remove login information from localStorage
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('username');
+      
+      // Redirect to login page
+      window.location.href = "/weblogin/formlogin.html";
+    }
+    
     function generatePrompt() {
       const karakter = document.getElementById("karakter").value;
       const emosi = document.getElementById("emosi").value;
@@ -420,6 +566,9 @@
       
       // Scroll to output
       document.getElementById("output-container").scrollIntoView({ behavior: 'smooth' });
+      
+      // Save to history
+      savePromptToHistory(prompt);
     }
 
     function copyPrompt() {
@@ -443,6 +592,30 @@
     function resetForm() {
       document.querySelectorAll("textarea, input").forEach(el => el.value = "");
       document.getElementById("output-container").classList.remove("visible");
+    }
+    
+    function savePromptToHistory(prompt) {
+      // Get current user
+      const username = localStorage.getItem('username');
+      if (!username) return;
+      
+      // Get existing history or initialize new one
+      const historyKey = `promptHistory_${username}`;
+      let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      
+      // Add new prompt with timestamp
+      history.push({
+        prompt: prompt,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Keep only last 10 prompts
+      if (history.length > 10) {
+        history = history.slice(history.length - 10);
+      }
+      
+      // Save back to localStorage
+      localStorage.setItem(historyKey, JSON.stringify(history));
     }
 
     function randomizeForm() {
@@ -533,7 +706,7 @@
     function goBack() {
       // You can replace this with your actual navigation logic
       history.back();
-      // Alternative: window.location.href = 'your-previous-page.html';
+      Alternative: window.location.href = '/generator/index.html';
     }
   </script>
 </body>
