@@ -26,6 +26,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         
         header {
@@ -33,6 +34,7 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
+            position: relative;
         }
         
         h1 {
@@ -80,6 +82,30 @@
             color: #666;
         }
         
+        /* Gaya untuk link teks */
+        .link {
+            color: #666;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 0 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .link:hover {
+            color: #000;
+        }
+
+        .flink.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .separator {
+            color: #ccc;
+            margin: 0 5px;
+        }
+        
         footer {
             margin-top: 30px;
             text-align: center;
@@ -89,15 +115,146 @@
             color: #888;
         }
         
+        /* Profil Menu */
+        .profile-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4a6fa5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+        
+        .profile-icon:hover {
+            background-color: #6da6e2;
+            transform: scale(1.05);
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            display: none;
+            overflow: hidden;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f9f9f9;
+            color: #4a6fa5;
+        }
+        
+        .dropdown-item span {
+            margin-left: 10px;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        /* Login Button */
+        .login-button {
+            padding: 8px 15px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .login-button:hover {
+            background-color: #6da6e2;
+        }
+        
+        /* Fixed: Improved greeting position */
+        .user-greeting {
+            display: none;
+            position: absolute;
+            top: -30px; /* Ubah dari -25px menjadi -30px atau lebih tinggi */
+            right: 0;
+            font-size: 14px;
+            color: #4a6fa5; /* Ubah warna agar lebih menonjol */
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.9); /* Tambahkan background semi-transparan */
+            padding: 3px 8px; /* Tambahkan padding */
+            border-radius: 4px; /* Tambahkan sudut membulat */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Tambahkan bayangan ringan */
+            max-width: 200px; /* Tambahkan ini untuk mengatur lebar maksimum */
+    white-space: nowrap; /* Tambahkan ini agar teks tidak wrap */
+    overflow: hidden; /* Tambahkan ini agar teks yang terlalu panjang terpotong */
+    text-overflow: ellipsis; /* Tambahkan ini untuk menampilkan elipsis (...) jika teks terpotong */
+
+        }
+        
+        /* Membuat tampilan alternatif untuk layout */
+        .profile-with-greeting {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
         @media (max-width: 600px) {
             .category-list {
                 grid-template-columns: 1fr;
+            }
+            
+            .profile-menu {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .user-greeting {
+                top: -25px;
+                font-size: 12px;
+                padding: 2px 6px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Profile Menu -->
+        <div class="profile-menu" id="profileMenuContainer">
+            <!-- Ini akan diisi oleh JavaScript -->
+            <div class="user-greeting" id="userGreeting"></div>
+            <!-- Tombol login statis sebagai fallback (akan disembunyikan oleh JS jika user sudah login) -->
+            <a href="/weblogin/formlogin.html" class="login-button" id="staticLoginButton">Masuk</a>
+        </div>
+        
         <header>
             <h1>Generator Prompt AI</h1>
             <p>Pilih kategori generator prompt untuk mulai menggunakan</p>
@@ -148,8 +305,129 @@
         </div>
         
         <footer>
-            <p>&copy; 2025 Generator Prompt AI</p>
+            <p>&copy; 2025 Generator Prompt AI<span class="separator">|</span><a href="/index.html" class="link">Enoted</a> </p>
         </footer>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileMenuContainer = document.getElementById('profileMenuContainer');
+            const userGreeting = document.getElementById('userGreeting');
+            const staticLoginButton = document.getElementById('staticLoginButton');
+            
+            try {
+                // Cek apakah user sudah login
+                let currentUser = null;
+                try {
+                    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    console.log("Data user:", currentUser);
+                } catch (error) {
+                    console.error("Error parsing user data:", error);
+                }
+                
+                if (currentUser && currentUser.isLoggedIn) {
+                    // User sudah login, tampilkan profil
+                    console.log("User sudah login:", currentUser.displayName);
+                    
+                    // Sembunyikan tombol login statis
+                    if (staticLoginButton) {
+                        staticLoginButton.style.display = 'none';
+                    }
+                    
+                    // Buat wrapper untuk greeting dan profile icon jika menggunakan layout baru
+                    const profileWrapper = document.createElement('div');
+                    profileWrapper.className = 'profile-with-greeting';
+                    
+                    // Tampilkan salam ke pengguna
+                    userGreeting.textContent = `Halo, ${currentUser.displayName}!`;
+                    userGreeting.style.display = 'block';
+                    
+                    // Buat elemen profil icon
+                    const profileIcon = document.createElement('div');
+                    profileIcon.className = 'profile-icon';
+                    profileIcon.id = 'profileIcon';
+                    profileIcon.textContent = currentUser.initials || 'U';
+                    profileIcon.style.marginTop = '2px'; // Tambahkan margin atas agar tidak terlalu dekat dengan greeting
+                    
+                    // Gunakan layout baru jika ada masalah tumpang tindih
+                    // profileWrapper.appendChild(userGreeting);
+                    // profileWrapper.appendChild(profileIcon);
+                    // profileMenuContainer.appendChild(profileWrapper);
+                    
+                    // Atau tetap menggunakan layout lama tapi dengan posisi greeting yang lebih baik
+                    profileMenuContainer.appendChild(profileIcon);
+                    
+                    // Buat dropdown menu
+                    const profileDropdown = document.createElement('div');
+                    profileDropdown.className = 'profile-dropdown';
+                    profileDropdown.id = 'profileDropdown';
+                    
+                    // Isi dropdown menu
+                    profileDropdown.innerHTML = `
+                        <a href="/weblogin/dashboard-profile.html" class="dropdown-item">
+                            👤 <span>Profil Saya</span>
+                        </a>
+                        <a href="/weblogin/dashboard-home.html" class="dropdown-item">
+                            📊 <span>Dashboard</span>
+                        </a>
+                        <a href="/weblogin/dashboard-activities.html" class="dropdown-item">
+                            📝 <span>Aktivitas</span>
+                        </a>
+                        <a href="/weblogin/dashboard-settings.html" class="dropdown-item">
+                            ⚙️ <span>Pengaturan</span>
+                        </a>
+                        <a href="/weblogin/dashboard-help.html" class="dropdown-item">
+                            ❓ <span>Bantuan</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" id="logoutButton">
+                            🚪 <span>Keluar</span>
+                        </a>
+                    `;
+                    
+                    profileMenuContainer.appendChild(profileDropdown);
+                    
+                    // Toggle profile dropdown
+                    profileIcon.addEventListener('click', function() {
+                        profileDropdown.classList.toggle('show');
+                    });
+                    
+                    // Handle logout
+                    document.getElementById('logoutButton').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Hapus data user dari localStorage
+                        localStorage.removeItem('currentUser');
+                        
+                        // Tampilkan pesan
+                        alert('Anda telah berhasil keluar dari akun.');
+                        
+                        // Refresh halaman
+                        window.location.reload();
+                    });
+                    
+                    // Close dropdown when clicking outside
+                    window.addEventListener('click', function(event) {
+                        if (!event.target.matches('#profileIcon') && !profileDropdown.contains(event.target)) {
+                            profileDropdown.classList.remove('show');
+                        }
+                    });
+                    
+                } else {
+                    // User belum login, pastikan tombol login terlihat
+                    console.log("User belum login, menampilkan tombol login");
+                    if (staticLoginButton) {
+                        staticLoginButton.style.display = 'inline-block';
+                    }
+                }
+            } catch (error) {
+                console.error("Error dalam script:", error);
+                // Pastikan tombol login tetap tersedia jika terjadi error
+                if (staticLoginButton) {
+                    staticLoginButton.style.display = 'inline-block';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
