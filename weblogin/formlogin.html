@@ -267,8 +267,13 @@
   
   if (validUser) {
     // Simpan status login di localStorage
-    localStorage.setItem('loggedIn', 'true');
-    localStorage.setItem('username', username);
+    const userData = {
+      isLoggedIn: true,
+      displayName: username,
+      initials: username.charAt(0).toUpperCase()
+    };
+
+    localStorage.setItem('currentUser', JSON.stringify(userData));
     
     // Arahkan ke halaman generator karakter
     window.location.href = "/generator/prompt-char/char.html";

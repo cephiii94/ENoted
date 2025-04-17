@@ -354,6 +354,7 @@
       </svg>
     </button>
     
+    <!--USER PROFIL
     <div class="user-profile">
       <div class="user-avatar" id="user-initial">U</div>
       <div class="user-menu">
@@ -376,7 +377,8 @@
         </div>
       </div>
     </div>
-    
+    -->
+
     <h1>AI Prompt Generator Gambar</h1>
     <p class="intro">Buat prompt detail untuk AI image generator dengan mengisi form berikut.</p>
     
@@ -463,6 +465,17 @@
         </svg>
         Contoh Random
       </button>
+      <button onclick="translateToEnglish()" id="translateBtn" class="accent">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 8l6 6"></path>
+          <path d="M4 14h12"></path>
+          <path d="M2 5h12"></path>
+          <path d="M7 2h1"></path>
+          <path d="M22 22l-5-10-5 10"></path>
+          <path d="M14 18h6"></path>
+        </svg>
+        English
+      </button>
     </div>
     
     <div id="output-container">
@@ -481,6 +494,9 @@
     Prompt berhasil disalin!
   </div>
 
+
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <script>
     // Check login state when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -495,17 +511,20 @@
       if (!isLoggedIn || !username) {
         // Redirect to login page if not logged in
         window.location.href = "/weblogin/formlogin.html";
-      } else {
-        // Update UI with username
-        document.getElementById('username-text').textContent = username;
-        
-        // Set user initial
-        if (username) {
-          document.getElementById('user-initial').textContent = username.charAt(0).toUpperCase();
-        }
-      }
+      }  else {
+    // Update UI with username jika elemen ada
+    const usernameText = document.getElementById('username-text');
+    if (usernameText) {
+      usernameText.textContent = username;
     }
     
+    // Set user initial jika elemen ada
+    const userInitial = document.getElementById('user-initial');
+    if (userInitial && username) {
+      userInitial.textContent = username.charAt(0).toUpperCase();
+    }
+  }
+}
     function setupUserMenu() {
       const avatar = document.getElementById('user-initial');
       const dropdown = document.getElementById('user-dropdown');
@@ -621,6 +640,7 @@
     function randomizeForm() {
       const contoh = {
         karakter: [
+          "dia memiliki rambut panjang berwarna hitam yang mengalir seperti air terjun, dengan sedikit kilau biru. Matanya berwarna hijau terang, yang memancarkan keberanian dan kecerdasan. Dia mengenakan armor ringan dari kulit hewan hutan yang berwarna coklat gelap dengan aksen logam perak di bahu dan tangan. Di punggungnya terdapat pedang besar yang terbuat dari bahan misterius.",
           "Seorang ksatria muda dengan jubah biru dan pedang besar",
           "Gadis kecil berpakaian tradisional Jepang dengan payung",
           "Robot kucing futuristik dengan mata neon",
@@ -629,6 +649,7 @@
         ],
         emosi: ["penuh semangat", "sedih", "marah", "tenang", "terkejut", "bahagia", "penasaran", "tegang"],
         aksi: [
+          "dia berdiri tegak dengan tangan memegang pedang, siap untuk bertarung. Di sekelilingnya terdapat hewan-hewan hutan yang diam-diam memperhatikannya. Suasana sekitar terasa tegang, tetapi juga penuh kekuatan.",
           "berlari melawan angin", 
           "menatap langit", 
           "berdiri di tebing", 
@@ -639,6 +660,8 @@
           "menari di tengah hujan"
         ],
         background: [
+          "Cahaya matahari yang sangat sedikit masuk, hanya ada beberapa sinar lembut yang menembus kabut. Warna-warna gelap seperti hijau lumut, coklat tanah, dan abu-abu kabut mendominasi. Ada aura magis yang terlihat samar di antara pepohonan, dengan cahaya yang melintas seperti gelombang energi.",
+          "hutan lebat dengan pohon-pohon besar yang menjulang tinggi, dengan kabut tebal yang hampir menutupi seluruh area. Beberapa tanaman merambat dan lumut menutupi sebagian besar batang pohon, memberi kesan bahwa hutan ini sangat tua dan penuh misteri.",
           "gunung bersalju saat matahari terbit",
           "jalan kota cyberpunk malam hari",
           "padang rumput dengan langit senja",
@@ -708,6 +731,206 @@
       history.back();
       Alternative: window.location.href = '/generator/index.html';
     }
+
+    // Initialize Google Translate
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'id',
+    includedLanguages: 'en',
+    autoDisplay: false
+  }, 'google_translate_element');
+  
+  // Hide the Google Translate widget since we're using our own button
+  const translateElement = document.getElementById('google_translate_element');
+  if (translateElement) {
+    translateElement.style.display = 'none';
+  }
+}
+
+function translateToEnglish() {
+  const output = document.getElementById("output").textContent;
+  if (output.trim() === "") {
+    alert("Belum ada prompt untuk diterjemahkan.");
+    return;
+  }
+  
+  // Mengubah tombol untuk menunjukkan proses loading
+  const translateBtn = document.getElementById("translateBtn");
+  const originalBtnContent = translateBtn.innerHTML;
+  translateBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> Translating...';
+  
+  // Bagi teks menjadi beberapa bagian (maksimal 500 karakter)
+  const MAX_CHARS = 500;
+  const textChunks = [];
+  let tempText = output;
+  
+  while (tempText.length > 0) {
+    // Temukan posisi terakhir spasi dalam batas 500 karakter
+    let cutPoint = Math.min(tempText.length, MAX_CHARS);
+    if (cutPoint < tempText.length) {
+      // Cari spasi terakhir dalam batas karakter untuk memotong di tempat yang tepat
+      const lastSpace = tempText.lastIndexOf(' ', cutPoint);
+      if (lastSpace > 0) {
+        cutPoint = lastSpace;
+      }
+    }
+    
+    // Potong teks dan tambahkan ke chunks
+    textChunks.push(tempText.substring(0, cutPoint));
+    tempText = tempText.substring(cutPoint).trim();
+  }
+  
+  // Terjemahkan setiap chunk dan gabungkan hasilnya
+  const translatePromises = textChunks.map(chunk => 
+    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=id|en`)
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.responseData && data.responseData.translatedText) {
+          return data.responseData.translatedText;
+        }
+        throw new Error("Terjemahan gagal untuk sebagian teks");
+      })
+  );
+  
+  // Tunggu semua terjemahan selesai
+  Promise.all(translatePromises)
+    .then(translatedChunks => {
+      // Gabungkan semua chunk yang sudah diterjemahkan
+      const translatedText = translatedChunks.join(' ');
+      document.getElementById("output").textContent = translatedText;
+      
+      // Kembalikan tombol ke keadaan semula
+      translateBtn.innerHTML = originalBtnContent;
+    })
+    .catch(error => {
+      console.error('Translation error:', error);
+      alert("Translasi gagal. Silakan coba lagi nanti.");
+      // Kembalikan tombol ke keadaan semula
+      translateBtn.innerHTML = originalBtnContent;
+    });
+
+
+  // Melakukan request ke API translasi
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.responseData && data.responseData.translatedText) {
+        document.getElementById("output").textContent = data.responseData.translatedText;
+      } else {
+        // Jika API gagal, tampilkan pesan error
+        alert("Translasi gagal. Silakan coba lagi nanti.");
+      }
+      // Kembalikan tombol ke keadaan semula
+      translateBtn.innerHTML = originalBtnContent;
+    })
+    .catch(error => {
+      console.error('Translation error:', error);
+      alert("Translasi gagal. Silakan coba lagi nanti.");
+      // Kembalikan tombol ke keadaan semula
+      translateBtn.innerHTML = originalBtnContent;
+    });
+
+  
+  // Show loading state
+  const originalText = document.getElementById("translateBtn").innerHTML;
+  document.getElementById("translateBtn").innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> Translating...';
+  
+  // Create a hidden div for translation
+  let translationDiv = document.getElementById('translation-div');
+  if (!translationDiv) {
+    translationDiv = document.createElement('div');
+    translationDiv.id = 'translation-div';
+    translationDiv.style.display = 'none';
+    document.body.appendChild(translationDiv);
+  }
+  
+  // Set the content to be translated
+  translationDiv.textContent = output;
+  
+  // Create a hidden Google Translate element if it doesn't exist
+  let googleTranslateElement = document.getElementById('google_translate_element');
+  if (!googleTranslateElement) {
+    googleTranslateElement = document.createElement('div');
+    googleTranslateElement.id = 'google_translate_element';
+    googleTranslateElement.style.display = 'none';
+    document.body.appendChild(googleTranslateElement);
+    
+    // Initialize Google Translate if not already initialized
+    if (typeof google === 'undefined' || typeof google.translate === 'undefined') {
+      const script = document.createElement('script');
+      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      document.body.appendChild(script);
+    } else {
+      googleTranslateElementInit();
+    }
+  }
+  
+  // Wait for Google Translate to load and then trigger translation
+  const checkTranslateReady = setInterval(() => {
+    if (typeof google !== 'undefined' && typeof google.translate !== 'undefined' && 
+        typeof google.translate.TranslateElement !== 'undefined') {
+      clearInterval(checkTranslateReady);
+      
+      // Trigger translation
+      const selectBox = document.querySelector('.goog-te-combo');
+      if (selectBox) {
+        selectBox.value = 'en';
+        selectBox.dispatchEvent(new Event('change'));
+        
+        // Wait for translation to complete
+        setTimeout(() => {
+          // Get translated text
+          const translatedText = translationDiv.textContent;
+          
+          // Update output with translated text
+          document.getElementById("output").textContent = translatedText;
+          
+          // Reset button
+          document.getElementById("translateBtn").innerHTML = originalText;
+          
+          // Create custom translation using fetch API as fallback
+          if (translatedText === output) {
+            customTranslate(output);
+          }
+        }, 1000);
+      } else {
+        // If Google Translate dropdown not found, use custom translation
+        customTranslate(output);
+      }
+    }
+  }, 300);
+  
+  // Set timeout if Google Translate takes too long
+  setTimeout(() => {
+    clearInterval(checkTranslateReady);
+    customTranslate(output);
+  }, 3000);
+}
+
+// Custom translation function as a fallback
+function customTranslate(text) {
+  // Use a free translation API
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=id|en`;
+  
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.responseData && data.responseData.translatedText) {
+        document.getElementById("output").textContent = data.responseData.translatedText;
+      } else {
+        // If this API fails too, show an error
+        alert("Translasi gagal. Silakan coba lagi nanti.");
+      }
+      // Reset button
+      document.getElementById("translateBtn").innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"></path><path d="M4 14h12"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="M22 22l-5-10-5 10"></path><path d="M14 18h6"></path></svg> English';
+    })
+    .catch(error => {
+      console.error('Translation error:', error);
+      alert("Translasi gagal. Silakan coba lagi nanti.");
+      // Reset button
+      document.getElementById("translateBtn").innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"></path><path d="M4 14h12"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="M22 22l-5-10-5 10"></path><path d="M14 18h6"></path></svg> English';
+    });
+}
   </script>
 </body>
 </html>
