@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar - Sistem Pengguna</title>
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --accent-color: #4895ef;
+      --text-color: #333;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --error-color: #e63946;
+      --success-color: #2a9d8f;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--accent-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    .alt-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    
+    .alt-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .alt-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .password-strength {
+      margin-top: 8px;
+      height: 5px;
+      background-color: #e9ecef;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .password-strength-meter {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s, background-color 0.3s;
+    }
+    
+    .password-strength-text {
+      margin-top: 5px;
+      font-size: 0.8rem;
+      text-align: right;
+    }
+    
+    .terms {
+      margin-top: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .terms input {
+      margin-right: 10px;
+      margin-top: 3px;
+    }
+    
+    .terms label {
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    
+    .terms label a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    
+    .terms label a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Buat Akun Baru</h1>
+      <p>Daftar untuk mendapatkan akses penuh ke layanan kami</p>
+    </div>
+    
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="regUsername">Nama Pengguna</label>
+        <input type="text" id="regUsername" name="username" class="form-control" required autocomplete="username">
+      </div>
+      
+      <!-- FORM EMAIL
+      <div class="form-group">
+        <label for="regEmail">Alamat Email</label>
+        <input type="email" id="regEmail" name="email" class="form-control" required autocomplete="email">
+      </div>
+      -->
+      
+      <div class="form-group">
+        <label for="regPassword">Kata Sandi</label>
+        <input type="password" id="regPassword" name="password" class="form-control" required autocomplete="new-password">
+        <div class="password-strength">
+          <div class="password-strength-meter" id="passwordStrengthMeter"></div>
+        </div>
+        <div class="password-strength-text" id="passwordStrengthText">Kekuatan kata sandi</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="regConfirmPassword">Konfirmasi Kata Sandi</label>
+        <input type="password" id="regConfirmPassword" name="confirmPassword" class="form-control" required autocomplete="new-password">
+      </div>
+      
+      <div class="terms">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms">Saya setuju dengan <a href="#">Syarat dan Ketentuan</a> serta <a href="#">Kebijakan Privasi</a> yang berlaku</label>
+      </div>
+      
+      <button type="submit" class="btn">Daftar Sekarang</button>
+    </form>
+    
+    <div class="alt-link">
+      <p>Sudah punya akun? <a href="/weblogin/formlogin.html">Masuk di sini</a></p>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    // Script sederhana untuk indikator kekuatan kata sandi
+    document.getElementById('regPassword').addEventListener('input', function() {
+      const password = this.value;
+      const meter = document.getElementById('passwordStrengthMeter');
+      const text = document.getElementById('passwordStrengthText');
+      
+      if (password.length === 0) {
+        meter.style.width = '0%';
+        meter.style.backgroundColor = '#e9ecef';
+        text.textContent = 'Kekuatan kata sandi';
+        return;
+      }
+      
+      // Logika sederhana untuk menentukan kekuatan kata sandi
+      let strength = 0;
+      
+      // Panjang minimal
+      if (password.length >= 8) strength += 25;
+      
+      // Kombinasi huruf besar & kecil
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+      
+      // Angka
+      if (/[0-9]/.test(password)) strength += 25;
+      
+      // Karakter khusus
+      if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+      
+      // Update UI
+      meter.style.width = strength + '%';
+      
+      if (strength <= 25) {
+        meter.style.backgroundColor = '#e63946'; // Lemah
+        text.textContent = 'Lemah';
+      } else if (strength <= 50) {
+        meter.style.backgroundColor = '#fb8500'; // Sedang
+        text.textContent = 'Sedang';
+      } else if (strength <= 75) {
+        meter.style.backgroundColor = '#4895ef'; // Kuat
+        text.textContent = 'Kuat';
+      } else {
+        meter.style.backgroundColor = '#2a9d8f'; // Sangat kuat
+        text.textContent = 'Sangat Kuat';
+      }
+    });
+    
+    // Validasi konfirmasi kata sandi
+    document.getElementById('regConfirmPassword').addEventListener('input', function() {
+      const password = document.getElementById('regPassword').value;
+      if (this.value !== password) {
+        this.setCustomValidity('Kata sandi tidak cocok');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+  </script>
+</body>
+</html>

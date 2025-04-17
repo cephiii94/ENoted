@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Generator - Beranda</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #2c4f7c;
+      --accent-color: #6da6e2;
+      --light-bg: #f5f9ff;
+      --dark-text: #333;
+      --light-text: #f5f5f5;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+      color: var(--dark-text);
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+      color: #666;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .auth-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      padding: 0.8rem 2rem;
+      background-color: var(--primary-color);
+      color: var(--light-text);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--light-bg);
+      color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    /* Features Section */
+    .features {
+      margin: 3rem 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      color: var(--secondary-color);
+      font-size: 2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 100px;
+      background: var(--accent-color);
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+      margin: 0 auto;
+      width: 80px;
+      height: 80px;
+      background-color: var(--light-bg);
+      color: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-title {
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    
+    .feature-description {
+      color: #666;
+    }
+    
+    /* Preview Section */
+    .preview {
+      margin: 4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+    
+    .preview-text {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .preview-image {
+      flex: 1;
+      min-width: 300px;
+      box-shadow: var(--box-shadow);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    
+    .preview-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* User Dashboard */
+    .dashboard {
+      display: none;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .dashboard.visible {
+      display: block;
+    }
+    
+    .welcome-text {
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+    }
+    
+    .dashboard-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    /* Tools Section */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .tool-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tool-icon {
+      margin: 0 auto;
+      width: 60px;
+      height: 60px;
+      background-color: var(--light-bg);
+      color: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    .tool-title {
+      color: var(--secondary-color);
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+    
+    .tool-description {
+      color: #666;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid #ddd;
+      color: #666;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .footer-links a:hover {
+      color: var(--secondary-color);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .preview {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      
+      .auth-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI Prompt Generator</h1>
+      <p class="tagline">Buat prompt AI berkualitas tinggi dengan mudah dan cepat untuk berbagai keperluan kreatif Anda</p>
+      
+      <div class="auth-buttons" id="auth-buttons">
+        <a href="/weblogin/formlogin.html" class="btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Masuk
+        </a>
+        <a href="/weblogin/formregister.html" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+          Daftar
+        </a>
+      </div>
+      
+      <!-- Dashboard untuk pengguna yang sudah login -->
+      <div class="dashboard" id="dashboard">
+        <p class="welcome-text">Selamat datang, <strong id="dashboard-username">User</strong>!</p>
+        <div class="dashboard-buttons">
+          <a href="char.html" class="btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Generator Karakter
+          </a>
+          <button onclick="logout()" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <section class="features">
+      <h2 class="section-title">Fitur Unggulan</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+              <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+              <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+              <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+              <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+              <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Prompt Gambar Detail</h3>
+          <p class="feature-description">Buat prompt gambar dengan detail lengkap untuk menghasilkan gambar AI yang sesuai keinginan Anda.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Tersimpan Otomatis</h3>
+          <p class="feature-description">Prompt yang Anda buat akan tersimpan secara otomatis untuk digunakan kembali di masa mendatang.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <h3 class="feature-title">Contoh Inspiratif</h3>
+          <p class="feature-description">Jelajahi contoh-contoh prompt berkualitas untuk mendapatkan inspirasi dalam membuat karya Anda.</p>
+        </div>
+      </div>
+    </section>
+    
+    <section class="preview">
+      <div class="preview-text">
+        <h2 class="section-title">Buat Gambar AI Menakjubkan</h2>
+        <p>AI Prompt Generator membantu Anda membuat prompt detail untuk berbagai model AI pembuat gambar seperti Midjourney, DALL-E, dan Stable Diffusion.</p>
+        <br>
+        <p>Dengan mengisi formulir sederhana, Anda dapat membuat prompt yang mencakup:</p>
+        <br>
+        <ul>
+          <li>Deskripsi karakter dan objek</li>
+          <li>Latar dan suasana</li>
+          <li>Emosi dan tindakan</li>
+          <li>Gaya seni dan pencahayaan</li>
+          <li>Format dan resolusi</li>
+        </ul>
+        <br>
+        <a href="register.html" class="btn">Mulai Sekarang</a>
+      </div>
+      <div class="preview-image">
+        <img src="/api/placeholder/600/400" alt="Preview Generator Prompt AI" />
+      </div>
+    </section>
+    
+    <section class="tools">
+      <h2 class="section-title">Generator Tersedia</h2>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="checkLogin('char.html')">
+          <div class="tool-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3 class="tool-title">Generator Karakter</h3>
+          <p class="tool-description">Buat prompt karakter lengkap untuk berbagai keperluan ilustrasi.</p>
+          <span class="btn">Buka Generator</span>
+        </div>
+        
+        <div class="tool-card" onclick="checkLogin('#')">
+          <div class="tool-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <h3 class="tool-title">Generator Pemandangan</h3>
+          <p class="tool-description">Buat prompt untuk pemandangan alam dan lingkungan yang menakjubkan.</p>
+          <span class="btn">Segera Hadir</span>
+        </div>
+        
+        <div class="tool-card" onclick="checkLogin('#')">
+          <div class="tool-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <h3 class="tool-title">Generator Konsep Produk</h3>
+          <p class="tool-description">Buat prompt untuk visualisasi produk dan desain konseptual.</p>
+          <span class="btn">Segera Hadir</span>
+        </div>
+      </div>
+    </section>
+    
+    <footer>
+      <div class="footer-links">
+        <a href="#">Tentang Kami</a>
+        <a href="#">Bantuan</a>
+        <a href="#">Syarat & Ketentuan</a>
+        <a href="#">Kebijakan Privasi</a>
+      </div>
+      <p>&copy; 2025 AI Prompt Generator. Semua hak dilindungi.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Periksa status login saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+      checkLoginState();
+    });
+    
+    function checkLoginState() {
+      const isLoggedIn = localStorage.getItem('loggedIn');
+      const username = localStorage.getItem('username');
+      
+      if (isLoggedIn === 'true' && username) {
+        // Pengguna sudah login
+        document.getElementById('auth-buttons').style.display = 'none';
+        document.getElementById('dashboard').classList.add('visible');
+        document.getElementById('dashboard-username').textContent = username;
+      } else {
+        // Pengguna belum login
+        document.getElementById('auth-buttons').style.display = 'flex';
+        document.getElementById('dashboard').classList.remove('visible');
+      }
+    }
+    
+    function logout() {
+      // Hapus informasi login dari localStorage
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('username');
+      
+      // Perbarui tampilan
+      checkLoginState();
+    }
+    
+    function checkLogin(destination) {
+      const isLoggedIn = localStorage.getItem('loggedIn');
+      
+      if (isLoggedIn === 'true') {
+        // Arahkan ke tujuan jika sudah login
+        window.location.href = destination;
+      } else {
+        // Arahkan ke halaman login jika belum login
+        window.location.href = "formlogin.html";
+      }
+    }
+  </script>
+</body>
+</html>
