@@ -500,7 +500,7 @@ select:focus {
      
       <div class="form-group full-width">
         <label for="tambahan">Tambahan Khusus</label>
-        <textarea id="tambahan" placeholder="Contoh: Ada naga terbang di latar belakang, efek partikel cahaya"></textarea>
+        <textarea id="tambahan" placeholder="Contoh: Ada naga terbang di latar belakang, efek partikel cahaya, angel kamera, sudut pandang."></textarea>
       </div>
     </div>
     
@@ -640,14 +640,14 @@ select:focus {
       }
 
       let prompt = `${karakter}. `;
-      if (emosi) prompt += `Emosi: ${emosi}. `;
-      if (aksi) prompt += `Aksi: ${aksi}. `;
+      if (emosi) prompt += ` ${emosi}. `;
+      if (aksi) prompt += ` ${aksi}. `;
       if (background) prompt += `Latar: ${background}. `;
       if (suasana) prompt += `Suasana: ${suasana}. `;
       if (dialog) prompt += `Dialog: "${dialog}". `;
-      if (gaya) prompt += `buatkan dalam bentuk style: ${gaya}. `;
-      if (format) prompt += `Format: ${format}. `;
-      if (warna) prompt += `Warna dan pencahayaan: ${warna}. `;
+      if (gaya) prompt += `buatkan dalam bentuk style ${gaya}. `;
+      if (format) prompt += `dengan Format/resolusi ${format}. `;
+      if (warna) prompt += ` ${warna}. `;
       if (tambahan) prompt += `Detail tambahan: ${tambahan}.`;
 
       document.getElementById("output").textContent = prompt;
@@ -798,7 +798,9 @@ select:focus {
       document.getElementById("suasana").value = random(contoh.suasana);
       document.getElementById("dialog").value = random(contoh.dialog);
       document.getElementById("gaya").value = random(contoh.gaya);
-      document.getElementById("format").value = random(contoh.format);
+      const formatOptions = document.getElementById("format").options;
+const randomFormatIndex = Math.floor(Math.random() * (formatOptions.length - 1)) + 1; // skip first empty option
+document.getElementById("format").selectedIndex = randomFormatIndex;
       document.getElementById("warna").value = random(contoh.warna);
       document.getElementById("tambahan").value = random(contoh.tambahan);
 

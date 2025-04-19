@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Generator Gambar</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #2c4f7c;
+      --accent-color: #6da6e2;
+      --light-bg: #f5f9ff;
+      --dark-text: #333;
+      --light-text: #f5f5f5;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+      color: var(--dark-text);
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2rem;
+      position: relative;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2.2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 100px;
+      background: var(--accent-color);
+    }
+    
+    .intro {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #666;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    textarea, input, select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: var(--light-bg);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    select {
+      appearance: none; /* Remove default arrow */
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.8rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem; /* Make space for custom arrow */
+    }
+    
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(109, 166, 226, 0.2);
+    }
+    
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+    
+    button {
+      padding: 0.8rem 1.5rem;
+      background-color: var(--primary-color);
+      color: var(--light-text);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+    
+    button.secondary {
+      background-color: #6c757d;
+    }
+     button.secondary:hover {
+      background-color: #5a6268;
+    }
+    
+    button.accent {
+      background-color: var(--accent-color);
+    }
+     button.accent:hover {
+      background-color: #5794d6;
+    }
+    
+    #output-container {
+      margin-top: 2rem;
+      display: none; /* Initially hidden */
+    }
+    
+    #output-container.visible {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    #output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    #output-title {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    #output {
+      background-color: var(--light-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      white-space: pre-wrap; /* Preserve line breaks and spaces */
+      word-wrap: break-word; /* Wrap long words */
+      border-left: 4px solid var(--accent-color);
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      position: relative;
+      min-height: 50px; /* Ensure it has some height even when empty */
+      color: #333;
+    }
+    
+    .copy-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none; /* Prevent interaction */
+    }
+    
+    .copy-notification.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* User Profile Area (Commented out in HTML, styles kept for potential use) */
+    .user-profile {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer; /* Make it clickable */
+    }
+    
+    .user-menu {
+      position: relative;
+    }
+    
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 150px;
+      z-index: 100;
+      display: none; /* Hidden by default */
+      overflow: hidden; /* Ensure border radius applies to children */
+    }
+    
+    .user-dropdown.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .user-dropdown-item {
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--dark-text);
+    }
+    
+    .user-dropdown-item:hover {
+      background-color: var(--light-bg);
+    }
+
+    /* Back Button Styles */
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background-color: white; /* Changed for visibility */
+      color: var(--primary-color);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid #eee; /* Subtle border */
+      z-index: 10;
+    }
+    
+    .back-button:hover {
+      background-color: var(--light-bg);
+      transform: translateX(-2px);
+      color: var(--secondary-color);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      .container {
+        padding: 1.5rem;
+      }
+      .form-grid {
+        grid-template-columns: 1fr; /* Stack columns */
+      }
+      .form-group.full-width {
+        grid-column: span 1; /* Reset span for single column */
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      .buttons {
+         flex-direction: column; /* Stack buttons */
+         align-items: stretch; /* Make buttons full width */
+      }
+      .back-button {
+        top: 0.5rem;
+        left: 0.5rem;
+      }
+      /* Adjust user profile position if uncommented */
+      .user-profile {
+         top: 0.5rem;
+         right: 0.5rem;
+      }
+      .copy-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px; /* Make it span width */
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-button" onclick="goBack()" title="Kembali">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    
+    <h1>AI Prompt Generator Gambar</h1>
+    <p class="intro">Buat prompt detail untuk AI image generator dengan mengisi form berikut.</p>
+    
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label for="karakter">Deskripsi Karakter Utama*</label>
+        <textarea id="karakter" placeholder="Contoh: Seorang ksatria muda dengan jubah biru dan pedang besar, rambut hitam, mata coklat" required></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="emosi">Emosi/Perasaan</label>
+        <input type="text" id="emosi" placeholder="Contoh: penuh semangat, sedih, tenang">
+      </div>
+      <div class="form-group">
+        <label for="aksi">Aksi/Tindakan</label>
+        <input type="text" id="aksi" placeholder="Contoh: berlari melawan angin, menatap langit">
+      </div>
+      
+      <div class="form-group full-width">
+        <label for="background">Background / Latar</label>
+        <textarea id="background" placeholder="Contoh: gunung bersalju saat matahari terbit, hutan lebat berkabut"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="suasana">Suasana</label>
+        <input type="text" id="suasana" placeholder="Contoh: epik, melankolis, damai, misterius">
+      </div>
+       <div class="form-group">
+        <label for="lighting">Pencahayaan</label>
+        <input type="text" id="lighting" placeholder="Contoh: golden hour, cinematic, neon, soft natural light">
+      </div>
+
+      <div class="form-group">
+        <label for="gaya">Gaya Seni</label>
+        <select id="gaya">
+          <option value="">Pilih gaya seni...</option>
+          <option value="anime style">Anime</option>
+          <option value="realistic 3D render">Realistis 3D</option>
+          <option value="digital painting">Lukisan Digital</option>
+          <option value="Pixar animation style">Gaya Pixar</option>
+          <option value="Japanese ukiyo-e style">Ukiyo-e Jepang</option>
+          <option value="game concept art">Seni Konsep Game</option>
+          <option value="Studio Ghibli style">Studio Ghibli</option>
+          <option value="fantasy art">Seni Fantasi</option>
+          <option value="impressionist painting">Impresionis</option>
+          <option value="minimalist vector art">Minimalis</option>
+          <option value="low poly art">Low Poly</option>
+          <option value="pixel art">Pixel Art</option>
+          <option value="comic book style">Komik</option>
+          <option value="caricature">Karikatur</option>
+          <option value="photorealistic">Photorealistic</option>
+          <option value="cinematic">Cinematic</option>
+          </select>
+      </div>
+      <div class="form-group">
+        <label for="composition">Komposisi / Sudut Pandang</label>
+        <input type="text" id="composition" placeholder="Contoh: close-up shot, wide angle, low angle view, eye-level">
+      </div>
+
+      <div class="form-group">
+        <label for="warna">Palet Warna Dominan</label>
+        <input type="text" id="warna" placeholder="Contoh: neon terang, pastel lembut, gelap kontras tinggi">
+      </div>
+      <div class="form-group">
+        <label for="format">Parameter Teknis (Format, dll)</label>
+         <input type="text" id="format" placeholder="Contoh: --ar 16:9, --ar 1:1, --ar 9:16, --q 2, --style raw">
+      </div>
+
+       <div class="form-group">
+        <label for="dialog">Dialog (opsional)</label>
+        <input type="text" id="dialog" placeholder="Contoh: Ayo kita mulai!">
+      </div>
+      <div class="form-group">
+        <label for="negativePrompt">Prompt Negatif (pisahkan dengan koma)</label>
+        <input type="text" id="negativePrompt" placeholder="Contoh: blurry, text, watermark, deformed hands">
+      </div>
+
+      <div class="form-group full-width">
+        <label for="tambahan">Detail Tambahan Lainnya</label>
+        <textarea id="tambahan" placeholder="Contoh: Ada naga terbang di latar belakang, efek partikel cahaya, memakai kalung kristal."></textarea>
+      </div>
+    </div>
+    
+    <div class="buttons">
+      <button onclick="generatePrompt()" id="generateBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        Buat Prompt
+      </button>
+      <button onclick="copyPrompt()" id="copyBtn" class="accent">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Salin Prompt
+      </button>
+      <button onclick="resetForm()" id="resetBtn" class="secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+         <polyline points="1 4 1 10 7 10"></polyline>
+         <polyline points="23 20 23 14 17 14"></polyline>
+         <path d="M20.49 9A9 9 0 0 0 12 5C8.49 5 5.34 6.94 3.51 10"></path>
+         <path d="M3.51 14a9 9 0 0 0 8.49 5c3.51 0 6.66-1.94 8.49-5"></path>
+        </svg>
+        Reset
+      </button>
+      <button onclick="randomizeForm()" id="randomBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 3h5v5"></path>
+          <path d="M4 20L21 3"></path>
+          <path d="M21 16v5h-5"></path>
+          <path d="M15 15l6 6"></path>
+          <path d="M4 4l5 5"></path>
+        </svg>
+        Contoh Random
+      </button>
+      <button onclick="translateToEnglish()" id="translateBtn" class="accent">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+         <path d="M12 20V4M6 12H18"></path>
+         <path d="M18 16l4-4-4-4"></path>
+         <path d="M6 8l-4 4 4 4"></path>
+        </svg>
+        Translate (EN)
+      </button>
+    </div>
+    
+    <div id="output-container">
+      <div id="output-header">
+        <div id="output-title">Prompt yang dihasilkan:</div>
+      </div>
+      <div id="output"></div> </div>
+    
+    <footer>
+      AI Prompt Generator &copy; 2025 - Dibuat oleh Cecep Hardiansyah
+    </footer>
+  </div>
+  
+  <div class="copy-notification" id="copyNotification">
+    Prompt berhasil disalin!
+  </div>
+
+  <script>
+    // --- User Authentication & Profile (Optional, based on commented HTML) ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // Uncomment the line below if using the login feature
+      // checkLoginState(); 
+      setupUserMenu(); // Setup menu even if not logged in (graceful degradation)
+    });
+    
+    function checkLoginState() {
+      const isLoggedIn = localStorage.getItem('loggedIn');
+      const username = localStorage.getItem('username');
+      
+      const userProfileElement = document.querySelector('.user-profile'); // Check if profile exists
+
+      if ((!isLoggedIn || !username) && userProfileElement) {
+         // If profile element exists but user not logged in, maybe hide it or redirect
+         // Example: window.location.href = "/weblogin/formlogin.html"; 
+         console.log("User not logged in."); // Or handle appropriately
+         if(userProfileElement) userProfileElement.style.display = 'none'; // Hide profile if not logged in
+      } else if (username && userProfileElement) {
+        // Update UI only if elements exist
+        const usernameText = document.getElementById('username-text');
+        if (usernameText) usernameText.textContent = username;
+        
+        const userInitial = document.getElementById('user-initial');
+        if (userInitial) userInitial.textContent = username.charAt(0).toUpperCase();
+      }
+    }
+
+    function setupUserMenu() {
+      const avatar = document.getElementById('user-initial');
+      const dropdown = document.getElementById('user-dropdown');
+      
+      // Only setup if avatar and dropdown exist (i.e., profile HTML is uncommented)
+      if (avatar && dropdown) {
+         avatar.addEventListener('click', function(e) {
+           e.stopPropagation(); // Prevent click from closing menu immediately
+           dropdown.classList.toggle('active');
+         });
+         
+         // Close dropdown when clicking outside
+         document.addEventListener('click', function(e) {
+           // Check if the click is outside the dropdown and the avatar
+           if (!dropdown.contains(e.target) && e.target !== avatar && dropdown.classList.contains('active')) {
+              dropdown.classList.remove('active');
+           }
+         });
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('username');
+      // Redirect or update UI after logout
+      // Example: window.location.href = "/weblogin/formlogin.html";
+      alert("Anda telah logout."); // Simple notification
+      // Optionally hide user profile section again
+       const userProfileElement = document.querySelector('.user-profile');
+       if(userProfileElement) userProfileElement.style.display = 'none';
+    }
+
+    // --- Core Prompt Generation Logic ---
+    function generatePrompt() {
+      // Get values from all input fields
+      const inputs = {
+        karakter: document.getElementById("karakter").value.trim(),
+        emosi: document.getElementById("emosi").value.trim(),
+        aksi: document.getElementById("aksi").value.trim(),
+        background: document.getElementById("background").value.trim(),
+        suasana: document.getElementById("suasana").value.trim(),
+        lighting: document.getElementById("lighting").value.trim(), // New field
+        gaya: document.getElementById("gaya").value, // Select field
+        composition: document.getElementById("composition").value.trim(), // New field
+        warna: document.getElementById("warna").value.trim(),
+        format: document.getElementById("format").value.trim(), // Technical params field
+        dialog: document.getElementById("dialog").value.trim(),
+        negativePrompt: document.getElementById("negativePrompt").value.trim(), // New field
+        tambahan: document.getElementById("tambahan").value.trim()
+      };
+
+      // Basic validation: Character description is required
+      if (!inputs.karakter) {
+        alert("Deskripsi Karakter Utama wajib diisi!");
+        document.getElementById("karakter").focus(); // Focus on the required field
+        return;
+      }
+
+      // Build the prompt using an array and join method
+      const parts = [];
+
+      // 1. Core Description
+      if (inputs.karakter) parts.push(inputs.karakter);
+      if (inputs.emosi) parts.push(`dengan ekspresi ${inputs.emosi}`);
+      if (inputs.aksi) parts.push(inputs.aksi);
+
+      // 2. Scene Details
+      if (inputs.background) parts.push(`di ${inputs.background}`);
+      if (inputs.suasana) parts.push(`dengan suasana ${inputs.suasana}`);
+      if (inputs.lighting) parts.push(`dengan pencahayaan ${inputs.lighting}`);
+
+      // 3. Artistic Elements
+      if (inputs.gaya) parts.push(inputs.gaya); // Direct style keyword from select
+      if (inputs.warna) parts.push(`palet warna dominan ${inputs.warna}`);
+      if (inputs.composition) parts.push(inputs.composition);
+
+      // 4. Additional Details & Dialog
+      if (inputs.dialog) parts.push(`mengatakan "${inputs.dialog}"`);
+      if (inputs.tambahan) parts.push(inputs.tambahan); // Add other details
+
+      // Combine core prompt parts with commas
+      let promptText = parts.join(', ');
+
+      // 5. Append Technical Parameters & Negative Prompt (usually at the end)
+      let technicalParams = [];
+      if (inputs.format) technicalParams.push(inputs.format); // Add format/resolution params like --ar 16:9
+      if (inputs.negativePrompt) {
+          // Format negative prompt correctly: --no item1, item2, item3
+          const negItems = inputs.negativePrompt.split(',')
+                             .map(item => item.trim())
+                             .filter(item => item) // Remove empty items
+                             .join(', '); // Join cleaned items with comma+space
+          if (negItems) {
+              technicalParams.push(`--no ${negItems}`);
+          }
+      }
+
+      // Join technical parameters with spaces
+      if (technicalParams.length > 0) {
+          promptText += ' ' + technicalParams.join(' ');
+      }
+
+      // Clean up potential formatting issues (extra spaces, double commas)
+      promptText = promptText.replace(/ ,/g, ',').replace(/, ,/g, ',').replace(/\s+/g, ' ').trim();
+      // Add final period if desired and no technical params are present
+      // if (promptText && !technicalParams.length > 0 && !promptText.endsWith('.')) {
+      //    promptText += '.';
+      // }
+
+
+      // Display the generated prompt
+      const outputElement = document.getElementById("output");
+      const outputContainer = document.getElementById("output-container");
+      outputElement.textContent = promptText;
+      outputContainer.classList.add("visible"); // Make the output container visible
+
+      // Scroll to the output section smoothly
+      outputContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Save the generated prompt to history (if using login)
+      // Uncomment the line below if using the login feature
+      // savePromptToHistory(promptText);
+    }
+
+    // --- Utility Functions ---
+
+    function copyPrompt() {
+      const outputText = document.getElementById("output").textContent;
+      const notification = document.getElementById("copyNotification");
+
+      if (outputText && outputText.trim() !== "") {
+        navigator.clipboard.writeText(outputText)
+          .then(() => {
+            // Show success notification
+            notification.textContent = "Prompt berhasil disalin!"; // Set text just in case
+            notification.classList.add("visible");
+            // Hide notification after 2 seconds
+            setTimeout(() => {
+              notification.classList.remove("visible");
+            }, 2000);
+          })
+          .catch(err => {
+            console.error('Gagal menyalin prompt: ', err);
+            // Show error notification (optional)
+             notification.textContent = "Gagal menyalin!";
+             notification.style.backgroundColor = '#dc3545'; // Error color
+             notification.classList.add("visible");
+             setTimeout(() => {
+               notification.classList.remove("visible");
+               notification.style.backgroundColor = ''; // Reset color
+             }, 2000);
+            alert("Gagal menyalin prompt. Coba lagi secara manual.");
+          });
+      } else {
+        alert("Belum ada prompt untuk disalin.");
+      }
+    }
+
+    function resetForm() {
+      // Reset all text inputs, textareas, and select elements
+      document.querySelectorAll("textarea, input[type='text']").forEach(el => el.value = "");
+      document.querySelectorAll("select").forEach(el => el.selectedIndex = 0); // Reset selects to the first option
+      // Hide the output container
+      document.getElementById("output-container").classList.remove("visible");
+      document.getElementById("output").textContent = ""; // Clear output text
+    }
+
+    function savePromptToHistory(prompt) {
+      const username = localStorage.getItem('username');
+      // Only save if a username exists (i.e., logged in)
+      if (!username) return; 
+      
+      const historyKey = `promptHistory_${username}`;
+      let history = [];
+      try {
+          // Safely parse existing history
+          history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+          if (!Array.isArray(history)) history = []; // Ensure it's an array
+      } catch (e) {
+          console.error("Error parsing history from localStorage:", e);
+          history = []; // Reset history if parsing fails
+      }
+      
+      // Add new prompt object with timestamp
+      history.unshift({ // Add to the beginning for recent first
+        prompt: prompt,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Limit history size (e.g., keep last 20 prompts)
+      const MAX_HISTORY = 20;
+      if (history.length > MAX_HISTORY) {
+        history = history.slice(0, MAX_HISTORY);
+      }
+      
+      // Save updated history back to localStorage
+      try {
+          localStorage.setItem(historyKey, JSON.stringify(history));
+      } catch (e) {
+          console.error("Error saving history to localStorage:", e);
+          // Handle potential storage quota exceeded error
+          alert("Gagal menyimpan riwayat prompt. Penyimpanan lokal mungkin penuh.");
+      }
+    }
+
+    function randomizeForm() {
+      // Expanded examples including new fields
+      const contoh = {
+        karakter: [
+          "Seorang penyihir tua bijaksana dengan janggut putih panjang, mata biru bersinar, memakai jubah berbintang",
+          "Gadis pejuang pemberani dengan rambut merah dikepang, armor kulit ringan, membawa busur panah",
+          "Robot android ramping berwarna perak dengan mata LED hijau, berdiri di bawah hujan neon",
+          "Makhluk fantasi imut seperti rubah dengan bulu ungu dan ekor bercahaya",
+          "Astronot melayang di luar angkasa dekat nebula berwarna-warni",
+          "Vanno Athar Rudiansyah, anak laki-laki Indonesia hampir 2 tahun, tersenyum ceria"
+        ],
+        emosi: ["tenang", "bahagia", "fokus", "penasaran", "bersemangat", "melankolis", "misterius"],
+        aksi: [
+          "membaca buku kuno bercahaya", 
+          "menatap matahari terbenam di cakrawala", 
+          "mengulurkan tangan ke arah kupu-kupu ajaib", 
+          "berdiri gagah di puncak gunung", 
+          "bermeditasi di bawah air terjun",
+          "bermain balok kayu warna-warni"
+        ],
+        background: [
+          "perpustakaan megah penuh buku terbang",
+          "kota futuristik dengan mobil terbang dan gedung pencakar langit",
+          "hutan ajaib dengan jamur raksasa bercahaya",
+          "reruntuhan kuil kuno di tengah gurun pasir",
+          "pantai tropis dengan air laut biru jernih dan pasir putih",
+          "ruang bermain anak yang cerah"
+        ],
+        suasana: ["epik", "damai", "misterius", "ajaib", "futuristik", "tenang", "ceria"],
+        lighting: ["sinar matahari lembut menembus jendela", "cahaya bulan purnama mistis", "lampu neon warna-warni kota", "pencahayaan dramatis dari bawah", "golden hour hangat", "soft studio lighting"],
+        gaya: [ // Values should match the <option> values in HTML
+          "anime style", "realistic 3D render", "digital painting", "Pixar animation style", "Japanese ukiyo-e style", "game concept art", "Studio Ghibli style", "fantasy art", "impressionist painting", "minimalist vector art", "low poly art", "pixel art", "comic book style", "photorealistic", "cinematic"
+        ],
+         composition: ["close-up portrait", "wide angle landscape", "eye-level shot", "low angle view looking up", "high angle view looking down", "dutch angle", "over-the-shoulder shot"],
+        warna: ["palet warna pastel lembut", "warna-warna cerah dan kontras", "monokromatik dengan aksen merah", "skema warna analog biru dan hijau", "warna bumi natural", "hitam putih klasik"],
+        format: ["--ar 16:9", "--ar 1:1", "--ar 9:16", "--ar 2:3", "--ar 3:2", "--q 2 --style raw", "--chaos 10"], // Include technical parameters
+        dialog: ["", "Saatnya beraksi!", "Apa yang terjadi di sini?", "Keajaiban ada di mana-mana.", "Masa depan cerah."], // Include empty string for optional
+        negativePrompt: ["blurry, low quality", "text, watermark, signature", "extra limbs, deformed hands", "ugly, disfigured", "bad anatomy", ""], // Include empty string
+        tambahan: [
+          "dengan detail armor yang rumit", 
+          "efek partikel sihir berkilauan", 
+          "latar belakang bokeh lembut", 
+          "ada burung phoenix terbang di kejauhan", 
+          "memakai mahkota kristal",
+          "refleksi di permukaan air tenang",
+          "" // Include empty string
+        ]
+      };
+
+      // Helper function to get random element
+      function random(arr) {
+        if (!arr || arr.length === 0) return ""; // Handle empty array case
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      // Populate form fields
+      document.getElementById("karakter").value = random(contoh.karakter);
+      document.getElementById("emosi").value = random(contoh.emosi);
+      document.getElementById("aksi").value = random(contoh.aksi);
+      document.getElementById("background").value = random(contoh.background);
+      document.getElementById("suasana").value = random(contoh.suasana);
+      document.getElementById("lighting").value = random(contoh.lighting); // New field
+      
+      // Set random select option for 'gaya'
+      const gayaSelect = document.getElementById("gaya");
+      const randomGayaIndex = Math.floor(Math.random() * (gayaSelect.options.length - 1)) + 1; // Skip first empty option
+      gayaSelect.selectedIndex = randomGayaIndex;
+
+      document.getElementById("composition").value = random(contoh.composition); // New field
+      document.getElementById("warna").value = random(contoh.warna);
+      document.getElementById("format").value = random(contoh.format); // Technical params
+      document.getElementById("dialog").value = random(contoh.dialog);
+      document.getElementById("negativePrompt").value = random(contoh.negativePrompt); // New field
+      document.getElementById("tambahan").value = random(contoh.tambahan);
+
+      // Automatically generate prompt after randomizing
+      generatePrompt();
+    }
+    
+    function goBack() {
+      // Navigate back in browser history
+      history.back();
+      // Alternative: Redirect to a specific page if history is not reliable
+      // window.location.href = '/dashboard.html'; 
+    }
+
+    // --- Translation Functionality (Using MyMemory API) ---
+    function translateToEnglish() {
+        const outputElement = document.getElementById("output");
+        const outputText = outputElement.textContent;
+        const translateBtn = document.getElementById("translateBtn");
+        const originalBtnContent = translateBtn.innerHTML; // Store original button content
+
+        if (!outputText || outputText.trim() === "") {
+            alert("Belum ada prompt untuk diterjemahkan.");
+            return;
+        }
+
+        // Show loading state on the button
+        translateBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Translating...`;
+        translateBtn.disabled = true; // Disable button during translation
+
+        // Add spinning animation CSS dynamically if needed
+        if (!document.getElementById('spin-animation-style')) {
+            const style = document.createElement('style');
+            style.id = 'spin-animation-style';
+            style.innerHTML = `
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                .spin { animation: spin 1s linear infinite; }
+            `;
+            document.head.appendChild(style);
+        }
+
+
+        // MyMemory API endpoint
+        const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(outputText)}&langpair=id|en`;
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.responseData && data.responseData.translatedText) {
+                    // Check if the translation is significantly different (API sometimes returns original text)
+                    if (data.responseData.translatedText.toLowerCase() !== outputText.toLowerCase()) {
+                        outputElement.textContent = data.responseData.translatedText;
+                    } else {
+                         // Handle cases where translation might fail or return original
+                         console.warn("Translation might be same as original or failed silently.");
+                         // Optionally inform user: alert("Translation result seems same as original.");
+                    }
+
+                } else {
+                    console.error("Translation failed: Invalid API response format.", data);
+                    throw new Error("Terjemahan gagal: Format respons tidak valid.");
+                }
+            })
+            .catch(error => {
+                console.error('Translation error:', error);
+                alert(`Translasi gagal: ${error.message}. Silakan coba lagi nanti.`);
+            })
+            .finally(() => {
+                // Restore button state regardless of success or failure
+                translateBtn.innerHTML = originalBtnContent;
+                translateBtn.disabled = false;
+            });
+    }
+
+  </script>
+</body>
+</html>
