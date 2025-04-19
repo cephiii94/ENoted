@@ -150,6 +150,28 @@
     button.accent {
       background-color: var(--accent-color);
     }
+
+    select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+  background-color: var(--light-bg);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(109, 166, 226, 0.2);
+}
     
     #output-container {
       margin-top: 2rem;
@@ -413,21 +435,69 @@
         <input type="text" id="dialog" placeholder="Contoh: Ayo kita mulai petualangan ini!">
       </div>
       
+      <!--
       <div class="form-group">
         <label for="gaya">Gaya Seni</label>
         <input type="text" id="gaya" placeholder="Contoh: anime, realistis 3D, lukisan digital">
       </div>
+      -->
+
       
+<div class="form-group">
+  <label for="gaya">Gaya Seni</label>
+  <select id="gaya">
+    <option value="">Pilih gaya seni...</option>
+    <option value="anime">Anime</option>
+    <option value="realistis 3D">Realistis 3D</option>
+    <option value="lukisan digital">Lukisan Digital</option>
+    <option value="gaya Pixar">Gaya Pixar</option>
+    <option value="ukiyo-e Jepang">Ukiyo-e Jepang</option>
+    <option value="seni konsep game">Seni Konsep Game</option>
+    <option value="gaya Studio Ghibli">Studio Ghibli</option>
+    <option value="seni fantasi">Seni Fantasi</option>
+    <option value="impresionis">Impresionis</option>
+    <option value="minimalis">Minimalis</option>
+    <option value="low poly">Low Poly</option>
+    <option value="pixel art">Pixel Art</option>
+    <option value="komik">Komik</option>
+    <option value="karikatur">Karikatur</option>
+    <option value="lainnya">Lainnya (tulis di tambahan)</option>
+  </select>
+</div>
+      
+    <!--
       <div class="form-group">
         <label for="format">Resolusi / Format</label>
         <input type="text" id="format" placeholder="Contoh: 1080p horizontal, square, vertical poster">
       </div>
+    --> 
       
+    <div class="form-group">
+      <label for="format">Resolusi / Format</label>
+      <select id="format">
+        <option value="">Pilih format...</option>
+        <option value="1080p horizontal">1080p Horizontal (1920×1080)</option>
+        <option value="4K horizontal">4K Horizontal (3840×2160)</option>
+        <option value="1080p vertical">1080p Vertical (1080×1920)</option>
+        <option value="square">Square (1:1)</option>
+        <option value="instagram post">Instagram Post (1080×1080)</option>
+        <option value="instagram story">Instagram Story (1080×1920)</option>
+        <option value="facebook cover">Facebook Cover (820×312)</option>
+        <option value="twitter header">Twitter Header (1500×500)</option>
+        <option value="youtube thumbnail">YouTube Thumbnail (1280×720)</option>
+        <option value="desktop wallpaper">Desktop Wallpaper (1920×1080)</option>
+        <option value="mobile wallpaper">Mobile Wallpaper (1440×2560)</option>
+        <option value="wide panorama">Wide Panorama (3840×1080)</option>
+        <option value="ultra wide">Ultra Wide (3440×1440)</option>
+        <option value="custom">Custom (tulis di tambahan)</option>
+      </select>
+    </div>
+    
       <div class="form-group full-width">
         <label for="warna">Cahaya & Warna</label>
         <input type="text" id="warna" placeholder="Contoh: neon terang, warna pastel, gelap dengan kontras tinggi">
       </div>
-      
+     
       <div class="form-group full-width">
         <label for="tambahan">Tambahan Khusus</label>
         <textarea id="tambahan" placeholder="Contoh: Ada naga terbang di latar belakang, efek partikel cahaya"></textarea>
@@ -575,7 +645,7 @@
       if (background) prompt += `Latar: ${background}. `;
       if (suasana) prompt += `Suasana: ${suasana}. `;
       if (dialog) prompt += `Dialog: "${dialog}". `;
-      if (gaya) prompt += `Gaya seni: ${gaya}. `;
+      if (gaya) prompt += `buatkan dalam bentuk style: ${gaya}. `;
       if (format) prompt += `Format: ${format}. `;
       if (warna) prompt += `Warna dan pencahayaan: ${warna}. `;
       if (tambahan) prompt += `Detail tambahan: ${tambahan}.`;
@@ -688,7 +758,16 @@
           "gaya Studio Ghibli",
           "seni fantasi"
         ],
-        format: ["1080p horizontal", "square", "vertical poster", "panorama lebar", "4K detail tinggi"],
+        format: [
+          "1080p horizontal", 
+          "square", 
+          "vertical poster", 
+          "panorama lebar", 
+          "4K detail tinggi",
+          "instagram post",
+          "instagram story",
+          "desktop wallpaper"
+      ],
         warna: [
           "neon terang", 
           "warna pastel", 

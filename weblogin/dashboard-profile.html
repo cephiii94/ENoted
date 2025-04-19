@@ -716,7 +716,128 @@
   
   <script>
     
+    // Ambil data pengguna dari localStorage saat halaman dimuat
+document.addEventListener('DOMContentLoaded', function() {
+  // Cek apakah pengguna sudah login
+  let currentUser = null;
+  try {
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    console.log("Data user yang dimuat:", currentUser);
     
+    // Jika tidak ada data pengguna, redirect ke halaman login
+    if (!currentUser || !currentUser.isLoggedIn) {
+      alert('Sesi Anda telah berakhir. Silakan login kembali.');
+      window.location.href = '/weblogin/formlogin.html';
+      return;
+    }
+    
+    // Isi informasi pengguna di sidebar
+    const userAvatarSidebar = document.querySelector('.user-profile .user-avatar');
+    const userNameSidebar = document.querySelector('.user-profile .user-name');
+    
+    if (userAvatarSidebar) {
+      // Ambil inisial dari nama pengguna (huruf pertama)
+      const initials = currentUser.initials || currentUser.displayName.charAt(0).toUpperCase();
+      userAvatarSidebar.textContent = initials;
+    }
+    
+    if (userNameSidebar) {
+      userNameSidebar.textContent = currentUser.displayName;
+    }
+    
+    // Isi informasi pada bagian profil utama
+    const profileAvatar = document.querySelector('.profile-avatar');
+    const profileName = document.querySelector('.profile-name');
+    const profileUsername = document.querySelector('.profile-username');
+    
+    if (profileAvatar) {
+      // Ambil inisial untuk avatar profil utama
+      const initials = currentUser.initials || currentUser.displayName.charAt(0).toUpperCase();
+      // Pertahankan tombol edit foto
+      const editButton = profileAvatar.querySelector('.edit-avatar');
+      profileAvatar.textContent = initials;
+      if (editButton) {
+        profileAvatar.appendChild(editButton);
+      }
+    }
+    
+    if (profileName) {
+      profileName.textContent = currentUser.displayName;
+    }
+    
+    if (profileUsername) {
+      // Gunakan nama pengguna dengan format @username
+      profileUsername.textContent = '@' + currentUser.displayName.toLowerCase().replace(/\s+/g, '');
+    }
+    
+    // Isi form profil dengan data yang ada atau tanda strip untuk yang kosong
+    const firstNameInput = document.getElementById('firstName');
+    const lastNameInput = document.getElementById('lastName');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const bioTextarea = document.getElementById('bio');
+    
+    if (firstNameInput && currentUser.displayName) {
+      // Jika nama lengkap, pisahkan menjadi nama depan dan belakang
+      const nameParts = currentUser.displayName.split(' ');
+      if (nameParts.length > 0) {
+        firstNameInput.value = nameParts[0];
+      } else {
+        firstNameInput.value = "-";
+      }
+    }
+    
+    if (lastNameInput) {
+      // Cek jika ada nama belakang
+      const nameParts = currentUser.displayName.split(' ');
+      if (nameParts.length > 1) {
+        lastNameInput.value = nameParts.slice(1).join(' ');
+      } else {
+        // Nama belakang tidak diisi
+        lastNameInput.value = "-";
+      }
+    }
+    
+    if (usernameInput) {
+      usernameInput.value = currentUser.displayName.toLowerCase().replace(/\s+/g, '');
+    }
+    
+    // Untuk field yang belum ada di data login, tampilkan strip
+    if (emailInput) {
+      // Pakai email jika ada, jika tidak pakai placeholder
+      emailInput.value = currentUser.email || "-";
+    }
+    
+    if (phoneInput) {
+      // Telepon belum ada di data login
+      phoneInput.value = currentUser.phone || "-";
+    }
+    
+    if (bioTextarea) {
+      // Bio belum ada di data login
+      bioTextarea.value = currentUser.bio || "-";
+    }
+    
+  } catch (error) {
+    console.error("Error memuat data pengguna:", error);
+    alert('Terjadi kesalahan saat memuat data profil. Silakan coba lagi.');
+  }
+});
+
+// Tambahkan fungsi logout ke tombol logout yang sudah ada
+document.querySelector('.logout-btn').addEventListener('click', function() {
+  // Hapus data user dari localStorage
+  localStorage.removeItem('currentUser');
+  
+  // Tampilkan pesan
+  alert('Anda telah berhasil keluar dari akun.');
+  
+  // Redirect ke halaman login
+  window.location.href = '/weblogin/formlogin.html';
+});
+
+  
     
     // Toggle Menu
     const menuToggle = document.getElementById('menuToggle');
@@ -762,54 +883,63 @@
     });
     
     // Form submission
-    const profileForm = document.getElementById('profileForm');
+const profileForm = document.getElementById('profileForm');
+
+profileForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Ambil data user saat ini
+  let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  
+  // Update dengan nilai baru dari form
+  currentUser.displayName = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
+  currentUser.email = document.getElementById('email').value;
+  currentUser.phone = document.getElementById('phone').value;
+  currentUser.bio = document.getElementById('bio').value;
+  
+  // Simpan kembali ke localStorage
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+  // Create notification
+  const notification = document.createElement('div');
+  notification.style.position = 'fixed';
+  notification.style.top = '20px';
+  notification.style.right = '20px';
+  notification.style.backgroundColor = '#2a9d8f';
+  notification.style.color = 'white';
+  notification.style.padding = '15px 25px';
+  notification.style.borderRadius = '8px';
+  notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+  notification.style.zIndex = '9999';
+  notification.style.transform = 'translateY(-100px)';
+  notification.style.transition = 'all 0.3s ease';
+  
+  notification.textContent = 'Profil berhasil diperbarui!';
+  
+  document.body.appendChild(notification);
+  
+  // Show notification
+  setTimeout(() => {
+    notification.style.transform = 'translateY(0)';
+  }, 10);
+  
+  // Hide notification after a few seconds
+  setTimeout(() => {
+    notification.style.transform = 'translateY(-100px)';
     
-    profileForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Here you would normally send the data to the server
-      // For demo purposes, we'll just show an alert
-      
-      // Create notification
-      const notification = document.createElement('div');
-      notification.style.position = 'fixed';
-      notification.style.top = '20px';
-      notification.style.right = '20px';
-      notification.style.backgroundColor = '#2a9d8f';
-      notification.style.color = 'white';
-      notification.style.padding = '15px 25px';
-      notification.style.borderRadius = '8px';
-      notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-      notification.style.zIndex = '9999';
-      notification.style.transform = 'translateY(-100px)';
-      notification.style.transition = 'all 0.3s ease';
-      
-      notification.textContent = 'Profil berhasil diperbarui!';
-      
-      document.body.appendChild(notification);
-      
-      // Show notification
-      setTimeout(() => {
-        notification.style.transform = 'translateY(0)';
-      }, 10);
-      
-      // Hide notification after a few seconds
-      setTimeout(() => {
-        notification.style.transform = 'translateY(-100px)';
-        
-        // Remove from DOM after animation
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 300);
-      }, 3000);
-      
-      // Disable editing
-      formInputs.forEach(input => {
-        input.disabled = true;
-      });
-      formButtons.style.display = 'none';
-      editToggle.textContent = 'Edit';
-    });
+    // Remove from DOM after animation
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
+  
+  // Disable editing
+  formInputs.forEach(input => {
+    input.disabled = true;
+  });
+  formButtons.style.display = 'none';
+  editToggle.textContent = 'Edit';
+});
   </script>
 </body>
 </html>
