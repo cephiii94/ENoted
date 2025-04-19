@@ -476,20 +476,10 @@ select:focus {
       <label for="format">Resolusi / Format</label>
       <select id="format">
         <option value="">Pilih format...</option>
-        <option value="1080p horizontal">1080p Horizontal (1920×1080)</option>
-        <option value="4K horizontal">4K Horizontal (3840×2160)</option>
-        <option value="1080p vertical">1080p Vertical (1080×1920)</option>
-        <option value="square">Square (1:1)</option>
-        <option value="instagram post">Instagram Post (1080×1080)</option>
-        <option value="instagram story">Instagram Story (1080×1920)</option>
-        <option value="facebook cover">Facebook Cover (820×312)</option>
-        <option value="twitter header">Twitter Header (1500×500)</option>
-        <option value="youtube thumbnail">YouTube Thumbnail (1280×720)</option>
-        <option value="desktop wallpaper">Desktop Wallpaper (1920×1080)</option>
-        <option value="mobile wallpaper">Mobile Wallpaper (1440×2560)</option>
-        <option value="wide panorama">Wide Panorama (3840×1080)</option>
-        <option value="ultra wide">Ultra Wide (3440×1440)</option>
-        <option value="custom">Custom (tulis di tambahan)</option>
+        <option value="horizontal (3:2)">Horizontal (3:2)</option>
+        <option value="vertikal (2:3)">Vertikal (3:2)</option>
+        <option value="square (1:1)">Square (1:1)</option>
+
       </select>
     </div>
     
@@ -639,16 +629,16 @@ select:focus {
         return;
       }
 
-      let prompt = `${karakter}. `;
-      if (emosi) prompt += ` ${emosi}. `;
+      let prompt = `${karakter}, `;
+      if (emosi) prompt += `ekspresi ${emosi}. `;
       if (aksi) prompt += ` ${aksi}. `;
-      if (background) prompt += `Latar: ${background}. `;
-      if (suasana) prompt += `Suasana: ${suasana}. `;
+      if (background) prompt += `Latar ${background}, `;
+      if (suasana) prompt += `Suasana ${suasana}. `;
       if (dialog) prompt += `Dialog: "${dialog}". `;
-      if (gaya) prompt += `buatkan dalam bentuk style ${gaya}. `;
-      if (format) prompt += `dengan Format/resolusi ${format}. `;
+      if (gaya) prompt += `buatkan dalam bentuk style ${gaya} `;
+      if (format) prompt += `dengan Format/resolusi ${format},`;
       if (warna) prompt += ` ${warna}. `;
-      if (tambahan) prompt += `Detail tambahan: ${tambahan}.`;
+      if (tambahan) prompt += ` ${tambahan}.`;
 
       document.getElementById("output").textContent = prompt;
       document.getElementById("output-container").classList.add("visible");
@@ -759,15 +749,10 @@ select:focus {
           "seni fantasi"
         ],
         format: [
-          "1080p horizontal", 
-          "square", 
-          "vertical poster", 
-          "panorama lebar", 
-          "4K detail tinggi",
-          "instagram post",
-          "instagram story",
-          "desktop wallpaper"
-      ],
+          "horizontal (3:2)", 
+          "vertical (2:3)", 
+          "square (1:1)",         
+        ],
         warna: [
           "neon terang", 
           "warna pastel", 
