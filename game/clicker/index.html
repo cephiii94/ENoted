@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Idle Clicker Game</title>
     <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
+    <!--layout-->
+    <button id="sound-toggle" class="sound-button">🔊 Suara: Aktif</button>
+    
+    <!--body-->
     <div class="game-container">
         <h1>Idle Clicker</h1>
         
@@ -16,9 +21,10 @@
         </div>
         
         <div class="character-container" style="position: relative;">
-            <img id="character" src="/game/clicker/char/char1.png" alt="Karakter">
+            <img id="character" src="/game/clicker/img/char1.png" alt="Karakter">
             <!-- Aksesoris akan muncul di sini -->
         </div>
+
 
         <button id="click-button">Klik Saya!</button>
         
@@ -35,25 +41,41 @@
         </div>
 
         <!-- Tambahkan tombol toko -->
-<button id="shop-button" class="shop-button">Buka Toko</button>
-
-<!-- Popup toko -->
-<div id="shop-popup" class="shop-popup">
-    <div class="shop-content">
-        <span class="close-shop">&times;</span>
-        <h2>Toko Aksesoris</h2>
-        <div class="shop-items">
-            <div class="shop-item" data-id="hat" data-cost="100">
-                <img src="hat.png" alt="Topi">
+        <button id="shop-button" class="shop-button">Buka Toko</button>
+        <!-- Popup toko -->
+        <div id="shop-popup" class="shop-popup">
+            <div class="shop-content">
+                <span class="close-shop">&times;</span>
+                <h2>Toko Aksesoris</h2>
+                <div class="shop-items">
+                <div class="shop-item" data-id="hat" data-cost="1">
+                    <img src="/game/clicker/img/hat.png" alt="Topi" width="45px" height="35px">
                 <p>Topi Keren (100 poin)</p>
                 <button class="buy-btn">Beli</button>
             </div>
             <!-- Tambahkan item lainnya -->
         </div>
+        
+        <!-- Tombol untuk membuka inventory -->
+        <button id="inventory-button" class="inventory-button">Inventory</button>
+        <!-- Popup inventory -->
+        <div id="inventory-popup" class="inventory-popup">
+             <div class="inventory-content">
+                <span class="close-inventory">&times;</span>
+                <h2>Inventory</h2>
+                <div class="inventory-items">
+                 <!-- Item akan diisi dinamis oleh JavaScript -->
+                </div>
+             </div>
+        </div>
     </div>
 </div>
 
-    </div>
+    <audio id="click-sound" src="/game/clicker/sound/click.wav" preload="auto"></audio>
+    <audio id="upgrade-sound" src="/game/clicker/sound/upgrade.wav" preload="auto"></audio>
+    <audio id="buy-sound" src="/game/clicker/sound/buy.wav" preload="auto"></audio>
+    <audio id="shop-open-sound" src="/game/clicker/sound/shop-open.wav" preload="auto"></audio>
+    <audio id="shop-close-sound" src="/game/clicker/sound/shop-close.wav" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
