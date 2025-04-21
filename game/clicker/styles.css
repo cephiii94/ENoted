@@ -67,6 +67,7 @@ body {
 .character-container {
     margin: 20px 0;
     height: 150px;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -190,6 +191,17 @@ body {
     position: absolute;
     pointer-events: none;
     width: 100px;
+    height: auto;
+    margin-top: 20px; /* Jarak dari karakter */
+    transform: translate(-50%, -50%); /* Pusatkan pada karakter */
+}
+/* Posisi khusus untuk topi */
+.accessory-hat {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%); /* 100% ke atas dari tengah karakter */
+    width: 80px;
     height: auto;
 }
 

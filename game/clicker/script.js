@@ -162,8 +162,18 @@ function equipAccessory(itemId) {
     if (!document.getElementById(`acc-${itemId}`)) {
         const acc = document.createElement('img');
         acc.id = `acc-${itemId}`;
-        acc.src = `${itemId}.png`;
-        acc.className = 'accessory';
+        acc.src = `/game/clicker/img/${itemId}.png`;
+        acc.className = `accessory accessory-${itemId}`; // Tambahkan class khusus
+        
+        // Atur posisi khusus untuk topi
+        if (itemId === 'hat') {
+            acc.style.position = 'absolute';
+            acc.style.top = '-30px'; // Sesuaikan nilai ini
+            acc.style.left = '50%';
+            acc.style.transform = 'translateX(-50%)';
+            acc.style.zIndex = '10'; // Pastikan di atas karakter
+        }
+        
         document.querySelector('.character-container').appendChild(acc);
     }
 }
@@ -201,7 +211,7 @@ function updateInventory() {
         div.className = `inventory-item ${!accessories[item.id].owned ? 'not-owned' : ''}`;
         
         const img = document.createElement('img');
-        img.src = `${item.id}.png`;
+        img.src = `/game/clicker/img/${item.id}.png`;
         img.alt = item.name;
         
         const p = document.createElement('p');
