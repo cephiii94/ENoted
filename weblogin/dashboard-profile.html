@@ -587,7 +587,7 @@
               <h2 class="profile-name">Andi Saputra</h2>
               <p class="profile-username">@andisaputra</p>
               
-              <button class="btn btn-outline">Edit Profil</button>
+              <button class="btn btn-outline" id="editProfileBtn">Edit Profil</button>
               
               <div class="profile-stats">
                 <div class="stat-card">
@@ -715,230 +715,215 @@
   </div>
   
   <script>
-    
-    // Ambil data pengguna dari localStorage saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
-  // Cek apakah pengguna sudah login
-  let currentUser = null;
-  try {
-    currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("Data user yang dimuat:", currentUser);
-    
-    // Jika tidak ada data pengguna, redirect ke halaman login
-    if (!currentUser || !currentUser.isLoggedIn) {
-      alert('Sesi Anda telah berakhir. Silakan login kembali.');
-      window.location.href = '/weblogin/formlogin.html';
-      return;
+  // Profile Manager Class
+class ProfileManager {
+  constructor() {
+    this.currentUser = null;
+    this.init();
+  }
+
+  // Initialize all functionality
+  init() {
+    this.loadUserData();
+    this.setupEventListeners();
+  }
+
+  // Load user data from localStorage
+  loadUserData() {
+    try {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Loaded user data:", this.currentUser);
+
+      if (!this.currentUser || !this.currentUser.isLoggedIn) {
+        this.redirectToLogin();
+        return;
+      }
+
+      this.updateProfileUI();
+      this.populateFormFields();
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      alert('Error loading profile data. Please try again.');
     }
-    
-    // Isi informasi pengguna di sidebar
+  }
+
+  // Redirect to login page
+  redirectToLogin() {
+    alert('Your session has expired. Please log in again.');
+    window.location.href = '/weblogin/formlogin.html';
+  }
+
+  // Update profile UI elements
+  updateProfileUI() {
+    this.updateSidebarProfile();
+    this.updateMainProfile();
+  }
+
+  // Update sidebar profile information
+  updateSidebarProfile() {
     const userAvatarSidebar = document.querySelector('.user-profile .user-avatar');
     const userNameSidebar = document.querySelector('.user-profile .user-name');
-    
+
     if (userAvatarSidebar) {
-      // Ambil inisial dari nama pengguna (huruf pertama)
-      const initials = currentUser.initials || currentUser.displayName.charAt(0).toUpperCase();
-      userAvatarSidebar.textContent = initials;
+      userAvatarSidebar.textContent = this.getUserInitials();
     }
-    
+
     if (userNameSidebar) {
-      userNameSidebar.textContent = currentUser.displayName;
+      userNameSidebar.textContent = this.currentUser.displayName;
     }
-    
-    // Isi informasi pada bagian profil utama
+  }
+
+  // Update main profile section
+  updateMainProfile() {
     const profileAvatar = document.querySelector('.profile-avatar');
     const profileName = document.querySelector('.profile-name');
     const profileUsername = document.querySelector('.profile-username');
-    
+
     if (profileAvatar) {
-      // Ambil inisial untuk avatar profil utama
-      const initials = currentUser.initials || currentUser.displayName.charAt(0).toUpperCase();
-      // Pertahankan tombol edit foto
       const editButton = profileAvatar.querySelector('.edit-avatar');
-      profileAvatar.textContent = initials;
-      if (editButton) {
-        profileAvatar.appendChild(editButton);
-      }
+      profileAvatar.textContent = this.getUserInitials();
+      if (editButton) profileAvatar.appendChild(editButton);
     }
-    
+
     if (profileName) {
-      profileName.textContent = currentUser.displayName;
+      profileName.textContent = this.currentUser.displayName;
     }
-    
+
     if (profileUsername) {
-      // Gunakan nama pengguna dengan format @username
-      profileUsername.textContent = '@' + currentUser.displayName.toLowerCase().replace(/\s+/g, '');
+      profileUsername.textContent = `@${this.getFormattedUsername()}`;
     }
-    
-    // Isi form profil dengan data yang ada atau tanda strip untuk yang kosong
-    const firstNameInput = document.getElementById('firstName');
-    const lastNameInput = document.getElementById('lastName');
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const phoneInput = document.getElementById('phone');
-    const bioTextarea = document.getElementById('bio');
-    
-    if (firstNameInput && currentUser.displayName) {
-      // Jika nama lengkap, pisahkan menjadi nama depan dan belakang
-      const nameParts = currentUser.displayName.split(' ');
-      if (nameParts.length > 0) {
-        firstNameInput.value = nameParts[0];
-      } else {
-        firstNameInput.value = "-";
-      }
-    }
-    
-    if (lastNameInput) {
-      // Cek jika ada nama belakang
-      const nameParts = currentUser.displayName.split(' ');
-      if (nameParts.length > 1) {
-        lastNameInput.value = nameParts.slice(1).join(' ');
-      } else {
-        // Nama belakang tidak diisi
-        lastNameInput.value = "-";
-      }
-    }
-    
-    if (usernameInput) {
-      usernameInput.value = currentUser.displayName.toLowerCase().replace(/\s+/g, '');
-    }
-    
-    // Untuk field yang belum ada di data login, tampilkan strip
-    if (emailInput) {
-      // Pakai email jika ada, jika tidak pakai placeholder
-      emailInput.value = currentUser.email || "-";
-    }
-    
-    if (phoneInput) {
-      // Telepon belum ada di data login
-      phoneInput.value = currentUser.phone || "-";
-    }
-    
-    if (bioTextarea) {
-      // Bio belum ada di data login
-      bioTextarea.value = currentUser.bio || "-";
-    }
-    
-  } catch (error) {
-    console.error("Error memuat data pengguna:", error);
-    alert('Terjadi kesalahan saat memuat data profil. Silakan coba lagi.');
   }
-});
 
-// Tambahkan fungsi logout ke tombol logout yang sudah ada
-document.querySelector('.logout-btn').addEventListener('click', function() {
-  // Hapus data user dari localStorage
-  localStorage.removeItem('currentUser');
-  
-  // Tampilkan pesan
-  alert('Anda telah berhasil keluar dari akun.');
-  
-  // Redirect ke halaman login
-  window.location.href = '/weblogin/formlogin.html';
-});
+  // Get user initials
+  getUserInitials() {
+    return this.currentUser.initials || 
+           this.currentUser.displayName.charAt(0).toUpperCase();
+  }
 
-  
+  // Format username by removing spaces
+  getFormattedUsername() {
+    return this.currentUser.displayName.toLowerCase().replace(/\s+/g, '');
+  }
+
+  // Populate form fields with user data
+  populateFormFields() {
+    const nameParts = this.currentUser.displayName.split(' ');
     
-    // Toggle Menu
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    menuToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('show');
-    });
-    
-    // Edit Profile Toggle
-    const editToggle = document.getElementById('editToggle');
+    document.getElementById('firstName').value = nameParts[0] || "-";
+    document.getElementById('lastName').value = nameParts.slice(1).join(' ') || "-";
+    document.getElementById('username').value = this.getFormattedUsername();
+    document.getElementById('email').value = this.currentUser.email || "-";
+    document.getElementById('phone').value = this.currentUser.phone || "-";
+    document.getElementById('bio').value = this.currentUser.bio || "-";
+  }
+
+  // Toggle edit mode
+  toggleEditMode(isEditing) {
     const formInputs = document.querySelectorAll('#profileForm .form-control');
     const formButtons = document.getElementById('formButtons');
+    const editToggle = document.getElementById('editToggle');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+
+    formInputs.forEach(input => {
+      input.disabled = !isEditing;
+    });
+
+    formButtons.style.display = isEditing ? 'block' : 'none';
+    
+    const editText = isEditing ? 'Batal' : 'Edit';
+    editToggle.textContent = editText;
+    editProfileBtn.textContent = isEditing ? 'Batal Edit' : 'Edit Profil';
+  }
+
+  // Handle form submission
+  handleFormSubmit(e) {
+    e.preventDefault();
+    
+    // Update user data
+    this.currentUser.displayName = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+    this.currentUser.email = document.getElementById('email').value;
+    this.currentUser.phone = document.getElementById('phone').value;
+    this.currentUser.bio = document.getElementById('bio').value;
+    
+    // Save to localStorage
+    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    
+    // Update UI
+    this.updateProfileUI();
+    this.showSuccessNotification();
+    this.toggleEditMode(false);
+  }
+
+  // Show success notification
+  showSuccessNotification() {
+    const notification = document.createElement('div');
+    Object.assign(notification.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      backgroundColor: '#2a9d8f',
+      color: 'white',
+      padding: '15px 25px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      zIndex: '9999',
+      transform: 'translateY(-100px)',
+      transition: 'all 0.3s ease'
+    });
+    
+    notification.textContent = 'Profile updated successfully!';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateY(-100px)';
+      setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
+  }
+
+  // Logout user
+  logout() {
+    localStorage.removeItem('currentUser');
+    alert('You have successfully logged out.');
+    window.location.href = '/weblogin/formlogin.html';
+  }
+
+  // Setup all event listeners
+  setupEventListeners() {
+    // Menu toggle
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('show');
+    });
+
+    // Edit profile buttons
+    const editToggle = document.getElementById('editToggle');
+    const editProfileBtn = document.getElementById('editProfileBtn');
     const cancelEdit = document.getElementById('cancelEdit');
     
-    editToggle.addEventListener('click', function() {
-      const isEditing = formInputs[0].disabled === false;
-      
-      if (isEditing) {
-        // Disable editing
-        formInputs.forEach(input => {
-          input.disabled = true;
-        });
-        formButtons.style.display = 'none';
-        editToggle.textContent = 'Edit';
-      } else {
-        // Enable editing
-        formInputs.forEach(input => {
-          input.disabled = false;
-        });
-        formButtons.style.display = 'block';
-        editToggle.textContent = 'Batal';
-      }
+    editToggle.addEventListener('click', () => {
+      this.toggleEditMode(document.getElementById('firstName').disabled);
     });
     
-    cancelEdit.addEventListener('click', function() {
-      // Disable editing
-      formInputs.forEach(input => {
-        input.disabled = true;
-      });
-      formButtons.style.display = 'none';
-      editToggle.textContent = 'Edit';
+    editProfileBtn.addEventListener('click', () => {
+      this.toggleEditMode(document.getElementById('firstName').disabled);
     });
-    
-    // Form submission
-const profileForm = document.getElementById('profileForm');
 
-profileForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  // Ambil data user saat ini
-  let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  
-  // Update dengan nilai baru dari form
-  currentUser.displayName = document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value;
-  currentUser.email = document.getElementById('email').value;
-  currentUser.phone = document.getElementById('phone').value;
-  currentUser.bio = document.getElementById('bio').value;
-  
-  // Simpan kembali ke localStorage
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-  // Create notification
-  const notification = document.createElement('div');
-  notification.style.position = 'fixed';
-  notification.style.top = '20px';
-  notification.style.right = '20px';
-  notification.style.backgroundColor = '#2a9d8f';
-  notification.style.color = 'white';
-  notification.style.padding = '15px 25px';
-  notification.style.borderRadius = '8px';
-  notification.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-  notification.style.zIndex = '9999';
-  notification.style.transform = 'translateY(-100px)';
-  notification.style.transition = 'all 0.3s ease';
-  
-  notification.textContent = 'Profil berhasil diperbarui!';
-  
-  document.body.appendChild(notification);
-  
-  // Show notification
-  setTimeout(() => {
-    notification.style.transform = 'translateY(0)';
-  }, 10);
-  
-  // Hide notification after a few seconds
-  setTimeout(() => {
-    notification.style.transform = 'translateY(-100px)';
-    
-    // Remove from DOM after animation
-    setTimeout(() => {
-      document.body.removeChild(notification);
-    }, 300);
-  }, 3000);
-  
-  // Disable editing
-  formInputs.forEach(input => {
-    input.disabled = true;
-  });
-  formButtons.style.display = 'none';
-  editToggle.textContent = 'Edit';
+    cancelEdit.addEventListener('click', () => this.toggleEditMode(false));
+
+    // Form submission
+    document.getElementById('profileForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
+
+    // Logout button
+    document.querySelector('.logout-btn').addEventListener('click', () => this.logout());
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new ProfileManager();
 });
   </script>
 </body>

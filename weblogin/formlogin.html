@@ -235,58 +235,58 @@
   </div>
 
   <script>
-
-   document.getElementById('login-form').addEventListener('submit', function(e) {
+    // Fungsi untuk menangani form login
+  document.getElementById("login-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const errorMessage = document.getElementById('error-message');
-  
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const errorMessage = document.getElementById("error-message");
+
   // Data pengguna demo
   const validUsers = [
     { username: "admin", password: "admin123" },
-    { username: "user", password: "user123" }
+    { username: "user", password: "user123" },
   ];
-  
+
   // Ambil data pengguna dari localStorage
   let registeredUsers = [];
   try {
-    registeredUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    registeredUsers = JSON.parse(localStorage.getItem("users") || "[]");
     console.log("Registered users:", registeredUsers); // Debug info
   } catch (error) {
     console.error("Error parsing users from localStorage:", error);
   }
-  
+
   // Gabungkan pengguna demo dengan pengguna terdaftar
   const allUsers = [...validUsers, ...registeredUsers];
-  
+
   // Verifikasi kredensial dari semua pengguna
-  const validUser = allUsers.find(user => 
-    user.username === username && user.password === password
+  const validUser = allUsers.find(
+    (user) => user.username === username && user.password === password,
   );
-  
+
   if (validUser) {
     // Simpan status login di localStorage
     const userData = {
       isLoggedIn: true,
       displayName: username,
-      initials: username.charAt(0).toUpperCase()
+      initials: username.charAt(0).toUpperCase(),
     };
 
-    localStorage.setItem('currentUser', JSON.stringify(userData));
+    localStorage.setItem("currentUser", JSON.stringify(userData));
 
-    localStorage.setItem('loggedIn', 'true');
-    localStorage.setItem('username', username);
-    
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("username", username);
+
     // Arahkan ke halaman generator karakter
     window.location.href = "/generator/index.html";
   } else {
     // Tampilkan pesan kesalahan
-    errorMessage.classList.add('visible');
-    
+    errorMessage.classList.add("visible");
+
     // Kosongkan field password
-    document.getElementById('password').value = '';
+    document.getElementById("password").value = "";
   }
 });
 

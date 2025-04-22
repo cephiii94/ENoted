@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemformat Kode dengan Prettier</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .code-area {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .code-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .code-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #resetBtn {
+            background-color: #f44336;
+        }
+        #resetBtn:hover {
+            background-color: #d32f2f;
+        }
+        #copyBtn {
+            background-color: #2196F3;
+        }
+        #copyBtn:hover {
+            background-color: #0b7dda;
+        }
+        .language-select {
+            margin-bottom: 10px;
+        }
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .example-code {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .error {
+            color: #f44336;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pemformat Kode dengan Prettier</h1>
+    <div class="container">
+        <div class="language-select">
+            <label for="language">Pilih bahasa: </label>
+            <select id="language">
+                <option value="javascript">JavaScript</option>
+                <option value="typescript">TypeScript</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="json">JSON</option>
+            </select>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container">
+                <div class="code-header">
+                    <h2>Kode Input</h2>
+                    <span class="example-code" onclick="loadExample()">Muat contoh kode</span>
+                </div>
+                <textarea id="inputCode" placeholder="Masukkan kode di sini..."></textarea>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <h2>Kode Terformat</h2>
+                </div>
+                <textarea id="outputCode" placeholder="Kode terformat akan muncul di sini..." readonly></textarea>
+                <div id="errorMessage" class="error"></div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="formatBtn" onclick="formatCode()">Format Kode</button>
+            <button id="copyBtn" onclick="copyToClipboard()">Salin ke Clipboard</button>
+            <button id="resetBtn" onclick="resetCode()">Reset</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Ditenagai oleh <a href="https://prettier.io" target="_blank">Prettier</a> | Dibuat untuk tujuan pembelajaran</p>
+    </footer>
+
+    <!-- Load Prettier scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/standalone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-babel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-typescript.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-html.js"></script>
+
+    <script>
+        const examples = {
+            javascript: `function factorial(n){if(n===0||n===1){return 1}else{return n*factorial(n-1)}}
+            
+const obj = { foo:   'bar',   baz:    42,  nested: { a:1, b:  2, c:[1,2,3] } };
+
+            class ExampleClass {
+  constructor(name) { this.name = name; }
+  sayHello() {     return "Hello, " + this.name + "!";   }
+}`,
+            typescript: `interface User {
+  id: number;name: string;
+  email?: string;
+  createdAt: Date;
+}
+
+function processUser(user:User):string {
+  const {id,name,email="no-email@example.com"} = user;
+  return \`User \${name} (ID: \${id}) has email: \${email}\`;
+}`,
+            html: `<!DOCTYPE html><html><head><title>My Page</title></head><body>
+<div class="container"><h1>Hello World</h1><p>This is a paragraph with <strong>bold</strong> and <em>italic</em> text.</p>
+<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>
+</body></html>`,
+            css: `.header {
+  background-color: #f8f9fa; padding: 20px;     color: #333;}
+  
+.container {  display: flex;
+flex-direction: column;
+  gap: 10px;  width: 100%;
+      max-width: 1200px;
+  margin: 0 auto;}
+  
+  @media (max-width: 768px) {
+    .container {     padding: 10px;  }
+  }`,
+            json: `{
+"name":"John Doe",
+"age":30,
+"isActive":true,
+"address":{"street":"123 Main St","city":"Anytown","zipCode":"12345"},
+"hobbies":["reading","hiking","gaming"],
+"contact":{"email":"john@example.com","phone":"555-1234"}
+}`
+        };
+
+        function loadExample() {
+            const language = document.getElementById('language').value;
+            document.getElementById('inputCode').value = examples[language];
+        }
+
+        function formatCode() {
+            const inputCode = document.getElementById('inputCode').value;
+            const language = document.getElementById('language').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!inputCode.trim()) {
+                errorMessage.textContent = "Masukkan beberapa kode terlebih dahulu.";
+                return;
+            }
+            
+            errorMessage.textContent = "";
+            
+            try {
+                let formattedCode;
+                
+                switch (language) {
+                    case 'javascript':
+                        formattedCode = formatJavaScript(inputCode);
+                        break;
+                    case 'typescript':
+                        formattedCode = formatTypeScript(inputCode);
+                        break;
+                    case 'html':
+                        formattedCode = formatHTML(inputCode);
+                        break;
+                    case 'css':
+                        formattedCode = formatCSS(inputCode);
+                        break;
+                    case 'json':
+                        formattedCode = formatJSON(inputCode);
+                        break;
+                    default:
+                        formattedCode = formatJavaScript(inputCode);
+                }
+                
+                document.getElementById('outputCode').value = formattedCode;
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                console.error("Formatting error:", error);
+            }
+        }
+        
+        function formatJavaScript(code) {
+            return prettier.format(code, {
+                parser: 'babel',
+                plugins: prettierPlugins,
+                tabWidth: 2,
+                useTabs: false,
+                semi: true,
+                singleQuote: true,
+                trailingComma: 'es5',
+                bracketSpacing: true,
+                arrowParens: 'avoid',
+                printWidth: 80
+            });
+        }
+        
+        function formatTypeScript(code) {
+            return prettier.format(code, {
+                parser: 'typescript',
+                plugins: prettierPlugins,
+                tabWidth: 2,
+                useTabs: false,
+                semi: true,
+                singleQuote: true,
+                trailingComma: 'es5',
+                bracketSpacing: true,
+                arrowParens: 'avoid',
+                printWidth: 80
+            });
+        }
+        
+        function formatHTML(code) {
+            return prettier.format(code, {
+                parser: 'html',
+                plugins: prettierPlugins,
+                tabWidth: 2,
+                useTabs: false,
+                printWidth: 80
+            });
+        }
+        
+        function formatCSS(code) {
+            // Karena parser CSS tidak tersedia, kita menggunakan metode manual untuk memformat CSS
+            try {
+                // Metode 1: Mencoba dengan HTML parser (wrap dengan style tag)
+                const wrappedCode = `<style>${code}</style>`;
+                let result = prettier.format(wrappedCode, {
+                    parser: 'html',
+                    plugins: prettierPlugins,
+                    tabWidth: 2
+                });
+                
+                // Menghapus tag style
+                result = result
+                    .replace('<style>', '')
+                    .replace('</style>', '')
+                    .trim();
+                
+                return result;
+            } catch (e) {
+                // Metode 2: Format manual sederhana
+                return formatCSSManually(code);
+            }
+        }
+        
+        function formatCSSManually(css) {
+            // Pemformat CSS manual sederhana
+            let formattedCSS = '';
+            let indentLevel = 0;
+            let inComment = false;
+            let inSelector = true;
+            let buffer = '';
+            
+            // Hapus multiple whitespace
+            css = css.replace(/\s+/g, ' ').trim();
+            
+            // Format
+            for (let i = 0; i < css.length; i++) {
+                const char = css[i];
+                
+                if (char === '/' && css[i+1] === '*') {
+                    inComment = true;
+                    buffer += char;
+                } else if (char === '*' && css[i+1] === '/') {
+                    inComment = false;
+                    buffer += char;
+                } else if (inComment) {
+                    buffer += char;
+                } else if (char === '{') {
+                    formattedCSS += buffer.trim() + ' {\n';
+                    buffer = '';
+                    indentLevel++;
+                    inSelector = false;
+                } else if (char === '}') {
+                    if (buffer.trim()) {
+                        formattedCSS += '  '.repeat(indentLevel) + buffer.trim() + ';\n';
+                    }
+                    buffer = '';
+                    indentLevel--;
+                    formattedCSS += '  '.repeat(indentLevel) + '}\n\n';
+                    inSelector = true;
+                } else if (char === ';' && !inSelector) {
+                    formattedCSS += '  '.repeat(indentLevel) + buffer.trim() + ';\n';
+                    buffer = '';
+                } else if (char === '@' && !buffer.trim()) {
+                    buffer += char;
+                } else {
+                    buffer += char;
+                }
+            }
+            
+            return formattedCSS.trim();
+        }
+        
+        function formatJSON(code) {
+            try {
+                // Pertama, parse JSON untuk memvalidasi
+                const jsonObj = JSON.parse(code);
+                // Kemudian, stringifikasi dengan indentasi
+                return JSON.stringify(jsonObj, null, 2);
+            } catch (e) {
+                // Jika parsing gagal, coba gunakan Prettier dengan babel parser
+                try {
+                    return prettier.format(code, {
+                        parser: 'babel',
+                        plugins: prettierPlugins,
+                        tabWidth: 2
+                    });
+                } catch (pretterError) {
+                    // Jika semua gagal, laporkan error asli dari JSON.parse
+                    throw e;
+                }
+            }
+        }
+
+        function copyToClipboard() {
+            const outputArea = document.getElementById('outputCode');
+            outputArea.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = "Tersalin!";
+            
+            setTimeout(() => {
+                copyBtn.innerText = "Salin ke Clipboard";
+            }, 2000);
+        }
+
+        function resetCode() {
+            document.getElementById('inputCode').value = '';
+            document.getElementById('outputCode').value = '';
+            document.getElementById('errorMessage').textContent = '';
+        }
+
+        // Event listener for language change
+        document.getElementById('language').addEventListener('change', function() {
+            const outputArea = document.getElementById('outputCode');
+            outputArea.value = '';
+            document.getElementById('errorMessage').textContent = '';
+        });
+        
+        // Load example on page load
+        window.onload = function() {
+            loadExample();
+        };
+    </script>
+</body>
+</html>
