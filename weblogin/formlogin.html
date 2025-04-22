@@ -235,6 +235,7 @@
   </div>
 
   <script>
+
    document.getElementById('login-form').addEventListener('submit', function(e) {
   e.preventDefault();
   
@@ -274,9 +275,12 @@
     };
 
     localStorage.setItem('currentUser', JSON.stringify(userData));
+
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('username', username);
     
     // Arahkan ke halaman generator karakter
-    window.location.href = "/generator/prompt-char/char.html";
+    window.location.href = "/generator/index.html";
   } else {
     // Tampilkan pesan kesalahan
     errorMessage.classList.add('visible');
@@ -285,6 +289,7 @@
     document.getElementById('password').value = '';
   }
 });
+
   </script>
 </body>
 </html>

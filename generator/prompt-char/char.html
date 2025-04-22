@@ -558,6 +558,7 @@ select:focus {
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <script>
+    
     // Check login state when page loads
     document.addEventListener('DOMContentLoaded', function() {
       checkLoginState();
@@ -565,24 +566,29 @@ select:focus {
     });
     
     function checkLoginState() {
-      const isLoggedIn = localStorage.getItem('loggedIn');
-      const username = localStorage.getItem('username');
-      
-      if (!isLoggedIn || !username) {
-        // Redirect to login page if not logged in
-        window.location.href = "/weblogin/formlogin.html";
-      }  else {
-    // Update UI with username jika elemen ada
-    const usernameText = document.getElementById('username-text');
-    if (usernameText) {
-      usernameText.textContent = username;
-    }
-    
-    // Set user initial jika elemen ada
-    const userInitial = document.getElementById('user-initial');
-    if (userInitial && username) {
-      userInitial.textContent = username.charAt(0).toUpperCase();
-    }
+  // Cek dengan cara yang sama seperti di dashboard
+  let currentUser = null;
+  try {
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+  }
+  
+  // Jika tidak ada data pengguna, redirect ke login
+  if (!currentUser || !currentUser.isLoggedIn) {
+    window.location.href = "/weblogin/formlogin.html";
+    return;
+  }
+  
+  // Update UI dengan data user jika elemen ada
+  const usernameText = document.getElementById('username-text');
+  if (usernameText) {
+    usernameText.textContent = currentUser.displayName;
+  }
+  
+  const userInitial = document.getElementById('user-initial');
+  if (userInitial && currentUser.displayName) {
+    userInitial.textContent = currentUser.displayName.charAt(0).toUpperCase();
   }
 }
     function setupUserMenu() {
