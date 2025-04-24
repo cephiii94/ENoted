@@ -1,0 +1,114 @@
+ // Pesan sambutan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        addMessage('bot', 'Halo! Saya adalah asisten AI Anda. Apa yang bisa saya bantu hari ini?');
+        document.getElementById('input').focus();
+      }, 500);
+    });
+    
+    // Fungsi untuk menambahkan pesan ke chatbox
+    function addMessage(type, text) {
+      const chatbox = document.getElementById('chatbox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      
+      if (type === 'user') {
+        messageDiv.classList.add('user-message');
+        messageDiv.textContent = text;
+      } else {
+        messageDiv.classList.add('bot-message');
+        messageDiv.textContent = text;
+      }
+      
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Fungsi untuk menampilkan indikator "sedang mengetik"
+    function showTypingIndicator() {
+      const chatbox = document.getElementById('chatbox');
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('message', 'bot-message', 'typing-indicator-container');
+      typingDiv.id = 'typing-indicator';
+      
+      const typingIndicator = document.createElement('div');
+      typingIndicator.classList.add('typing-indicator');
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('typing-dot');
+        typingIndicator.appendChild(dot);
+      }
+      
+      typingDiv.appendChild(typingIndicator);
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Fungsi untuk menghapus indikator "sedang mengetik"
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+    
+    // Mengirim pesan dan mendapatkan respons
+    function sendMessage() {
+      const input = document.getElementById('input');
+      const userText = input.value.trim();
+      
+      if (userText === '') return;
+      
+      // Menampilkan pesan pengguna
+      addMessage('user', userText);
+      input.value = '';
+      
+      // Menampilkan indikator "sedang mengetik"
+      showTypingIndicator();
+      
+      // Simulasi penundaan sebelum bot menjawab
+      setTimeout(() => {
+        hideTypingIndicator();
+        
+        // Database respons sederhana
+        const responses = {
+          "halo": "Halo! Senang bertemu dengan Anda. Ada yang bisa saya bantu?",
+          "hai": "Hai! Apa kabar? Ada yang bisa saya bantu hari ini?",
+          "siapa kamu": "Saya adalah asisten AI yang dirancang untuk membantu Anda dengan berbagai pertanyaan dan tugas.",
+          "terima kasih": "Sama-sama! Senang bisa membantu. Ada yang lain yang ingin Anda tanyakan?",
+          "selamat pagi": "Selamat pagi! Semoga hari Anda menyenangkan. Ada yang bisa saya bantu?",
+          "selamat siang": "Selamat siang! Ada yang bisa saya bantu hari ini?",
+          "selamat malam": "Selamat malam! Ada yang bisa saya bantu sebelum hari berakhir?",
+          "bagaimana cara kerjamu": "Saya diprogram untuk memahami pertanyaan Anda dan memberikan respons yang sesuai berdasarkan database pengetahuan yang saya miliki.",
+          "apa yang bisa kamu lakukan": "Saya dapat menjawab pertanyaan, memberikan informasi, membantu dengan ide, dan banyak lagi. Silakan tanyakan apa saja!",
+          "siapa pembuatmu": "Saya dibuat oleh pengembang yang tertarik pada teknologi AI dan interaksi manusia-komputer.",
+        };
+        
+        // Mencari respons yang cocok (case insensitive)
+        let reply = '';
+        const userTextLower = userText.toLowerCase();
+        
+        for (const key in responses) {
+          if (userTextLower.includes(key)) {
+            reply = responses[key];
+            break;
+          }
+        }
+        
+        // Jika tidak ada kecocokan, gunakan respons default
+        if (!reply) {
+          reply = "Maaf, saya belum memahami pesan Anda. Bisakah Anda mengklarifikasi atau mencoba pertanyaan lain?";
+        }
+        
+        // Menampilkan respons bot
+        addMessage('bot', reply);
+      }, 1000 + Math.random() * 1000); // Waktu respons acak antara 1-2 detik
+    }
+    
+    // Menangani pengiriman pesan dengan tombol Enter
+    document.getElementById('input').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
