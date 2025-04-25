@@ -1,3 +1,0 @@
-# File .env - Simpan API key dan konfigurasi sensitif di sini
-HUGGINGFACE_API_KEY=hf_
-PORT=3000
