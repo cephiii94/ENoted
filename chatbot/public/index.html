@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant</title>
+  <style>
+    :root {
+      --primary-color: #0284fd;
+      --secondary-color: #E5E7EB;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --bot-bubble: #F3F4F6;
+      --user-bubble: #0284fd;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .container {
+      max-width: 700px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    header {
+      background-color: white;
+      box-shadow: var(--shadow);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+    
+    header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background-color: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    #chatbox {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+      word-break: break-word;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background-color: var(--user-bubble);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .bot-message {
+      align-self: flex-start;
+      background-color: var(--bot-bubble);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+    }
+    
+    .input-area {
+      padding: 15px 20px;
+      background-color: white;
+      border-top: 1px solid var(--secondary-color);
+      display: flex;
+      gap: 10px;
+    }
+    
+    #input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid var(--secondary-color);
+      border-radius: 24px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    #input:focus {
+      border-color: var(--primary-color);
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #3730A3;
+    }
+    
+    .status {
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-align: center;
+      padding: 5px 0;
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--text-secondary);
+      border-radius: 50%;
+      animation: typingAnimation 1.5s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typingAnimation {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @media (max-width: 600px) {
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="avatar">AI</div>
+      <h1>AI Assistant</h1>
+    </header>
+    
+    <div id="chatbox"></div>
+    
+    <div class="input-area">
+      <input type="text" id="input" placeholder="Ketik pesan..." autocomplete="off" />
+      <button onclick="sendMessage()">Kirim</button>
+    </div>
+  </div>
+
+  <script>
+    // URL backend API
+    const API_URL = 'http://localhost:3000/api/chat';
+    
+    // Pesan sambutan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        addMessage('bot', 'Halo! Saya adalah asisten AI Anda yang terhubung dengan Hugging Face. Apa yang bisa saya bantu hari ini?');
+        document.getElementById('input').focus();
+      }, 500);
+    });
+    
+    // Fungsi untuk menambahkan pesan ke chatbox
+    function addMessage(type, text) {
+      const chatbox = document.getElementById('chatbox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      
+      if (type === 'user') {
+        messageDiv.classList.add('user-message');
+        messageDiv.textContent = text;
+      } else {
+        messageDiv.classList.add('bot-message');
+        messageDiv.textContent = text;
+      }
+      
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Fungsi untuk menampilkan indikator "sedang mengetik"
+    function showTypingIndicator() {
+      const chatbox = document.getElementById('chatbox');
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('message', 'bot-message', 'typing-indicator-container');
+      typingDiv.id = 'typing-indicator';
+      
+      const typingIndicator = document.createElement('div');
+      typingIndicator.classList.add('typing-indicator');
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('typing-dot');
+        typingIndicator.appendChild(dot);
+      }
+      
+      typingDiv.appendChild(typingIndicator);
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    
+    // Fungsi untuk menghapus indikator "sedang mengetik"
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+    
+    // Mengirim pesan dan mendapatkan respons dari API
+    async function sendMessage() {
+      const input = document.getElementById('input');
+      const userText = input.value.trim();
+      
+      if (userText === '') return;
+      
+      // Menampilkan pesan pengguna
+      addMessage('user', userText);
+      input.value = '';
+      
+      // Menampilkan indikator "sedang mengetik"
+      showTypingIndicator();
+      
+      try {
+        // Panggil API Hugging Face melalui backend
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: userText })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Sembunyikan indikator mengetik
+        hideTypingIndicator();
+        
+        // Tampilkan respons dari API
+        addMessage('bot', data.reply);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        hideTypingIndicator();
+        addMessage('bot', 'Maaf, terjadi kesalahan saat menghubungi API. Silakan coba lagi nanti.');
+      }
+    }
+    
+    // Menangani pengiriman pesan dengan tombol Enter
+    document.getElementById('input').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
