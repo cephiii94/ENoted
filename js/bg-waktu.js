@@ -8,19 +8,19 @@ function aturBackgroundGambar() {
   
     if (jam >= 5 && jam < 12) {
       // Pagi
-      gambar = 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1400&q=80';
+      gambar = '/img/pagi.jpg';
       teks = 'Selamat Pagi 🌅';
     } else if (jam >= 12 && jam < 16) {
       // Siang
-      gambar = 'https://images.unsplash.com/photo-1588587573470-430092b9ef8d?auto=format&fit=crop&w=1400&q=80';
+      gambar = '/img/siang.jpg';
       teks = 'Selamat Siang ☀️';
     } else if (jam >= 16 && jam < 18) {
       // Sore
-      gambar = 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1400&q=80';
+      gambar = '/img/sore.jpg';
       teks = 'Selamat Sore 🌇';
     } else {
       // Malam
-      gambar = 'https://images.unsplash.com/photo-1501426026826-31c667bdf23d?auto=format&fit=crop&w=1400&q=80';
+      gambar = '/img/malam.jpg';
       teks = 'Selamat Malam 🌃';
     }
   
