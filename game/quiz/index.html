@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f8ff;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #4285f4;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #34a853;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .level-indicator {
+            font-size: 14px;
+        }
+
+        .coin-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .coin-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #fbbc05;
+            border-radius: 50%;
+            margin-right: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        /* Main Content Styles */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .character-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .character-image {
+            width: 150px;
+            height: 150px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .play-button {
+            padding: 15px 30px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .play-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .page-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Card Styles */
+        .card-container {
+            width: 100%;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateX(5px);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #4285f4;
+        }
+
+        .card-info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .card-info p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Back Button Styles */
+        .back-button {
+            position: absolute;
+            top: 60px;
+            left: 15px;
+            background: none;
+            border: none;
+            color: #4285f4;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Quiz Page Styles */
+        .quiz-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .quiz-question {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .quiz-question h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background-color: #f0f8ff;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: #e6f2ff;
+        }
+
+        .quiz-option.selected {
+            background-color: #d4e6ff;
+            border-color: #4285f4;
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .quiz-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-button {
+            background-color: #4285f4;
+            color: white;
+        }
+
+        /* Navigation Bar Styles */
+        nav {
+            background-color: white;
+            padding: 15px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #555;
+            text-decoration: none;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            color: #4285f4;
+            font-weight: bold;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 480px) {
+            header {
+                padding: 12px;
+            }
+
+            .profile-icon, .coin-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .character-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .play-button {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+
+            .card-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <!-- Main Page -->
+    <div id="main-page">
+        <!-- Header Section -->
+        <header>
+            <div class="profile-section">
+                <div class="profile-icon">P</div>
+                <div class="level-indicator">Level 5</div>
+            </div>
+            <div class="coin-section">
+                <div class="coin-icon">C</div>
+                <div class="coin-count">250</div>
+            </div>
+        </header>
+
+        <!-- Main Content Section -->
+        <main>
+            <div class="character-container">
+                <div class="character-image">
+                    <i class="fas fa-user-circle" style="font-size: 80px;"></i>
+                </div>
+                <button class="play-button" id="play-button">PLAY</button>
+            </div>
+        </main>
+
+        <!-- Navigation Bar -->
+        <nav>
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-inventory"></i>
+                <span>Inventori</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Shop</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Pencapaian</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Play Page -->
+    <div id="play-page" class="page">
+        <button class="back-button" id="back-button-1"><i class="fas fa-arrow-left"></i></button>
+        
+        <div class="page-header">
+            <h2>Pilih Kategori</h2>
+        </div>
+
+        <div class="card-container">
+            <div class="card" data-category="general">
+                <div class="card-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="card-info">
+                    <h3>General Knowledge</h3>
+                    <p>10 Pertanyaan</p>
+                </div>
+            </div>
+
+            <div class="card" data-category="science">
+                <div class="card-icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Ilmu Pengetahuan</h3>
+                    <p>10 Pertanyaan</p>
+                </div>
+            </div>
+
+            <div class="card" data-category="history">
+                <div class="card-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Sejarah</h3>
+                    <p>10 Pertanyaan</p>
+                </div>
+            </div>
+
+            <div class="card" data-category="geography">
+                <div class="card-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Geografi</h3>
+                    <p>10 Pertanyaan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Page -->
+    <div id="level-page" class="page">
+        <button class="back-button" id="back-button-2"><i class="fas fa-arrow-left"></i></button>
+        
+        <div class="page-header">
+            <h2>Pilih Level</h2>
+        </div>
+
+        <div class="card-container">
+            <div class="card" data-level="easy">
+                <div class="card-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Mudah</h3>
+                    <p>10 Pertanyaan - 30 Detik</p>
+                </div>
+            </div>
+
+            <div class="card" data-level="medium">
+                <div class="card-icon">
+                    <i class="fas fa-road"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Sedang</h3>
+                    <p>10 Pertanyaan - 20 Detik</p>
+                </div>
+            </div>
+
+            <div class="card" data-level="hard">
+                <div class="card-icon">
+                    <i class="fas fa-mountain"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Sulit</h3>
+                    <p>10 Pertanyaan - 10 Detik</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quiz-page" class="page">
+        <button class="back-button" id="back-button-3"><i class="fas fa-arrow-left"></i></button>
+        
+        <div class="page-header">
+            <h2>Quiz</h2>
+        </div>
+
+        <div class="quiz-container">
+            <div class="quiz-question" id="question">
+                <h3>Pertanyaan akan muncul di sini</h3>
+            </div>
+            
+            <div class="quiz-options" id="options">
+                <!-- Opsi jawaban akan dimuat di sini -->
+            </div>
+            
+            <div class="quiz-controls">
+                <button class="quiz-button" id="prev-button">Sebelumnya</button>
+                <button class="quiz-button submit-button" id="submit-button">Ajukan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variabel global untuk menyimpan data quiz
+        let currentCategory = '';
+        let currentLevel = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizData = [];
+        let timerInterval;
+        let timeLeft = 0;
+
+        // Data quiz contoh
+        const quizDatabase = {
+            general: {
+                easy: [
+                    { question: "Ibu kota Indonesia adalah?", options: ["Jakarta", "Bandung", "Surabaya", "Medan"], answer: "Jakarta" },
+                    { question: "Planet terbesar dalam tata surya adalah?", options: ["Bumi", "Mars", "Jupiter", "Venus"], answer: "Jupiter" },
+                    { question: "Warna bendera Indonesia?", options: ["Merah Putih", "Hitam Putih", "Hijau Putih", "Biru Putih"], answer: "Merah Putih" }
+                ],
+                medium: [
+                    { question: "Siapakah presiden pertama Indonesia?", options: ["Soekarno", "Hatta", "Soeharto", "Suharto"], answer: "Soekarno" },
+                    { question: "Berapakah hasil dari 7 + 8 x 3?", options: ["41", "15", "39", "31"], answer: "31" },
+                    { question: "Bendera negara Jepang berwarna apa?", options: ["Merah Putih", "Hitam Putih", "Putih dengan lingkaran merah", "Biru Putih"], answer: "Putih dengan lingkaran merah" }
+                ],
+                hard: [
+                    { question: "Siapakah penemu lampu pijar?", options: ["Albert Einstein", "Isaac Newton", "Thomas Edison", "Nikola Tesla"], answer: "Thomas Edison" },
+                    { question: "Apa nama benua terkecil?", options: ["Eropa", "Afrika", "Australia", "Antartika"], answer: "Australia" },
+                    { question: "Berapakah jumlah provinsi di Indonesia?", options: ["30", "32", "34", "36"], answer: "34" }
+                ]
+            },
+            science: {
+                easy: [
+                    { question: "Rumus kimia untuk air adalah?", options: ["H2O", "CO2", "O2", "NaCl"], answer: "H2O" },
+                    { question: "Planet mana yang dikenal sebagai 'Planet Merah'?", options: ["Venus", "Mars", "Jupiter", "Saturnus"], answer: "Mars" },
+                    { question: "Apa nama ilmuwan yang mengembangkan teori relativitas?", options: ["Isaac Newton", "Galileo Galilei", "Albert Einstein", "Nikola Tesla"], answer: "Albert Einstein" }
+                ],
+                medium: [
+                    { question: "Apa yang dimaksud dengan fotosintesis?", options: ["Proses hewan membuat makanan", "Proses tumbuhan membuat makanan", "Proses pernapasan tumbuhan", "Proses pernapasan hewan"], answer: "Proses tumbuhan membuat makanan" },
+                    { question: "Berapakah jumlah planet dalam tata surya?", options: ["7", "8", "9", "10"], answer: "8" },
+                    { question: "Apa nama unsur dengan simbol Au?", options: ["Aluminum", "Argon", "Astat", "Emas"], answer: "Emas" }
+                ],
+                hard: [
+                    { question: "Apa nama teleskop ruang angkasa?", options: ["Hubble", "Galileo", "Newton", "Einstein"], answer: "Hubble" },
+                    { question: "Apa yang dimaksud dengan DNA?", options: ["Unit dasar energi", "Unit dasar genetik", "Unit dasar cahaya", "Unit dasar suara"], answer: "Unit dasar genetik" },
+                    { question: "Apa kecepatan cahaya dalam kilometer per detik?", options: ["300,000 km/s", "150,000 km/s", "250,000 km/s", "200,000 km/s"], answer: "300,000 km/s" }
+                ]
+            },
+            history: {
+                easy: [
+                    { question: "Tahun berapakah Indonesia merdeka?", options: ["1942", "1945", "1947", "1950"], answer: "1945" },
+                    { question: "Siapakah pahlawan nasional Indonesia?", options: ["Sukarno", "Hatta", "Pangeran Diponegoro", "Semua jawaban benar"], answer: "Semua jawaban benar" },
+                    { question: "Apa nama kerajaan Hindu terbesar di Indonesia?", options: ["Majapahit", "Srivijaya", "Singhasari", "Mataram"], answer: "Majapahit" }
+                ],
+                medium: [
+                    { question: "Perang Dunia II berlangsung dari tahun berapa?", options: ["1939-1945", "1935-1940", "1940-1945", "1930-1935"], answer: "1939-1945" },
+                    { question: "Siapakah presiden Amerika Serikat pertama?", options: ["Thomas Jefferson", "Abraham Lincoln", "George Washington", "John Adams"], answer: "George Washington" },
+                    { question: "Apa nama perang antara Inggris dan Prancis abad 14-15?", options: ["Perang Dingin", "Perang Dunia", "Perang Saudara", "Perang Seratus Tahun"], answer: "Perang Seratus Tahun" }
+                ],
+                hard: [
+                    { question: "Apa yang ditemukan Christopher Columbus?", options: ["Amerika", "Australia", "Afrika", "Antartika"], answer: "Amerika" },
+                    { question: "Apa nama perjanjian yang mengakhiri Perang Dunia I?", options: ["Perjanjian Geneva", "Perjanjian Versailles", "Perjanjian Yalta", "Perjanjian Potsdam"], answer: "Perjanjian Versailles" },
+                    { question: "Kapan Revolusi Prancis terjadi?", options: ["1769-1799", "1789-1799", "1776-1783", "1804-1814"], answer: "1789-1799" }
+                ]
+            },
+            geography: {
+                easy: [
+                    { question: "Benua terbesar di dunia adalah?", options: ["Eropa", "Afrika", "Asia", "Amerika"], answer: "Asia" },
+                    { question: "Lautan terbesar di dunia adalah?", options: ["Lautan Atlantik", "Lautan Hindia", "Lautan Pasifik", "Lautan Arctic"], answer: "Lautan Pasifik" },
+                    { question: "Negara mana yang dikenal sebagai 'Negara Gajah Putih'?", options: ["India", "Thailand", "Kambodja", "Myanmar"], answer: "Thailand" }
+                ],
+                medium: [
+                    { question: "Gunung tertinggi di dunia?", options: ["K2", "Kangchenjunga", "Everest", "Makalu"], answer: "Everest" },
+                    { question: "Sungai terpanjang di dunia?", options: ["Nile", "Amazon", "Mississippi", "Yangtze"], answer: "Amazon" },
+                    { question: "Negara mana yang memiliki batas dengan paling banyak negara?", options: ["Rusia", "China", "Amerika Serikat", "Brasil"], answer: "China" }
+                ],
+                hard: [
+                    { question: "Apa ibu kota Negara Vatican?", options: ["Roma", "Vatican City", "Milan", "Florence"], answer: "Vatican City" },
+                    { question: "Apa nama negara pulau terbesar di dunia?", options: ["Greenland", "Australia", "Borneo", "Madagascar"], answer: "Greenland" },
+                    { question: "Di benua manakah negara Chile terletak?", options: ["Eropa", "Afrika", "Amerika Selatan", "Asia"], answer: "Amerika Selatan" }
+                ]
+            }
+        };
+
+        // Fungsi untuk menangani navigasi
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Fungsi untuk tombol play
+        document.getElementById('play-button').addEventListener('click', function() {
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('play-page').style.display = 'flex';
+        });
+
+        // Fungsi untuk tombol kembali di halaman play
+        document.getElementById('back-button-1').addEventListener('click', function() {
+            document.getElementById('play-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        });
+
+        // Fungsi untuk tombol kembali di halaman level
+        document.getElementById('back-button-2').addEventListener('click', function() {
+            document.getElementById('level-page').style.display = 'none';
+            document.getElementById('play-page').style.display = 'flex';
+        });
+
+        // Fungsi untuk tombol kembali di halaman quiz
+        document.getElementById('back-button-3').addEventListener('click', function() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('level-page').style.display = 'flex';
+        });
+
+        // Fungsi untuk kartu kategori
+        document.querySelectorAll('#play-page .card').forEach(card => {
+            card.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                currentCategory = category;
+                document.getElementById('play-page').style.display = 'none';
+                document.getElementById('level-page').style.display = 'flex';
+            });
+        });
+
+        // Fungsi untuk kartu level
+        document.querySelectorAll('#level-page .card').forEach(card => {
+            card.addEventListener('click', function() {
+                const level = this.getAttribute('data-level');
+                currentLevel = level;
+                startQuiz();
+            });
+        });
+
+        // Fungsi untuk memulai quiz
+        function startQuiz() {
+            document.getElementById('level-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'flex';
+            
+            // Atur waktu berdasarkan level
+            if (currentLevel === 'easy') timeLeft = 30;
+            else if (currentLevel === 'medium') timeLeft = 20;
+            else if (currentLevel === 'hard') timeLeft = 10;
+            
+            // Ambil data quiz
+            quizData = quizDatabase[currentCategory][currentLevel];
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+            
+            // Mulai timer
+            startTimer();
+        }
+
+        // Fungsi untuk memuat pertanyaan
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionElement.querySelector('h3').textContent = currentQuestion.question;
+            
+            optionsElement.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.textContent = option;
+                optionElement.addEventListener('click', function() {
+                    selectOption(optionElement, option);
+                });
+                optionsElement.appendChild(optionElement);
+            });
+            
+            // Nonaktifkan tombol ajukan jika ini pertanyaan terakhir
+            document.getElementById('submit-button').disabled = currentQuestionIndex === quizData.length - 1;
+        }
+
+        // Fungsi untuk memilih opsi
+        function selectOption(optionElement, selectedOption) {
+            // Hapus pilihan sebelumnya
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Tandai opsi yang dipilih
+            optionElement.classList.add('selected');
+            
+            // Aktifkan tombol ajukan
+            document.getElementById('submit-button').disabled = false;
+        }
+
+        // Fungsi untuk tombol sebelumnya
+        document.getElementById('prev-button').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        // Fungsi untuk tombol ajukan
+        document.getElementById('submit-button').addEventListener('click', function() {
+            const selectedOption = document.querySelector('.quiz-option.selected');
+            if (!selectedOption) return;
+            
+            const selectedAnswer = selectedOption.textContent;
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            if (selectedAnswer === currentQuestion.answer) {
+                score++;
+            }
+            
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        });
+
+        // Fungsi untuk timer
+        function startTimer() {
+            const timerElement = document.createElement('div');
+            timerElement.id = 'timer';
+            timerElement.style.textAlign = 'center';
+            timerElement.style.marginBottom = '20px';
+            timerElement.style.fontSize = '24px';
+            timerElement.textContent = `Waktu: ${timeLeft}s`;
+            
+            document.querySelector('.quiz-container').insertBefore(timerElement, document.getElementById('question'));
+            
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                timerElement.textContent = `Waktu: ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        // Fungsi untuk mengakhiri quiz
+        function endQuiz() {
+            clearInterval(timerInterval);
+            
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            
+            questionElement.querySelector('h3').textContent = `Quiz Selesai!`;
+            
+            optionsElement.innerHTML = '';
+            const scoreElement = document.createElement('div');
+            scoreElement.style.textAlign = 'center';
+            scoreElement.style.fontSize = '24px';
+            scoreElement.style.marginTop = '20px';
+            scoreElement.textContent = `Skor Anda: ${score} dari ${quizData.length} pertanyaan`;
+            
+            optionsElement.appendChild(scoreElement);
+            
+            document.getElementById('prev-button').disabled = true;
+            document.getElementById('submit-button').textContent = 'Ulangi';
+            document.getElementById('submit-button').onclick = function() {
+                startQuiz();
+            };
+        }
+    </script>
+</body>
+</html>
