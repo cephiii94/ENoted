@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game - Quiz</title>
+    <link rel="stylesheet" href="/game/quiz/assets/css/styles.css">
+    <link rel="stylesheet" href="/game/quiz/assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container quiz-mode">
+        <!-- Header -->
+        <header class="quiz-header">
+            <div class="quiz-info">
+                <div class="category-level" id="quizCategoryLevel">Category - Level 1</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="quizProgress"></div>
+                </div>
+            </div>
+            <div class="quiz-score">
+                <i class="fas fa-star"></i>
+                <span id="currentScore">0</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="quiz-content">
+            <div class="question-container">
+                <h2 class="question-text" id="questionText">Question text will appear here</h2>
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be dynamically added here via JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Result Modal -->
+        <div class="result-modal" id="resultModal">
+            <div class="result-content">
+                <h2 class="result-title">Quiz Completed!</h2>
+                <div class="result-score">
+                    <i class="fas fa-star"></i>
+                    <span id="finalScore">0</span>
+                </div>
+                <div class="reward-container">
+                    <div class="reward-coin">
+                        <i class="fas fa-coins"></i>
+                        <span id="coinReward">+50</span>
+                    </div>
+                    <div class="reward-xp">
+                        <i class="fas fa-bolt"></i>
+                        <span id="xpReward">+100 XP</span>
+                    </div>
+                </div>
+                <div class="result-buttons">
+                    <button id="restartQuizBtn" class="btn-restart">
+                        <i class="fas fa-redo"></i> Play Again
+                    </button>
+                    <button id="homeBtn" class="btn-home">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/game/quiz/assets/js/data.js"></script>
+    <script src="/game/quiz/assets/js/main.js"></script>
+    <script src="/game/quiz/assets/js/quiz.js"></script>
+</body>
+</html>

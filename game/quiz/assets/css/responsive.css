@@ -1,0 +1,140 @@
+/* Media Queries for Responsive Design */
+
+/* Small Devices (smartphones, 576px and down) */
+@media (max-width: 576px) {
+    .main-header {
+        padding: 10px;
+    }
+    
+    .profile-icon {
+        font-size: 1.8rem;
+    }
+    
+    .username {
+        font-size: 0.85rem;
+    }
+    
+    .level {
+        font-size: 0.75rem;
+    }
+    
+    .play-button {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+    }
+    
+    .nav-item i {
+        font-size: 1.2rem;
+    }
+    
+    .nav-item span {
+        font-size: 0.7rem;
+    }
+    
+    .categories-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .levels-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .question-text {
+        font-size: 1.1rem;
+    }
+    
+    .option-item {
+        padding: 12px;
+    }
+    
+    .result-content {
+        padding: 20px;
+    }
+    
+    .result-title {
+        font-size: 1.3rem;
+    }
+    
+    .result-score {
+        font-size: 2rem;
+    }
+    
+    .reward-coin, .reward-xp {
+        font-size: 1rem;
+    }
+    
+    .btn-restart, .btn-home {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Medium Devices (tablets, 768px and down) */
+@media (min-width: 577px) and (max-width: 768px) {
+    .categories-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .levels-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Large Devices (desktops, 992px and up) */
+@media (min-width: 769px) {
+    .container {
+        max-width: 768px;
+        margin: 0 auto;
+        border-left: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+    }
+    
+    .categories-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .levels-container {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Extra Large Devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 768px;
+    }
+}
+
+/* Landscape Mode Adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+    .main-content {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    .character-container {
+        margin-bottom: 0;
+        margin-right: 20px;
+    }
+    
+    .character {
+        max-height: 150px;
+    }
+    
+    .bottom-nav {
+        padding: 5px 0;
+    }
+    
+    .nav-item {
+        padding: 5px 10px;
+    }
+    
+    .nav-item i {
+        font-size: 1.1rem;
+        margin-bottom: 2px;
+    }
+    
+    .nav-item span {
+        font-size: 0.7rem;
+    }
+}

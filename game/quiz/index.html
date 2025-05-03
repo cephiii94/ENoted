@@ -1,73 +1,64 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Game</title>
-  
-  <!-- Font dari Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- CSS Tailwind (bisa juga menggunakan CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/game/quiz/assets/css/main.css">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
-  <!-- Tambahan konfigurasi Tailwind -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              200: '#ddd6fe',
-              300: '#c4b5fd',
-              400: '#a78bfa',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-              700: '#6d28d9',
-              800: '#5b21b6',
-              900: '#4c1d95',
-            },
-          },
-          fontFamily: {
-            sans: ['Nunito', 'sans-serif'],
-          },
-          animation: {
-            'bounce-slow': 'bounce 3s linear infinite',
-          }
-        }
-      }
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <link rel="stylesheet" href="/game/quiz/assets/css/styles.css">
+    <link rel="stylesheet" href="/game/quiz/assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <!-- Container utama untuk aplikasi React -->
-  <div id="root"></div>
-  
-  <!-- Script bundle React (dalam versi produksi sebenarnya akan menggunakan build) -->
-  <script type="module">
-    // Import React
-    import React from 'https://esm.sh/react@18.2.0';
-    import ReactDOM from 'https://esm.sh/react-dom@18.2.0';
-    
-    // Import komponen utama
-    import App from './game/quiz/assets/js/main.js';
-    
-    // Render aplikasi
-    ReactDOM.createRoot(document.getElementById('root')).render(
-      React.createElement(React.StrictMode, null, 
-        React.createElement(App)
-      )
-    );
-  </script>
+    <div class="container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="profile-container">
+                <div class="profile-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <p class="username">User123</p>
+                    <p class="level">Level 5</p>
+                </div>
+            </div>
+            <div class="coin-container">
+                <i class="fas fa-coins"></i>
+                <span class="coin-count">500</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="character-container">
+                <img src="/api/placeholder/200/300" alt="Game Character" class="character">
+            </div>
+            <button class="play-button" id="playButton">
+                <i class="fas fa-play"></i> PLAY
+            </button>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-box"></i>
+                <span>Inventory</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Shop</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Achievement</span>
+            </div>
+        </nav>
+    </div>
+
+    <script src="/game/quiz/assets/js/data.js"></script>
+    <script src="/game/quiz/assets/js/main.js"></script>
 </body>
 </html>
