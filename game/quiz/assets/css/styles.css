@@ -95,8 +95,11 @@ body {
 }
 
 .character-container {
+    display: flex;
     margin-bottom: 30px;
-    animation: float 3s ease-in-out infinite;
+    justify-content: center;
+    align-items: center;
+    animation: alternate float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -106,8 +109,16 @@ body {
 }
 
 .character {
-    max-width: 100%;
+    width: 200px; /* Ukuran default karakter */
     height: auto;
+    object-fit: contain; /* Pastikan gambar tidak terdistorsi */
+}
+
+/* Ukuran untuk layar kecil */
+@media (max-width: 576px) {
+    .character {
+        width: 200px;
+    }
 }
 
 .play-button {
