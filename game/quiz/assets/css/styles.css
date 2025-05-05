@@ -529,3 +529,326 @@ body {
 .btn-restart i, .btn-home i {
     margin-right: 5px;
 }
+
+/* Styles for Logout Button */
+.profile-container {
+    position: relative;
+}
+
+.logout-btn {
+    position: absolute;
+    top: 0;
+    right: -30px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Additional styles for login page */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-logo i {
+    font-size: 5rem;
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.login-title {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.login-button {
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #2980b9;
+}
+
+/* Styles untuk Profile Dropdown */
+.profile-container {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-dropdown {
+    position: absolute;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 180px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f7fa;
+}
+
+.dropdown-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdown-item i {
+    margin-right: 10px;
+    color: #3498db;
+    width: 20px;
+    text-align: center;
+}
+
+#logoutMenuItem i {
+    color: #e74c3c;
+}
+
+#resetMenuItem i {
+    color: #e67e22;
+}
+
+/* Styles untuk halaman profile */
+.profile-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.profile-header {
+    background-color: #f5f7fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar {
+    font-size: 3rem;
+    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.profile-details h2 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.profile-stats {
+    display: flex;
+    margin-top: 10px;
+}
+
+.stat-item {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.stat-item i {
+    margin-right: 5px;
+}
+
+.stat-item .coins {
+    color: #f39c12;
+}
+
+.stat-item .xp {
+    color: #9b59b6;
+}
+
+.profile-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h3 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.achievement-category {
+    margin-bottom: 20px;
+}
+
+.achievement-category h3 {
+    font-size: 1.1rem;
+    color: #3498db;
+    margin-bottom: 10px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.achievement-levels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.achievement-badge {
+    display: flex;
+    align-items: center;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    padding: 10px;
+    width: calc(50% - 8px);
+    transition: transform 0.2s;
+}
+
+.achievement-badge:hover {
+    transform: translateY(-3px);
+}
+
+.badge-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 12px;
+}
+
+.badge-info {
+    flex: 1;
+}
+
+.badge-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.badge-points {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+}
+
+.no-achievements {
+    text-align: center;
+    padding: 30px;
+    color: #7f8c8d;
+}
+
+.no-achievements i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #bdc3c7;
+}
+
+/* Responsif */
+@media (max-width: 576px) {
+    .achievement-badge {
+        width: 100%;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .profile-stats {
+        justify-content: center;
+    }
+}

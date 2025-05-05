@@ -1,15 +1,21 @@
+// Flag untuk mencegah redirect loops
+let redirectingToLogin = false;
+
 // Data untuk aplikasi Quiz
 
-// Data User
-const userData = {
-  username: "User123",
-  level: 5,
-  coins: 500,
-  xp: 1250,
+// Data User (Default, akan dioverride dari localStorage jika ada)
+let userData = {
+  username: "Guest",
+  level: 1,
+  coins: 100,
+  xp: 0,
+  // Menambahkan properti achievements untuk track pencapaian
+  achievements: [],
   completedLevels: {
-      "science": [1, 2],
-      "history": [1],
-      "geography": []
+      "science": [],
+      "history": [],
+      "geography": [],
+      "entertainment": []
   }
 };
 
@@ -43,6 +49,34 @@ const categoryData = [
       image: "/api/placeholder/400/200",
       totalLevels: 5
   }
+];
+
+// Data Achievement yang mungkin diraih
+const achievementsData = [
+    {
+        id: "first_quiz",
+        title: "Quiz Pertama",
+        description: "Menyelesaikan quiz pertama",
+        icon: "fas fa-star"
+    },
+    {
+        id: "level_master",
+        title: "Master Level",
+        description: "Menyelesaikan seluruh level pada satu kategori",
+        icon: "fas fa-crown"
+    },
+    {
+        id: "coin_collector",
+        title: "Kolektor Koin",
+        description: "Mengumpulkan 500 koin",
+        icon: "fas fa-coins"
+    },
+    {
+        id: "perfect_score",
+        title: "Nilai Sempurna",
+        description: "Mendapatkan nilai sempurna pada satu quiz",
+        icon: "fas fa-award"
+    }
 ];
 
 // Data Level dan Pertanyaan
@@ -260,6 +294,57 @@ function getQuestionsForLevel(categoryId, level) {
   return [];
 }
 
+// Fungsi untuk cek dan menambahkan achievement
+function checkAchievements() {
+  // Jika properti achievements belum ada, inisialisasi
+  if (!userData.achievements) {
+    userData.achievements = [];
+  }
+  
+  // Achievement: Quiz Pertama
+  const totalCompletedLevels = Object.values(userData.completedLevels)
+    .reduce((total, levels) => total + levels.length, 0);
+    
+  if (totalCompletedLevels > 0 && !hasAchievement('first_quiz')) {
+    addAchievement('first_quiz');
+  }
+  
+  // Achievement: Master Level (menyelesaikan semua level dalam satu kategori)
+  Object.keys(userData.completedLevels).forEach(categoryId => {
+    const category = categoryData.find(cat => cat.id === categoryId);
+    if (category && userData.completedLevels[categoryId].length >= category.totalLevels) {
+      if (!hasAchievement('level_master_' + categoryId)) {
+        addAchievement('level_master_' + categoryId, { categoryId: categoryId });
+      }
+    }
+  });
+  
+  // Achievement: Kolektor Koin
+  if (userData.coins >= 500 && !hasAchievement('coin_collector')) {
+    addAchievement('coin_collector');
+  }
+}
+
+// Fungsi untuk cek apakah user sudah memiliki achievement tertentu
+function hasAchievement(achievementId) {
+  return userData.achievements.some(achievement => achievement.id === achievementId);
+}
+
+// Fungsi untuk menambahkan achievement
+function addAchievement(achievementId, extraData = {}) {
+  const achievement = achievementsData.find(a => a.id === achievementId);
+  if (achievement) {
+    userData.achievements.push({
+      id: achievementId,
+      title: achievement.title,
+      description: achievement.description,
+      icon: achievement.icon,
+      dateEarned: new Date().toISOString(),
+      ...extraData
+    });
+  }
+}
+
 // Fungsi untuk menyimpan level yang sudah diselesaikan
 function completeLevel(categoryId, level, score) {
   if (!userData.completedLevels[categoryId]) {
@@ -280,6 +365,18 @@ function completeLevel(categoryId, level, score) {
   
   // Cek level up
   checkLevelUp();
+  
+  // Cek perfect score achievement
+  const questions = getQuestionsForLevel(categoryId, level);
+  const maxScore = questions.reduce((total, q) => total + q.points, 0);
+  if (score === maxScore) {
+    if (!hasAchievement('perfect_score')) {
+      addAchievement('perfect_score');
+    }
+  }
+  
+  // Cek achievement lainnya
+  checkAchievements();
   
   return {
       coinsEarned,
@@ -304,20 +401,90 @@ function saveGameData() {
 
 // Ambil data dari localStorage
 function loadGameData() {
+  // Mencegah redirect loop
+  if (redirectingToLogin) return;
+  
   const savedData = localStorage.getItem('quizUserData');
   if (savedData) {
+    try {
       const parsedData = JSON.parse(savedData);
-      userData.username = parsedData.username;
-      userData.level = parsedData.level;
-      userData.coins = parsedData.coins;
-      userData.xp = parsedData.xp;
-      userData.completedLevels = parsedData.completedLevels;
+      // Pastikan data valid sebelum digunakan
+      if (parsedData && parsedData.username && parsedData.username.trim() !== '') {
+        userData.username = parsedData.username;
+        userData.level = parsedData.level || 1;
+        userData.coins = parsedData.coins || 100;
+        userData.xp = parsedData.xp || 0;
+        userData.completedLevels = parsedData.completedLevels || {
+          "science": [],
+          "history": [],
+          "geography": [],
+          "entertainment": []
+        };
+        userData.achievements = parsedData.achievements || [];
+        
+        // Pastikan achievements dalam format yang benar
+        if (!Array.isArray(userData.achievements)) {
+          userData.achievements = [];
+        }
+      } else {
+        redirectToLogin();
+      }
+    } catch (error) {
+      console.error("Error parsing game data:", error);
+      redirectToLogin();
+    }
+  } else {
+    // Hanya redirect jika kita TIDAK berada di halaman login
+    if (!window.location.pathname.includes('login.html')) {
+      redirectToLogin();
+    }
   }
 }
 
-// Coba load data
+// Fungsi untuk logout
+function logoutUser() {
+  localStorage.removeItem('quizUserData');
+  redirectToLogin();
+}
+
+// Fungsi helper untuk redirect ke login
+function redirectToLogin() {
+  // Tandai bahwa kita sedang redirect ke login untuk mencegah loop
+  redirectingToLogin = true;
+  
+  // Hindari redirect jika sudah di halaman login
+  if (!window.location.pathname.includes('login.html')) {
+    window.location.href = 'login.html';
+  }
+}
+
+// Fungsi untuk reset data user
+function resetUserData() {
+  const username = userData.username;
+  
+  // Reset ke data awal tapi pertahankan username
+  userData = {
+    username: username,
+    level: 1,
+    coins: 100,
+    xp: 0,
+    achievements: [],
+    completedLevels: {
+      "science": [],
+      "history": [],
+      "geography": [],
+      "entertainment": []
+    }
+  };
+  
+  // Simpan data yang telah direset
+  saveGameData();
+}
+
+// Coba load data dengan penanganan error yang lebih baik
 try {
   loadGameData();
 } catch (error) {
   console.error("Error loading game data:", error);
+  // Jangan redirect di sini, biarkan loadGameData yang menangani
 }

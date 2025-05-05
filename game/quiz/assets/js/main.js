@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup event listeners berdasarkan halaman yang sedang dibuka
     setupPageEventListeners();
+    
+    // Setup profile dropdown menu
+    setupProfileDropdown();
 });
 
 // Update UI dengan data user
@@ -30,6 +33,72 @@ function updateUserUI() {
     
     coinElements.forEach(element => {
         element.textContent = userData.coins;
+    });
+}
+
+// Setup profile dropdown menu
+function setupProfileDropdown() {
+    const profileContainers = document.querySelectorAll('.profile-container');
+    
+    profileContainers.forEach(container => {
+        container.addEventListener('click', function(e) {
+            // Jika dropdown sudah ada dan terlihat, sembunyikan
+            const existingDropdown = document.querySelector('.profile-dropdown');
+            if (existingDropdown) {
+                existingDropdown.remove();
+                return;
+            }
+            
+            // Buat dropdown menu
+            const dropdown = document.createElement('div');
+            dropdown.className = 'profile-dropdown';
+            
+            dropdown.innerHTML = `
+                <div class="dropdown-item" id="profileMenuItem">
+                    <i class="fas fa-user"></i> Profil Saya
+                </div>
+                <div class="dropdown-item" id="logoutMenuItem">
+                    <i class="fas fa-sign-out-alt"></i> Keluar
+                </div>
+                <div class="dropdown-item" id="resetMenuItem">
+                    <i class="fas fa-trash"></i> Hapus Data
+                </div>
+            `;
+            
+            // Tambahkan ke body
+            document.body.appendChild(dropdown);
+            
+            // Posisikan dropdown di bawah profile container
+            const rect = container.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+            dropdown.style.left = (rect.left + window.scrollX) + 'px';
+            
+            // Tambahkan event listeners untuk menu items
+            document.getElementById('profileMenuItem').addEventListener('click', function() {
+                window.location.href = 'profile.html';
+            });
+            
+            document.getElementById('logoutMenuItem').addEventListener('click', function() {
+                if (confirm('Apakah Anda yakin ingin keluar?')) {
+                    logoutUser();
+                }
+            });
+            
+            document.getElementById('resetMenuItem').addEventListener('click', function() {
+                if (confirm('PERHATIAN: Ini akan menghapus semua progres Anda! Lanjutkan?')) {
+                    resetUserData();
+                    window.location.reload();
+                }
+            });
+            
+            // Tutup dropdown jika user klik di luar dropdown
+            document.addEventListener('click', function closeDropdown(event) {
+                if (!dropdown.contains(event.target) && !container.contains(event.target)) {
+                    dropdown.remove();
+                    document.removeEventListener('click', closeDropdown);
+                }
+            });
+        });
     });
 }
 
@@ -55,9 +124,161 @@ function setupPageEventListeners() {
     else if (filename === 'quiz.html') {
         // Quiz listeners akan di-setup di quiz.js
     }
+    // Halaman profile (profile.html)
+    else if (filename === 'profile.html') {
+        setupProfilePageListeners();
+    }
     
     // Setup navigation bar listeners untuk semua halaman
     setupNavBarListeners();
+}
+
+// Setup event listeners untuk halaman profile
+function setupProfilePageListeners() {
+    const backButton = document.getElementById('backToHome');
+    
+    if (backButton) {
+        backButton.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+    }
+    
+    // Update XP display
+    const xpCountElement = document.getElementById('xpCount');
+    if (xpCountElement) {
+        xpCountElement.textContent = userData.xp;
+    }
+    
+    // Render data achievement
+    renderAchievements();
+}
+
+// Render achievements di halaman profile
+function renderAchievements() {
+    const achievementsContainer = document.getElementById('achievementsContainer');
+    
+    if (!achievementsContainer) return;
+    
+    // Tampilkan achievements yang telah diraih jika ada
+    if (userData.achievements && userData.achievements.length > 0) {
+        let achievementsHTML = `
+            <div class="achievement-category">
+                <h3>Penghargaan Khusus</h3>
+                <div class="achievement-levels">
+        `;
+        
+        userData.achievements.forEach(achievement => {
+            const icon = achievement.icon || 'fas fa-award';
+            achievementsHTML += `
+                <div class="achievement-badge">
+                    <div class="badge-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="badge-info">
+                        <p class="badge-title">${achievement.title}</p>
+                        <p class="badge-points">${achievement.description}</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        achievementsHTML += `
+                </div>
+            </div>
+        `;
+        
+        // Tampilkan progress level setelah penghargaan khusus
+        const completedCategories = Object.keys(userData.completedLevels).filter(
+            cat => userData.completedLevels[cat].length > 0
+        );
+        
+        if (completedCategories.length > 0) {
+            completedCategories.forEach(categoryId => {
+                const category = categoryData.find(cat => cat.id === categoryId);
+                const completedLevels = userData.completedLevels[categoryId];
+                
+                if (category && completedLevels.length > 0) {
+                    achievementsHTML += `
+                        <div class="achievement-category">
+                            <h3>${category.title}</h3>
+                            <div class="achievement-levels">
+                    `;
+                    
+                    completedLevels.forEach(level => {
+                        achievementsHTML += `
+                            <div class="achievement-badge">
+                                <div class="badge-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="badge-info">
+                                    <p class="badge-title">Level ${level} Selesai</p>
+                                    <p class="badge-points">+${level * 10} Poin</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    achievementsHTML += `
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        achievementsContainer.innerHTML = achievementsHTML;
+    } else {
+        // Tampilkan level yang diselesaikan jika tidak ada achievement khusus
+        const completedCategories = Object.keys(userData.completedLevels).filter(
+            cat => userData.completedLevels[cat].length > 0
+        );
+        
+        if (completedCategories.length === 0) {
+            achievementsContainer.innerHTML = `
+                <div class="no-achievements">
+                    <i class="fas fa-trophy"></i>
+                    <p>Anda belum memiliki pencapaian. Mulailah bermain quiz untuk mendapatkan pencapaian!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let achievementsHTML = '';
+        
+        completedCategories.forEach(categoryId => {
+            const category = categoryData.find(cat => cat.id === categoryId);
+            const completedLevels = userData.completedLevels[categoryId];
+            
+            if (category && completedLevels.length > 0) {
+                achievementsHTML += `
+                    <div class="achievement-category">
+                        <h3>${category.title}</h3>
+                        <div class="achievement-levels">
+                `;
+                
+                completedLevels.forEach(level => {
+                    achievementsHTML += `
+                        <div class="achievement-badge">
+                            <div class="badge-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="badge-info">
+                                <p class="badge-title">Level ${level} Selesai</p>
+                                <p class="badge-points">+${level * 10} Poin</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                achievementsHTML += `
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        achievementsContainer.innerHTML = achievementsHTML;
+    }
 }
 
 // Setup event listeners untuk halaman utama
@@ -147,8 +368,7 @@ function setupNavBarListeners() {
                     alert('Fitur Shop akan segera hadir!');
                     break;
                 case 'achievement':
-                    // TODO: Implementasi halaman achievement
-                    alert('Fitur Achievement akan segera hadir!');
+                    window.location.href = 'profile.html';
                     break;
             }
         });
