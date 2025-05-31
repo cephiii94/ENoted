@@ -1,378 +1,622 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Chat Assistant - Modern Interface</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chat Assistant - Instagram Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  body { 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height untuk mobile */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            overflow: hidden;
+        }
 
-  .main-container {
-    text-align: center;
-    color: white;
-  }
+        .chat-container {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            max-width: 430px;
+        }
 
-  .title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  }
+        /* Desktop styling */
+        @media (min-width: 768px) {
+            .chat-container {
+                width: 400px;
+                height: 700px;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                overflow: hidden;
+            }
+        }
 
-  .subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-    font-weight: 300;
-  }
+        .chat-header {
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+            min-height: 60px;
+            /* Safe area untuk notch iPhone */
+            padding-top: max(12px, env(safe-area-inset-top));
+            z-index: 1000;
+        }
 
-  button.chat-button {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    color: white;
-    border: none;
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 auto;
-  }
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0; /* Prevent flex item overflow */
+        }
 
-  button.chat-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-  }
+        .back-arrow {
+            font-size: 24px;
+            margin-right: 12px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  button.chat-button:hover::before {
-    left: 100%;
-  }
+        .back-arrow:active {
+            background-color: rgba(255,255,255,0.2);
+        }
 
-  button.chat-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(238, 90, 36, 0.4);
-  }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
 
-  button.chat-button:active {
-    transform: translateY(0);
-  }
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
 
-  /* Modal styles */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
+        .chat-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-  .modal.show {
-    opacity: 1;
-  }
+        .chat-info .status {
+            font-size: 12px;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-  .modal-content {
-    position: relative;
-    width: min(450px, 90vw);
-    height: min(650px, 85vh);
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-    transform: scale(0.7);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
 
-  .modal.show .modal-content {
-    transform: scale(1);
-  }
+        .header-actions span {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  .modal-header {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+        .header-actions span:active {
+            background-color: rgba(255,255,255,0.2);
+        }
 
-  .modal-header h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+        .chat-body {
+            flex: 1;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
-  .close-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
+        .welcome-content {
+            max-width: 100%;
+            width: 100%;
+            max-width: 320px;
+        }
 
-  .close-btn:hover {
-    background: rgba(244, 67, 54, 0.8);
-    transform: rotate(90deg);
-  }
+        .ai-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            margin: 0 auto 24px;
+            animation: pulse 2s infinite;
+        }
 
-  .iframe-container {
-    height: calc(100% - 80px);
-    position: relative;
-    background: #f8f9fa;
-  }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-  .modal iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: white;
-  }
+        .welcome-content h2 {
+            font-size: 28px;
+            color: #262626;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
 
-  .loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    color: #667eea;
-  }
+        .welcome-content p {
+            font-size: 16px;
+            color: #8e8e8e;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            padding: 0 10px;
+        }
 
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #e3f2fd;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+        .start-chat-btn {
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(131, 58, 180, 0.3);
+            width: 100%;
+            max-width: 200px;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+        .start-chat-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 15px rgba(131, 58, 180, 0.4);
+        }
 
-  .pulse {
-    animation: pulse 2s infinite;
-  }
+        .chat-input-area {
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid #efefef;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            /* Safe area untuk home indicator */
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
 
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
+        .input-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            border-radius: 25px;
+            padding: 12px 16px;
+            min-height: 44px; /* Minimum touch target */
+        }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .title { font-size: 2rem; }
-    .subtitle { font-size: 1rem; }
-    
-    .modal-content {
-      width: 95vw;
-      height: 90vh;
-      border-radius: 15px;
-    }
-    
-    button.chat-button {
-      padding: 0.875rem 2rem;
-      font-size: 1rem;
-    }
-  }
+        .input-container input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 16px; /* Prevent zoom on iOS */
+            padding: 4px 0;
+            color: #262626;
+        }
 
-  /* Floating particles animation */
-  .particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1;
-  }
+        .input-container input::placeholder {
+            color: #8e8e8e;
+        }
 
-  .particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 50%;
-    animation: float 15s infinite linear;
-  }
+        .input-icons {
+            display: flex;
+            gap: 12px;
+            color: #8e8e8e;
+            font-size: 20px;
+            margin-left: 8px;
+        }
 
-  @keyframes float {
-    0% {
-      transform: translateY(100vh) rotate(0deg);
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100px) rotate(360deg);
-      opacity: 0;
-    }
-  }
-</style>
+        .input-icons span {
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .input-icons span:active {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Iframe container */
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Loading state */
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 16px;
+            color: #8e8e8e;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #efefef;
+            border-top: 3px solid #833ab4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile specific optimizations */
+        @media (max-width: 767px) {
+            .welcome-content h2 {
+                font-size: 24px;
+            }
+
+            .welcome-content p {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .ai-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 35px;
+                margin-bottom: 20px;
+            }
+
+            .start-chat-btn {
+                padding: 14px 32px;
+                font-size: 15px;
+            }
+
+            .chat-info h3 {
+                font-size: 15px;
+            }
+
+            .chat-info .status {
+                font-size: 11px;
+            }
+
+            .header-actions {
+                font-size: 18px;
+                gap: 4px;
+            }
+
+            .input-icons {
+                gap: 8px;
+                font-size: 18px;
+            }
+
+            /* Hide some input icons on very small screens */
+            .input-icons span:nth-child(3) {
+                display: none;
+            }
+        }
+
+        /* iPhone X and newer safe areas */
+        @media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3),
+               screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2),
+               screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3),
+               screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3),
+               screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) {
+            .chat-header {
+                padding-top: max(12px, 44px);
+            }
+            
+            .chat-input-area {
+                padding-bottom: max(12px, 34px);
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .welcome-content {
+                max-width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .ai-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+                margin-bottom: 16px;
+            }
+
+            .welcome-content h2 {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .welcome-content p {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+
+            .start-chat-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .chat-body {
+                background: #1a1a1a;
+            }
+
+            .welcome-content h2 {
+                color: #ffffff;
+            }
+
+            .welcome-content p {
+                color: #888888;
+            }
+
+            .input-container {
+                background: #2a2a2a;
+            }
+
+            .input-container input {
+                color: #ffffff;
+            }
+
+            .input-container input::placeholder {
+                color: #888888;
+            }
+
+            .chat-input-area {
+                background: #1a1a1a;
+                border-top-color: #333333;
+            }
+
+            .loading {
+                color: #888888;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="chat-container">
+        <!-- Header Instagram Style -->
+        <div class="chat-header">
+            <div class="header-left">
+                <span class="back-arrow">‹</span>
+                <div class="profile-pic">🤖</div>
+                <div class="chat-info">
+                    <h3>AI Assistant</h3>
+                    <div class="status">Online • Siap membantu</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span>📞</span>
+                <span>📹</span>
+                <span>ℹ️</span>
+            </div>
+        </div>
 
-<div class="particles"></div>
+        <!-- Chat Body -->
+        <div class="chat-body" id="chatBody">
+            <!-- Welcome Screen -->
+            <div class="welcome-content" id="welcomeContent">
+                <div class="ai-icon">🤖</div>
+                <h2>Chat Assistant</h2>
+                <p>Dapatkan bantuan instan dengan AI assistant kami. Mulai percakapan sekarang!</p>
+                <button class="start-chat-btn" onclick="startChat()">Mulai Chat</button>
+            </div>
 
-<div class="main-container">
-  <h1 class="title">Chat Assistant</h1>
-  <p class="subtitle">Dapatkan bantuan instan dengan AI assistant kami</p>
-  <button class="chat-button pulse" id="chatBtn">
-    <i class="fas fa-comments"></i>
-    Mulai Chat
-  </button>
-</div>
+            <!-- Loading State -->
+            <div class="loading" id="loadingState">
+                <div class="loading-spinner"></div>
+                Memuat chat...
+            </div>
 
-<div class="modal" id="chatModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-robot"></i>
-        AI Assistant
-      </h3>
-      <button class="close-btn" id="closeModal">
-        <i class="fas fa-times"></i>
-      </button>
+            <!-- Iframe Container -->
+            <div class="iframe-container" id="iframeContainer">
+                <!-- Iframe akan dimuat di sini setelah tombol diklik -->
+            </div>
+        </div>
+
+        <!-- Input Area Instagram Style -->
+        <div class="chat-input-area">
+            <div class="input-container">
+                <input type="text" placeholder="Tulis pesan..." id="messageInput" autocomplete="off">
+                <div class="input-icons">
+                    <span>😊</span>
+                    <span>📎</span>
+                    <span>📷</span>
+                </div>
+            </div>
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
     </div>
-    <div class="iframe-container">
-      <div class="loading" id="loadingIndicator">
-        <div class="spinner"></div>
-        <p>Memuat chat...</p>
-      </div>
-      <iframe src="" id="chatIframe" allowfullscreen style="display: none;"></iframe>
-    </div>
-  </div>
-</div>
 
-<script>
-  const chatBtn = document.getElementById('chatBtn');
-  const modal = document.getElementById('chatModal');
-  const closeModalBtn = document.getElementById('closeModal');
-  const chatIframe = document.getElementById('chatIframe');
-  const loadingIndicator = document.getElementById('loadingIndicator');
+    <script>
+        // Prevent zoom on double tap for iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            let now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
 
-  // Create floating particles
-  function createParticles() {
-    const particlesContainer = document.querySelector('.particles');
-    for (let i = 0; i < 50; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 15 + 's';
-      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-      particlesContainer.appendChild(particle);
-    }
-  }
+        // Handle viewport height changes on mobile
+        function setViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
 
-  chatBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-    setTimeout(() => {
-      modal.classList.add('show');
-    }, 10);
-    
-    // Show loading and set iframe source
-    loadingIndicator.style.display = 'flex';
-    chatIframe.style.display = 'none';
-    chatIframe.src = 'https://chat.powerai.id/c/33f96961-7b51-4409-beea-d1347537041f';
-  });
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+        setViewportHeight();
 
-  chatIframe.addEventListener('load', () => {
-    loadingIndicator.style.display = 'none';
-    chatIframe.style.display = 'block';
-  });
+        function startChat() {
+            // Sembunyikan welcome content
+            document.getElementById('welcomeContent').style.display = 'none';
+            
+            // Tampilkan loading
+            document.getElementById('loadingState').style.display = 'flex';
+            
+            // Simulasi loading kemudian tampilkan iframe
+            setTimeout(() => {
+                document.getElementById('loadingState').style.display = 'none';
+                
+                // Buat iframe dan masukkan ke container
+                const iframeContainer = document.getElementById('iframeContainer');
+                const iframe = document.createElement('iframe');
+                iframe.src = 'https://chat.powerai.id'; // Ganti dengan URL iframe Anda
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                
+                // Add allow attributes for iframe
+                iframe.setAttribute('allow', 'microphone; camera; geolocation');
+                iframe.setAttribute('loading', 'eager');
+                
+                iframeContainer.appendChild(iframe);
+                iframeContainer.style.display = 'block';
+                
+                // Update body untuk full iframe
+                document.getElementById('chatBody').style.padding = '0';
+            }, 2000);
+        }
 
-  function closeModal() {
-    modal.classList.remove('show');
-    setTimeout(() => {
-      modal.style.display = 'none';
-      chatIframe.src = '';
-      loadingIndicator.style.display = 'flex';
-      chatIframe.style.display = 'none';
-    }, 300);
-  }
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Jika iframe belum dimuat, mulai chat dulu
+                if (document.getElementById('welcomeContent').style.display !== 'none') {
+                    startChat();
+                }
+                
+                // Hapus focus dari input untuk menyembunyikan keyboard mobile
+                input.blur();
+                
+                // Kirim pesan ke iframe jika diperlukan
+                // Bisa menggunakan postMessage untuk komunikasi dengan iframe
+                
+                input.value = '';
+            }
+        }
 
-  closeModalBtn.addEventListener('click', closeModal);
+        // Event listener untuk Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      closeModal();
-    }
-  });
+        // Back button functionality
+        document.querySelector('.back-arrow').addEventListener('click', function() {
+            // Reset ke welcome screen
+            document.getElementById('iframeContainer').style.display = 'none';
+            document.getElementById('iframeContainer').innerHTML = '';
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('welcomeContent').style.display = 'block';
+            document.getElementById('chatBody').style.padding = '20px 16px';
+        });
 
-  // Keyboard support
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('show')) {
-      closeModal();
-    }
-  });
+        // Handle input focus untuk mobile keyboard
+        const messageInput = document.getElementById('messageInput');
+        
+        messageInput.addEventListener('focus', function() {
+            // Scroll ke input ketika keyboard muncul
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
 
-  // Initialize particles
-  createParticles();
-
-  // Add some interactive effects
-  document.addEventListener('mousemove', (e) => {
-    const mouseX = e.clientX / window.innerWidth;
-    const mouseY = e.clientY / window.innerHeight;
-    
-    document.body.style.background = `linear-gradient(135deg, 
-      hsl(${230 + mouseX * 20}, 70%, ${60 + mouseY * 10}%) 0%, 
-      hsl(${260 + mouseX * 20}, 60%, ${50 + mouseY * 10}%) 100%)`;
-  });
-</script>
-
+        // Prevent input zoom pada iOS
+        messageInput.addEventListener('touchstart', function(e) {
+            e.currentTarget.style.fontSize = '16px';
+        });
+    </script>
 </body>
 </html>
