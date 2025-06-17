@@ -1,7 +1,8 @@
 const CACHE_NAME = "enoted-cache-v1";
 const urlsToCache = [
+  "/index.html",
   "/blogpost/indexblogpost.html",
-  "/blogpost/style.css",       // ganti sesuai file CSS JS jika dipakai
+  "/blogpost/style.css",
   "/blogpost/script.js"
 ];
 
