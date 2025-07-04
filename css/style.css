@@ -312,7 +312,7 @@
     padding: 0px 0;
     margin-bottom: 5px;
     /* Sembunyikan semua artikel awalnya, tetapi akan ditampilkan oleh JS saat halaman dimuat */
-    display: none;
+    display: block;
     transition: all 0.3s ease; /* Tambahkan animasi transisi saat tampil/sembunyi */
   }
   
