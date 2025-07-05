@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Feeding Tracker</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            background-color: #f4f7f6; /* Light gray background */
+            color: #333; /* Dark gray text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Full viewport height */
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        /* Hide scrollbar for a cleaner look, but allow scrolling */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Container for the entire app */
+        .container {
+            background-color: #ffffff; /* White background for the card */
+            padding: 25px; /* Padding for content inside the container */
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            width: 100%;
+            max-width: 480px; /* Max width for desktop view */
+            border: 1px solid #e0e0e0; /* Light border */
+        }
+
+        /* Heading styles */
+        h1 {
+            font-size: 2.25rem; /* Large font size for main title */
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2563eb; /* Blue color for title */
+        }
+
+        /* Message Box Styles */
+        .message-box {
+            background-color: #e0f2fe; /* Light blue background */
+            color: #0c4a6e; /* Darker blue text */
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+        }
+        .message-box.success {
+            background-color: #dcfce7; /* Light green */
+            color: #166534; /* Dark green */
+        }
+        .message-box.error {
+            background-color: #fee2e2; /* Light red */
+            color: #991b1b; /* Dark red */
+        }
+        .message-box.info {
+            background-color: #e0f2fe; /* Light blue */
+            color: #0c4a6e; /* Dark blue */
+        }
+
+
+        /* Button container */
+        .button-group {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically */
+            gap: 16px; /* Space between buttons */
+            margin-bottom: 25px;
+        }
+
+        /* Button styles */
+        .app-button {
+            background-color: #10b981; /* Green for record button */
+            color: white;
+            font-weight: 600; /* Semi-bold */
+            padding: 14px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        }
+
+        .app-button:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Specific button color for reminder */
+        #checkReminderBtn {
+            background-color: #3b82f6; /* Blue for reminder button */
+        }
+
+        #checkReminderBtn:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+
+        /* Section styles (Reminder and History) */
+        .section-card {
+            background-color: #f0f9ff; /* Very light blue for reminder section */
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #bfdbfe; /* Light blue border */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            margin-bottom: 20px; /* Space between sections */
+        }
+
+        /* Specific background for history section */
+        .history-section {
+            background-color: #f5f3ff; /* Very light purple for history section */
+            border: 1px solid #ddd6fe; /* Light purple border */
+        }
+
+        /* Section heading styles */
+        .section-card h2 {
+            font-size: 1.25rem; /* Medium font size for section titles */
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2563eb; /* Blue for reminder section title */
+        }
+
+        .history-section h2 {
+            color: #9333ea; /* Purple for history section title */
+        }
+
+        /* Paragraph styles within sections */
+        .section-card p {
+            margin-bottom: 8px;
+            color: #4b5563; /* Gray text */
+        }
+
+        /* Highlighted text for times */
+        .section-card span {
+            font-weight: 500; /* Medium font weight */
+            color: #3b82f6; /* Blue for time values */
+        }
+
+        /* Specific style for time until next feeding */
+        #timeUntilNext {
+            font-weight: bold;
+            font-size: 1.125rem; /* Slightly larger font */
+            color: #2563eb; /* Default blue color */
+        }
+
+        #timeUntilNext.overdue {
+            color: #ef4444; /* Red color if overdue */
+        }
+
+        /* History List styles */
+        .history-list {
+            list-style-type: none; /* Remove bullet points */
+            padding: 0;
+            margin: 0;
+            max-height: 200px; /* Max height for scrollable history */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 8px; /* Space for scrollbar */
+        }
+
+        .history-list li {
+            background-color: #ffffff; /* White background for list items */
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow for list items */
+            border: 1px solid #f3f4f6; /* Light border */
+            margin-bottom: 8px; /* Space between list items */
+            display: flex;
+            flex-direction: column; /* Stack time and buttons vertically on small screens */
+            align-items: flex-start; /* Align items to the start */
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+
+        .history-list li .feeding-info {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .history-list li .feeding-info span {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .history-list li:last-child {
+            margin-bottom: 0; /* No bottom margin for the last item */
+        }
+
+        .history-list li.empty-message {
+            text-align: center;
+            font-style: italic;
+            color: #6b7280;
+            background-color: transparent;
+            box-shadow: none;
+            border: none;
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 8px; /* Space between edit/delete buttons */
+            width: 100%; /* Take full width */
+            justify-content: flex-end; /* Align buttons to the right */
+        }
+
+        .history-item-actions button {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .history-item-actions .edit-btn {
+            background-color: #facc15; /* Yellow for edit */
+            color: #333;
+        }
+        .history-item-actions .edit-btn:hover {
+            background-color: #eab308;
+        }
+
+        .history-item-actions .delete-btn {
+            background-color: #ef4444; /* Red for delete */
+            color: white;
+        }
+        .history-item-actions .delete-btn:hover {
+            background-color: #dc2626;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; /* Ensure modal is on top */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+        .modal-buttons .confirm-btn {
+            background-color: #ef4444; /* Red for confirm delete */
+            color: white;
+        }
+        .modal-buttons .confirm-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .modal-buttons .cancel-btn {
+            background-color: #e0e0e0; /* Gray for cancel */
+            color: #333;
+        }
+        .modal-buttons .cancel-btn:hover {
+            background-color: #c0c0c0;
+        }
+
+        /* Modal Input Styles (for both record and edit modals) */
+        .modal-input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .modal-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .modal-input-group input[type="datetime-local"],
+        .modal-input-group input[type="number"],
+        .modal-input-group select {
+            width: calc(100% - 22px); /* Full width minus padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Include padding and border in width */
+        }
+
+        .modal-input-group input:focus,
+        .modal-input-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+                border-radius: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+
+            .app-button {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+
+            .section-card {
+                padding: 18px;
+            }
+
+            .section-card h2 {
+                font-size: 1.1rem;
+            }
+
+            #timeUntilNext {
+                font-size: 1rem;
+            }
+
+            .history-list {
+                max-height: 180px;
+            }
+
+            .history-list li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .history-item-actions {
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .modal-content h3 {
+                font-size: 1.3rem;
+            }
+
+            .modal-buttons button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                padding: 15px;
+                border-radius: 8px;
+            }
+            h1 {
+                font-size: 1.75rem;
+                margin-bottom: 15px;
+            }
+            .app-button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .section-card {
+                padding: 15px;
+            }
+            .section-card h2 {
+                font-size: 1rem;
+            }
+            #timeUntilNext {
+                font-size: 0.95rem;
+            }
+            .history-list {
+                max-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter">
+
+    <div class="container">
+        <h1>👶 Pencatat Susu Bayi</h1>
+
+        <!-- Message Display Area -->
+        <div id="messageBox" class="message-box">
+            <!-- Messages will be displayed here -->
+        </div>
+
+        <div class="button-group">
+            <button id="recordFeedingBtn" class="app-button">
+                🍼 Catat Pemberian Susu Sekarang
+            </button>
+            <button id="checkReminderBtn" class="app-button">
+                ⏰ Cek Pengingat Berikutnya
+            </button>
+        </div>
+
+        <div class="space-y-5">
+            <!-- Reminder Section -->
+            <div class="section-card">
+                <h2>Informasi Pemberian Susu</h2>
+                <p>
+                    Terakhir: <span id="lastFeedingTime">Belum ada data</span>
+                </p>
+                <p>
+                    Berikutnya (estimasi): <span id="nextFeedingDue">Belum ada data</span>
+                </p>
+                <p id="timeUntilNext">
+                    Catat pemberian susu pertama untuk melihat pengingat.
+                </p>
+            </div>
+
+            <!-- History Section -->
+            <div class="section-card history-section">
+                <h2>Riwayat Pemberian Susu</h2>
+                <ul id="feedingHistoryList" class="history-list">
+                    <!-- Feeding records will be loaded here by JavaScript -->
+                    <li class="empty-message">Riwayat akan muncul di sini.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="confirmModalTitle">Konfirmasi</h3>
+            <p id="confirmModalMessage">Apakah Anda yakin?</p>
+            <div class="modal-buttons">
+                <button id="confirmModalConfirmBtn" class="confirm-btn">Ya</button>
+                <button id="confirmModalCancelBtn" class="cancel-btn">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record New Feeding Modal -->
+    <div id="recordFeedingModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Catat Pemberian Susu</h3>
+            <p>Waktu saat ini akan otomatis dicatat.</p>
+            <div class="modal-input-group">
+                <label for="recordAmountInput">Jumlah (ml):</label>
+                <input type="number" id="recordAmountInput" min="10" step="5" value="100">
+            </div>
+            <div class="modal-input-group">
+                <label for="recordTypeSelect">Jenis Susu:</label>
+                <select id="recordTypeSelect">
+                    <option value="ASI">ASI</option>
+                    <option value="Sufor">Sufor</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="recordModalSaveBtn" class="app-button">Simpan</button>
+                <button id="recordModalCancelBtn" class="cancel-btn">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Feeding Modal -->
+    <div id="editModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Edit Waktu Pemberian Susu</h3>
+            <div class="modal-input-group">
+                <label for="editTimeInput">Waktu:</label>
+                <input type="datetime-local" id="editTimeInput">
+            </div>
+            <div class="modal-input-group">
+                <label for="editAmountInput">Jumlah (ml):</label>
+                <input type="number" id="editAmountInput" min="10" step="5">
+            </div>
+            <div class="modal-input-group">
+                <label for="editTypeSelect">Jenis Susu:</label>
+                <select id="editTypeSelect">
+                    <option value="ASI">ASI</option>
+                    <option value="Sufor">Sufor</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="editModalSaveBtn" class="app-button">Simpan</button>
+                <button id="editModalCancelBtn" class="cancel-btn">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Aplikasi
+        const FEEDING_INTERVAL_HOURS = 3; // Interval default for reminders (in hours)
+        const LOCAL_STORAGE_KEY = 'babyFeedings'; // Key for localStorage
+        let reminderInterval; // Variable to store the reminder interval ID
+
+        // Get references to HTML elements
+        const recordFeedingBtn = document.getElementById('recordFeedingBtn');
+        const checkReminderBtn = document.getElementById('checkReminderBtn');
+        const lastFeedingTimeSpan = document.getElementById('lastFeedingTime');
+        const nextFeedingDueSpan = document.getElementById('nextFeedingDue');
+        const timeUntilNextP = document.getElementById('timeUntilNext');
+        const feedingHistoryList = document.getElementById('feedingHistoryList');
+        const messageBox = document.getElementById('messageBox');
+
+        // Modal Elements
+        const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+        const confirmModalTitle = document.getElementById('confirmModalTitle');
+        const confirmModalMessage = document.getElementById('confirmModalMessage');
+        const confirmModalConfirmBtn = document.getElementById('confirmModalConfirmBtn');
+        const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
+
+        // Record Feeding Modal Elements
+        const recordFeedingModalOverlay = document.getElementById('recordFeedingModalOverlay');
+        const recordAmountInput = document.getElementById('recordAmountInput');
+        const recordTypeSelect = document.getElementById('recordTypeSelect');
+        const recordModalSaveBtn = document.getElementById('recordModalSaveBtn');
+        const recordModalCancelBtn = document.getElementById('recordModalCancelBtn');
+
+        // Edit Feeding Modal Elements
+        const editModalOverlay = document.getElementById('editModalOverlay');
+        const editTimeInput = document.getElementById('editTimeInput');
+        const editAmountInput = document.getElementById('editAmountInput');
+        const editTypeSelect = document.getElementById('editTypeSelect');
+        const editModalSaveBtn = document.getElementById('editModalSaveBtn');
+        const editModalCancelBtn = document.getElementById('editModalCancelBtn');
+
+        let currentEditIndex = -1; // Stores the index of the item currently being edited
+
+        // --- Utility Functions for Messages ---
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.classList.remove('success', 'error', 'info');
+            messageBox.classList.add(type);
+            messageBox.style.display = 'block';
+
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // --- Custom Modal Functions ---
+        function showConfirmModal(message, onConfirmCallback) {
+            confirmModalMessage.textContent = message;
+            confirmModalOverlay.classList.add('active');
+
+            const handleConfirm = () => {
+                onConfirmCallback();
+                confirmModalOverlay.classList.remove('active');
+                confirmModalConfirmBtn.removeEventListener('click', handleConfirm);
+                confirmModalCancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            const handleCancel = () => {
+                confirmModalOverlay.classList.remove('active');
+                confirmModalConfirmBtn.removeEventListener('click', handleConfirm);
+                confirmModalCancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            confirmModalConfirmBtn.addEventListener('click', handleConfirm);
+            confirmModalCancelBtn.addEventListener('click', handleCancel);
+        }
+
+        // Function to format a Date object to 'YYYY-MM-DDTHH:MM' for datetime-local input
+        function formatDateToLocalDatetimeInput(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Function to show the new record modal
+        function showRecordFeedingModal() {
+            recordAmountInput.value = 100; // Default amount
+            recordTypeSelect.value = 'ASI'; // Default type
+
+            recordFeedingModalOverlay.classList.add('active');
+
+            const handleSave = () => {
+                const amount = parseInt(recordAmountInput.value);
+                const type = recordTypeSelect.value;
+
+                if (isNaN(amount) || amount <= 0 || !type) {
+                    showMessage("Mohon lengkapi jumlah dan jenis susu.", "error");
+                    return;
+                }
+
+                // Get current time directly
+                const now = new Date();
+
+                const newFeeding = { time: now.toISOString(), amount: amount, type: type };
+                let feedings = loadFeedings();
+                feedings.push(newFeeding);
+                feedings.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+                saveFeedings(feedings);
+                updateUI();
+                showMessage(`Pemberian susu (${amount}ml ${type}) dicatat pada: ${now.toLocaleString('id-ID')}`, 'success');
+                recordFeedingModalOverlay.classList.remove('active');
+                removeRecordModalListeners();
+            };
+
+            const handleCancel = () => {
+                recordFeedingModalOverlay.classList.remove('active');
+                removeRecordModalListeners();
+            };
+
+            recordModalSaveBtn.addEventListener('click', handleSave);
+            recordModalCancelBtn.addEventListener('click', handleCancel);
+
+            function removeRecordModalListeners() {
+                recordModalSaveBtn.removeEventListener('click', handleSave);
+                recordModalCancelBtn.removeEventListener('click', handleCancel);
+            }
+        }
+
+        // Function to show the edit modal
+        function showEditModal(feedingData, onSaveCallback) {
+            // Use the new helper function to format the date correctly for local timezone display
+            editTimeInput.value = formatDateToLocalDatetimeInput(new Date(feedingData.time));
+            editAmountInput.value = feedingData.amount;
+            editTypeSelect.value = feedingData.type;
+
+            editModalOverlay.classList.add('active');
+
+            const handleSave = () => {
+                const newTime = editTimeInput.value;
+                const newAmount = parseInt(editAmountInput.value);
+                const newType = editTypeSelect.value;
+
+                if (!newTime || isNaN(newAmount) || newAmount <= 0 || !newType) {
+                    showMessage("Mohon lengkapi semua data (waktu, jumlah, jenis susu).", "error");
+                    return;
+                }
+
+                // When saving, convert the datetime-local input value back to ISO string
+                const newDate = new Date(newTime);
+                if (isNaN(newDate.getTime())) {
+                    showMessage("Format waktu tidak valid.", "error");
+                    return;
+                }
+
+                onSaveCallback({ time: newDate.toISOString(), amount: newAmount, type: newType });
+                editModalOverlay.classList.remove('active');
+                removeEditModalListeners();
+            };
+
+            const handleCancel = () => {
+                editModalOverlay.classList.remove('active');
+                removeEditModalListeners();
+            };
+
+            editModalSaveBtn.addEventListener('click', handleSave);
+            editModalCancelBtn.addEventListener('click', handleCancel);
+
+            function removeEditModalListeners() {
+                editModalSaveBtn.removeEventListener('click', handleSave);
+                editModalCancelBtn.removeEventListener('click', handleCancel);
+            }
+        }
+
+        // --- Data Functions (using LocalStorage) ---
+        function loadFeedings() {
+            try {
+                const feedingsJson = localStorage.getItem(LOCAL_STORAGE_KEY);
+                return feedingsJson ? JSON.parse(feedingsJson).map(item => ({
+                    time: item.time, // Keep as ISO string for storage
+                    amount: item.amount,
+                    type: item.type
+                })) : [];
+            } catch (e) {
+                console.error("Error loading feedings from localStorage:", e);
+                showMessage("Terjadi kesalahan saat memuat data.", "error");
+                return [];
+            }
+        }
+
+        function saveFeedings(feedings) {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(feedings));
+            } catch (e) {
+                console.error("Error saving feedings to localStorage:", e);
+                showMessage("Terjadi kesalahan saat menyimpan data.", "error");
+            }
+        }
+
+        // --- Application Functionality ---
+        function recordNewFeeding() {
+            showRecordFeedingModal();
+        }
+
+        function deleteFeeding(indexToDelete) {
+            showConfirmModal("Apakah Anda yakin ingin menghapus catatan ini?", () => {
+                let feedings = loadFeedings();
+                if (indexToDelete >= 0 && indexToDelete < feedings.length) {
+                    const deletedItem = feedings[indexToDelete];
+                    const deletedTime = new Date(deletedItem.time).toLocaleString('id-ID');
+                    feedings.splice(indexToDelete, 1);
+                    saveFeedings(feedings);
+                    updateUI();
+                    showMessage(`Catatan pemberian susu pada ${deletedTime} (${deletedItem.amount}ml ${deletedItem.type}) berhasil dihapus.`, 'info');
+                } else {
+                    showMessage("Indeks catatan tidak valid.", "error");
+                }
+            });
+        }
+
+        function editFeeding(indexToEdit) {
+            let feedings = loadFeedings();
+            if (indexToEdit >= 0 && indexToEdit < feedings.length) {
+                currentEditIndex = indexToEdit;
+                const currentFeedingData = feedings[indexToEdit];
+
+                showEditModal(currentFeedingData, (updatedData) => {
+                    feedings[currentEditIndex] = updatedData;
+                    feedings.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+                    saveFeedings(feedings);
+                    updateUI();
+                    showMessage(`Catatan pemberian susu berhasil diperbarui.`, 'success');
+                    currentEditIndex = -1;
+                });
+            } else {
+                showMessage("Indeks catatan tidak valid untuk diedit.", "error");
+            }
+        }
+
+        function displayFeedings() {
+            const feedings = loadFeedings();
+            feedingHistoryList.innerHTML = '';
+
+            if (feedings.length === 0) {
+                const listItem = document.createElement('li');
+                listItem.className = 'empty-message';
+                listItem.textContent = 'Belum ada riwayat pemberian susu.';
+                feedingHistoryList.appendChild(listItem);
+                return;
+            }
+
+            // Display history from newest to oldest
+            feedings.slice().reverse().forEach((feeding, originalIndex) => {
+                // Find the original index of this feeding in the *sorted* array
+                const actualIndex = feedings.findIndex(f => f.time === feeding.time);
+
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <div class="feeding-info">
+                        <span>Waktu: ${new Date(feeding.time).toLocaleString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                        <span>Jumlah: ${feeding.amount} ml</span>
+                        <span>Jenis: ${feeding.type}</span>
+                    </div>
+                    <div class="history-item-actions">
+                        <button class="edit-btn" data-index="${actualIndex}">Edit</button>
+                        <button class="delete-btn" data-index="${actualIndex}">Hapus</button>
+                    </div>
+                `;
+                feedingHistoryList.appendChild(listItem);
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const index = parseInt(event.target.dataset.index);
+                    deleteFeeding(index);
+                });
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const index = parseInt(event.target.dataset.index);
+                    editFeeding(index);
+                });
+            });
+        }
+
+        function displayReminder() {
+            const feedings = loadFeedings();
+            if (feedings.length === 0) {
+                lastFeedingTimeSpan.textContent = 'Belum ada data';
+                nextFeedingDueSpan.textContent = 'Belum ada data';
+                timeUntilNextP.textContent = 'Catat pemberian susu pertama untuk melihat pengingat.';
+                timeUntilNextP.classList.remove('overdue');
+                return;
+            }
+
+            const lastFeeding = new Date(feedings[feedings.length - 1].time); // Convert ISO string to Date object
+            const nextFeedingDue = new Date(lastFeeding.getTime() + FEEDING_INTERVAL_HOURS * 60 * 60 * 1000);
+            const now = new Date();
+
+            lastFeedingTimeSpan.textContent = lastFeeding.toLocaleString('id-ID');
+            nextFeedingDueSpan.textContent = nextFeedingDue.toLocaleString('id-ID');
+
+            if (now < nextFeedingDue) {
+                const timeLeftMs = nextFeedingDue.getTime() - now.getTime();
+                const hours = Math.floor(timeLeftMs / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeftMs % (1000 * 60)) / 1000);
+                timeUntilNextP.textContent = `Sisa waktu: ${hours} jam, ${minutes} menit, ${seconds} detik lagi.`;
+                timeUntilNextP.classList.remove('overdue');
+            } else {
+                timeUntilNextP.textContent = "Waktunya memberi susu bayi! Sudah melewati estimasi.";
+                timeUntilNextP.classList.add('overdue');
+            }
+        }
+
+        // Function to update the entire UI
+        function updateUI() {
+            displayFeedings();
+            displayReminder();
+        }
+
+        // --- Event Listeners ---
+        recordFeedingBtn.addEventListener('click', recordNewFeeding);
+        // checkReminderBtn.addEventListener('click', displayReminder); // Not strictly needed as it updates automatically
+
+        // --- Initialization when page is loaded ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            // Set interval to update reminder every second
+            reminderInterval = setInterval(displayReminder, 1000);
+        });
+
+        // Clear interval when page is closed (optional, for resource cleanup)
+        window.addEventListener('beforeunload', () => {
+            clearInterval(reminderInterval);
+        });
+    </script>
+</body>
+</html>
