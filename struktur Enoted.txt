@@ -1,0 +1,64 @@
+struktur Enoted
+
+old-Enoted/
+|--- css/ (berisi style web)
+|	|__ style.css
+|
+|--- js/ 
+|	|__ articleDatas.js (logika menampilkan judul dan isi postingan di halaman Utama)
+|	|__ auth.js 
+|	|__ bg-waktu.js (logika background waktu)
+|	|__ filter.js (logika filter)
+|	|__ popup-category.js (logika popup kategori)
+|	|__ script.js (logika fungsi global)
+|
+|--- kategori/ (berisi postingan perkategori)
+|	|__ belajar-koding/ (berisi postingan dengan kategori belajar koding)
+|	|__ islam/ (berisi postingan dengan kategori islam)
+|	|__ tutorial/ (berisi postingan dengan kategori tutorial)
+|
+|--- index.html (halaman utama)
+|--- manifest.json (manifest web)
+|--- robots.txt (robots.txt)
+|--- service-worker.js (service worker)
+|--- sitemap.xml (sitemap)
+
+
+-----------------------------------------------------------------------
+
+
+Enoted/
+|--- css/
+|	|__ style.css          (Dimodifikasi & diperbaiki untuk tata letak)
+|
+|--- js/
+|	|__ admin/
+|	|	|__ dashboard-logic.js (BARU: Logika untuk dashboard admin)
+|	|	|__ create-post-logic.js (Dimodifikasi: Mengelola buat & edit post)
+|	|
+|	|__ auth.js              (Dimodifikasi: Untuk autentikasi admin)
+|	|__ firestore.js         (Dimodifikasi: Koneksi ke Firebase & ekspor Auth)
+|	|__ main-page.js         (Dimodifikasi: Mengambil & menampilkan post)
+|	|__ post-page.js         (BARU: Mengambil & menampilkan post tunggal)
+|	|__ script.js            (Dimodifikasi: Memperbaiki fungsi klik post)
+|	|__ popup-category.js    (Tidak digunakan lagi, bisa dihapus)
+|	|__ articlesData.js      (Tidak digunakan lagi, bisa dihapus)
+|	|__ bg-waktu.js          (Tetap sama)
+|
+|--- admin/
+|	|__ login.html           (BARU: Halaman login admin)
+|	|__ dashboard.html       (BARU: Halaman daftar post admin)
+|	|__ create-post.html     (Dimodifikasi: Halaman buat & edit post)
+|	|__ style.css            (style untuk create-post)
+|
+|--- kategori/              (HAPUS: Folder ini tidak diperlukan lagi)
+|
+|--- img/
+|	|__ ...
+|
+|--- index.html             (Dimodifikasi: Menampilkan post dinamis)
+|--- post-template.html     (BARU: Template untuk post tunggal)
+|--- service-worker.js      (Dimodifikasi & diperbaiki)
+|--- manifest.json          (Tetap sama)
+|--- robots.txt             (Tetap sama)
+|--- sitemap.xml            (Tetap sama, perlu diperbarui)

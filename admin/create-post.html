@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENoted - Buat Postingan</title>
+    <link rel="stylesheet" href="/admin/Style.css"> 
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+</head>
+
+<body>
+    <div class="generator-container">
+        <h1>ENoted - New Post</h1>
+        
+        <form id="createPostForm">
+            <div class="form-group">
+                <label for="postTitle">Judul Postingan:</label>
+                <input type="text" id="postTitle" name="postTitle" required placeholder="Contoh: Membuat AI Sendiri" aria-label="Judul Postingan">
+            </div>
+
+            <div class="form-group">
+                <label for="postCategory">Kategori:</label>
+                <input type="text" id="postCategory" name="postCategory" required placeholder="Contoh: Belajar Koding" aria-label="Kategori">
+            </div>
+
+            <div class="form-group">
+                <label for="postContent">Isi Konten:</label>
+                <div class="format-guide">
+                    <details>
+                        <summary>Panduan Format</summary>
+                        <div class="format-examples">
+                            <p><strong>Judul:</strong> # Judul atau ## Subjudul</p>
+                            <p><strong>Bold:</strong> **teks bold**</p>
+                            <p><strong>Italic:</strong> *teks italic*</p>
+                            <p><strong>Underline:</strong> __teks underline__</p>
+                            <p><strong>Daftar Berurut:</strong> 1. Item satu</p>
+                            <p><strong>Daftar Tak Berurut:</strong> - Item satu</p>
+                            <p><strong>Kutipan:</strong> > Teks kutipan</p>
+                            <p><strong>Kode:</strong> `kode inline` atau blok kode dengan ```</p>
+                            <p><strong>Link:</strong> [teks link](https://example.com)</p>
+                            <p><strong>Gambar:</strong> ![alt text](https://example.com/image.jpg)</p>
+                        </div>
+                    </details>
+                </div>
+                <textarea id="postContent" name="postContent" required rows="10" placeholder="Tulis konten postingan Anda di sini..." aria-label="Isi Konten"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="postDescription">Deskripsi Singkat (untuk SEO):</label>
+                <textarea id="postDescription" name="postDescription" required rows="3" placeholder="Deskripsi yang akan muncul di hasil pencarian" aria-label="Deskripsi Singkat"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="postKeywords">Kata Kunci (pisahkan dengan koma):</label>
+                <input type="text" id="postKeywords" name="postKeywords" required placeholder="Contoh: tips & trik, manfaat, teknologi" aria-label="Kata Kunci">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-generate">Terbitkan Postingan</button>
+                <button type="reset" class="btn-reset">Reset Form</button>
+            </div>
+        </form>
+        <div id="responseMessage" class="response-message"></div>
+    </div>
+    
+    <script type="module" src="/js/firestore.js"></script>
+    <script type="module" src="/js/admin/create-post-logic.js"></script>
+</body>
+</html>

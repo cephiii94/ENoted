@@ -1,0 +1,463 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--color-background);
+    background-image: url("/img/bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: block;
+    height: auto;
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+}
+
+/* Container Styles */
+.generator-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+#htmlForm {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Button Styles */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-generate, .btn-reset {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-generate {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-generate:hover {
+    background-color: #2980b9;
+}
+
+.btn-reset {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-reset:hover {
+    background-color: #c0392b;
+}
+
+/* Preview Styles */
+.preview-container {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 4px;
+    background: #fff;
+    margin-top: 20px;
+    position: relative;
+}
+
+.preview-container h1 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.preview-container .post-meta {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.preview-container .post-content {
+    line-height: 1.8;
+}
+
+.preview-container .post-content p {
+    margin-bottom: 15px;
+}
+
+/* Format Guide Styles */
+.format-guide {
+    margin-bottom: 10px;
+    font-size: 14px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.format-guide summary {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #3498db;
+    font-weight: 600;
+}
+
+.format-examples {
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.format-examples p {
+    margin: 5px 0;
+}
+
+/* Download Button */
+.download-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.download-btn:hover {
+    background-color: #27ae60;
+}
+
+/* Share Button and Menu */
+.share-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.share-menu {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.share-menu.active {
+    display: block;
+}
+
+.share-menu a {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: #3498db;
+}
+
+.share-menu a:hover {
+    background-color: #f5f5f5;
+}
+
+/* Back Button */
+.back-btn {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+.back-btn:hover {
+    background-color: #7f8c8d;
+}
+
+/* Error Message */
+.error-message {
+    color: #e74c3c;
+    background-color: #fadbd8;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    display: none;
+}
+
+.error-message.active {
+    display: block;
+}
+
+/* Content Styling */
+blockquote {
+    border-left: 4px solid #ccc;
+    padding-left: 15px;
+    color: #555;
+    margin: 15px 0;
+    font-style: italic;
+}
+
+code {
+    background: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+pre {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+.post-content h1, .post-content h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.post-content ul, .post-content ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .generator-container {
+        padding: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-generate, .btn-reset {
+        width: 100%;
+    }
+}
+
+/* Style untuk preview isi dalam bentuk kode */
+.preview-isi-content pre {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    border: none;
+}
+
+.preview-isi-content code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: block;
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Style untuk menyoroti tag HTML */
+.preview-isi-content code .html-tag {
+    color: #0066cc;
+}
+
+.preview-isi-content code .html-attr {
+    color: #cc6600;
+}
+
+.preview-isi-content code .html-content {
+    color: #000;
+}
+
+/* Container untuk preview isi */
+.preview-isi-container {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-isi-content {
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+/* Tombol-tombol */
+.btn-preview-isi {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-preview-isi:hover {
+    background-color: #219653;
+}
+
+.btn-close-preview {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-close-preview:hover {
+    background-color: #c0392b;
+}
+
+/* Blackquote */
+blockquote { 
+    border-left: 4px solid #ccc; 
+    padding-left: 10px; 
+    color: #555; 
+    margin: 15px 0; 
+}
+
+code { 
+    background: #eee; 
+    padding: 2px 4px; 
+    border-radius: 4px; 
+}
+
+pre code { 
+    display: block; 
+    padding: 10px; 
+    background: #222; 
+    color: #fff; 
+    overflow-x: auto;
+}
+
+
+/* Copy button styling */
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.preview-header h2 {
+    margin: 0;
+}
+
+.preview-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.btn-copy-preview {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-copy-preview:hover {
+    background-color: #2980b9;
+}
+
+.btn-copy-preview.copied {
+    background-color: #27ae60;
+}
+
+/* Copy icon */
+.copy-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}

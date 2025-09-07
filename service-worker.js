@@ -1,9 +1,22 @@
-const CACHE_NAME = "enoted-cache-v1";
+const CACHE_NAME = "enoted-cache-v2"; // Naikkan versi cache
 const urlsToCache = [
+  "/",
   "/index.html",
-  "/blogpost/indexblogpost.html",
-  "/blogpost/style.css",
-  "/blogpost/script.js"
+  "/post-template.html",
+  "/admin/create-post.html",
+  "/admin/login.html",
+  "/css/style.css",
+  "/admin/Style.css",
+  "/js/bg-waktu.js",
+  "/js/firestore.js",
+  "/js/main-page.js",
+  "/js/post-page.js",
+  "/js/script.js",
+  "/js/auth.js",
+  "/js/popup-category.js",
+  "/js/admin/create-post-logic.js",
+  "/img/bg.jpg",
+  "/img/favicon.ico"
 ];
 
 self.addEventListener("install", function(event) {

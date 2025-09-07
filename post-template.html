@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="description" id="metaDescription" content="" />
+    <meta name="keywords" id="metaKeywords" content="" />
+    <meta name="author" content="Cecep Hardiansyah" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" id="canonicalUrl" href="" />
+
+    <meta property="og:title" id="ogTitle" content="" />
+    <meta property="og:description" id="ogDescription" content="" />
+    <meta property="og:image" id="ogImage" content="https://www.enoted.netifly.app/img/default-thumbnail.jpg" />
+    <meta property="og:url" id="ogUrl" content="" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="ENoted" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" id="twitterTitle" content="" />
+    <meta name="twitter:description" id="twitterDescription" content="" />
+    <meta name="twitter:image" id="twitterImage" content="https://www.enoted.netifly.app/img/default-thumbnail.jpg" />
+
+    <link rel="icon" type="image/png" href="/img/favicon.ico" />
+    <title id="pageTitle">ENoted</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body class="post-page">
+    <div class="content" id="mainContent">
+        <nav aria-label="breadcrumb" class="breadcrumb">
+            <ol id="breadcrumbList">
+                <li><a href="/index.html">Beranda</a></li>
+                <li id="breadcrumbCategory" class="category"></li>
+                <li id="breadcrumbTitle" aria-current="page"></li>
+            </ol>
+        </nav>
+        
+        <h1 id="postTitle"></h1>
+        
+        <div class="post-meta">
+            <time id="postDate" datetime="" class="post-date"></time>
+        </div>
+
+        <button class="share-btn" id="shareButton">Bagikan</button>
+        <div class="share-menu" id="shareMenu">
+            <a href="#" onclick="shareViaWhatsApp()">WhatsApp</a>
+            <a href="#" onclick="shareViaFacebook()">Facebook</a>
+            <a href="#" onclick="shareViaTelegram()">Telegram</a>
+            <a href="#" onclick="copyLink()">Salin Link</a>
+        </div>
+        
+        <div class="post-content" id="postContent">
+            </div>
+
+        <button class="back-btn" id="backButton" onclick="goBack()">
+            Kembali
+        </button>
+    </div>
+
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup-notification" id="popupNotification">
+        <p id="popupMessage"></p>
+        <button class="close-popup" onclick="closePopup()">Tutup</button>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="/js/popup-category.js"></script>
+
+    <script type="application/ld+json" id="breadcrumbSchema">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": []
+      }
+    </script>
+    <script type="application/ld+json" id="articleSchema">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "author": {
+          "@type": "Person",
+          "name": "Cecep Hardiansyah"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "ENoted",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.enoted.netifly.app/img/logo.png"
+          }
+        },
+        "description": ""
+      }
+    </script>
+
+    <script type="module" src="/js/post-page.js"></script>
+    <script type="module" src="/js/firestore.js"></script>
+</body>
+</html>
