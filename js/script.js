@@ -203,3 +203,4 @@ document.addEventListener('DOMContentLoaded', function() {
 // Penting: Ekspor fungsi agar dapat diakses secara global
 window.openPost = openPost;
 window.closePost = closePost;
+window.openFullView = openFullView;
