@@ -35,7 +35,7 @@ const handleLogin = async (e) => {
         // Simpan UID admin di local storage atau sesi
         localStorage.setItem('adminUID', user.uid);
 
-        window.location.href = '/admin/create-post.html';
+        window.location.href = '/admin/dashboard.html'; // Ganti dengan halaman admin Anda
 
     } catch (error) {
         responseMessage.className = 'response-message error';

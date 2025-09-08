@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENoted - Buat Postingan</title>
+    <!-- Tambahkan stylesheet Quill.js -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="/admin/Style.css"> 
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <link rel="manifest" href="/manifest.json">
@@ -27,24 +29,8 @@
 
             <div class="form-group">
                 <label for="postContent">Isi Konten:</label>
-                <div class="format-guide">
-                    <details>
-                        <summary>Panduan Format</summary>
-                        <div class="format-examples">
-                            <p><strong>Judul:</strong> # Judul atau ## Subjudul</p>
-                            <p><strong>Bold:</strong> **teks bold**</p>
-                            <p><strong>Italic:</strong> *teks italic*</p>
-                            <p><strong>Underline:</strong> __teks underline__</p>
-                            <p><strong>Daftar Berurut:</strong> 1. Item satu</p>
-                            <p><strong>Daftar Tak Berurut:</strong> - Item satu</p>
-                            <p><strong>Kutipan:</strong> > Teks kutipan</p>
-                            <p><strong>Kode:</strong> `kode inline` atau blok kode dengan ```</p>
-                            <p><strong>Link:</strong> [teks link](https://example.com)</p>
-                            <p><strong>Gambar:</strong> ![alt text](https://example.com/image.jpg)</p>
-                        </div>
-                    </details>
-                </div>
-                <textarea id="postContent" name="postContent" required rows="10" placeholder="Tulis konten postingan Anda di sini..." aria-label="Isi Konten"></textarea>
+                <!-- Container untuk Quill.js. Ini akan menggantikan textarea -->
+                <div id="editor-container"></div>
             </div>
 
             <div class="form-group">
@@ -65,7 +51,39 @@
         <div id="responseMessage" class="response-message"></div>
     </div>
     
+    <!-- Tambahkan skrip Quill.js di akhir body -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/create-post-logic.js"></script>
+    <script>
+        // Inisialisasi Quill.js pada container
+        const quill = new Quill('#editor-container', {
+            theme: 'snow'
+        });
+
+        // Tangkap form submit
+        const form = document.getElementById('createPostForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah form dari reload halaman
+
+            // Dapatkan konten HTML dari Quill.js
+            const postContent = quill.root.innerHTML;
+
+            // Log konten untuk verifikasi
+            console.log('Konten Postingan (HTML):', postContent);
+
+            // TODO: Sekarang Anda bisa menggunakan variabel `postContent`
+            // untuk mengirim data ke Firestore atau backend Anda.
+            // Contoh:
+            // const postData = {
+            //     title: document.getElementById('postTitle').value,
+            //     category: document.getElementById('postCategory').value,
+            //     content: postContent, // Gunakan konten dari Quill
+            //     description: document.getElementById('postDescription').value,
+            //     keywords: document.getElementById('postKeywords').value
+            // };
+            // sendToFirestore(postData);
+        });
+    </script>
 </body>
 </html>

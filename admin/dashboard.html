@@ -3,92 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - ENoted</title>
-    <link rel="stylesheet" href="/Style.css">
-    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <title>Dashboard Admin Modern - ENoted</title>
+    <!-- Menggunakan Tailwind CSS untuk styling modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Menggunakan Google Fonts untuk tipografi yang lebih baik -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .dashboard-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        /* Menggunakan font Inter sebagai default */
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .dashboard-container h1, .dashboard-container h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .post-list {
-            list-style: none;
-            padding: 0;
-        }
-        .post-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        .post-item:last-child {
-            border-bottom: none;
-        }
-        .post-item-info {
-            flex-grow: 1;
-        }
-        .post-item-info h3 {
-            margin: 0 0 5px 0;
-            color: #3498db;
-        }
-        .post-item-info p {
-            margin: 0;
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-        .post-item-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .post-item-actions button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .btn-edit {
-            background-color: #f39c12;
-            color: white;
-        }
-        .btn-delete {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .btn-add {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 12px;
-            background-color: #2ecc71;
-            color: white;
-            text-align: center;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
+        /* Style untuk transisi smooth */
+        .transition-all {
+            transition: all 0.3s ease-in-out;
         }
     </style>
 </head>
+<body class="bg-sky-50 text-gray-800">
 
-<body>
-    <div class="dashboard-container">
-        <h1>Dashboard Admin</h1>
-        <a href="/admin/create-post.html" class="btn-add">Buat Postingan Baru</a>
-        <div id="loading" style="text-align: center;">Memuat postingan...</div>
-        <ul id="post-list" class="post-list">
-            </ul>
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header Dashboard -->
+        <header class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-sky-800">Dashboard Postingan</h1>
+                    <p class="text-gray-500 mt-1">Kelola semua postingan Anda di satu tempat.</p>
+                </div>
+                <!-- Tombol untuk membuat postingan baru, arahkan ke halaman yang sesuai -->
+                <a href="/admin/create-post.html" class="flex items-center gap-2 bg-sky-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-sky-700 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Buat Postingan Baru
+                </a>
+            </div>
+        </header>
+
+        <!-- Fitur Filter dan Sort -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-6 flex flex-col sm:flex-row gap-4">
+            <!-- Input Pencarian -->
+            <div class="relative flex-grow">
+                <input type="text" id="searchInput" placeholder="Cari judul postingan..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <!-- Dropdown untuk Sort -->
+            <div class="relative">
+                <select id="sortSelect" class="w-full sm:w-48 appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none">
+                    <option value="newest">Terbaru</option>
+                    <option value="oldest">Terlama</option>
+                </select>
+                 <svg class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </div>
+        </div>
+
+        <!-- Daftar Postingan -->
+        <div id="post-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Postingan akan dimuat di sini oleh JavaScript -->
+        </div>
+        
+        <!-- Pesan Status -->
+        <div id="loading" class="text-center py-10 text-gray-500">
+            <p>Menghubungkan ke server...</p>
+        </div>
+        <div id="no-results" class="hidden text-center py-10 text-gray-500">
+            <p>Postingan tidak ditemukan.</p>
+        </div>
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-bold text-gray-800">Konfirmasi Hapus</h3>
+            <p class="text-gray-600 mt-2 mb-4">Apakah Anda yakin ingin menghapus postingan ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Batal</button>
+                <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT ASLI ANDA DIKEMBALIKAN -->
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/dashboard-logic.js"></script>
 </body>
 </html>
+
