@@ -29,7 +29,7 @@
 
             <div class="form-group">
                 <label for="postContent">Isi Konten:</label>
-                <!-- Container untuk Quill.js. Ini akan menggantikan textarea -->
+                <!-- Container untuk Quill.js. Ini akan digantikan oleh textarea -->
                 <div id="editor-container"></div>
             </div>
 
@@ -53,37 +53,9 @@
     
     <!-- Tambahkan skrip Quill.js di akhir body -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- Muat skrip modul setelah library Quill dimuat -->
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/create-post-logic.js"></script>
-    <script>
-        // Inisialisasi Quill.js pada container
-        const quill = new Quill('#editor-container', {
-            theme: 'snow'
-        });
-
-        // Tangkap form submit
-        const form = document.getElementById('createPostForm');
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Mencegah form dari reload halaman
-
-            // Dapatkan konten HTML dari Quill.js
-            const postContent = quill.root.innerHTML;
-
-            // Log konten untuk verifikasi
-            console.log('Konten Postingan (HTML):', postContent);
-
-            // TODO: Sekarang Anda bisa menggunakan variabel `postContent`
-            // untuk mengirim data ke Firestore atau backend Anda.
-            // Contoh:
-            // const postData = {
-            //     title: document.getElementById('postTitle').value,
-            //     category: document.getElementById('postCategory').value,
-            //     content: postContent, // Gunakan konten dari Quill
-            //     description: document.getElementById('postDescription').value,
-            //     keywords: document.getElementById('postKeywords').value
-            // };
-            // sendToFirestore(postData);
-        });
-    </script>
+    <!-- Tidak ada lagi blok <script> inline di sini, semua logika sudah di file .js -->
 </body>
 </html>
