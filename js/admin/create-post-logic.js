@@ -1,135 +1,209 @@
 // js/admin/create-post-logic.js
 
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { db, auth } from "../firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// --- PERUBAHAN 1: Inisialisasi Quill.js di sini ---
-// Kita buat instance Quill agar bisa diakses di seluruh file ini.
+// Inisialisasi Quill.js
 const quill = new Quill('#editor-container', {
     theme: 'snow',
     placeholder: 'Tulis konten artikel di sini...'
 });
 
+// Elemen Form Utama
 const createPostForm = document.getElementById('createPostForm');
 const responseMessage = document.getElementById('responseMessage');
+const postCategorySelect = document.getElementById('postCategory');
+
+// Elemen Modal Kategori
+const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+const categoryModal = document.getElementById('categoryModal');
+const closeCategoryModal = document.getElementById('closeCategoryModal');
+const categoryListContainer = document.getElementById('categoryListContainer');
+const newCategoryInput = document.getElementById('newCategoryInput');
+const addCategoryBtn = document.getElementById('addCategoryBtn');
+
+// Elemen Modal Konfirmasi Hapus (BARU)
+const confirmModal = document.getElementById('confirmModal');
+const confirmMessage = document.getElementById('confirmMessage');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
 let currentUser = null;
 const postId = new URLSearchParams(window.location.search).get('id');
+let postDataToSelect = null;
+let categoryToDelete = null; // Menyimpan info kategori yang akan dihapus
+
+// Fungsi untuk memuat kategori secara real-time
+const loadCategories = () => {
+    const categoriesRef = collection(db, "categories");
+    const q = query(categoriesRef, orderBy("name", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+        postCategorySelect.innerHTML = '<option value="" disabled>Pilih Kategori...</option>';
+        categoryListContainer.innerHTML = '';
+
+        if (snapshot.empty) {
+             postCategorySelect.innerHTML = '<option value="" disabled>Belum ada kategori</option>';
+             categoryListContainer.innerHTML = '<p>Belum ada kategori. Silakan tambahkan.</p>';
+        } else {
+            snapshot.forEach(doc => {
+                const category = doc.data();
+                const categoryId = doc.id;
+
+                const option = document.createElement('option');
+                option.value = category.name;
+                option.textContent = category.name;
+                postCategorySelect.appendChild(option);
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'category-item';
+                itemDiv.innerHTML = `
+                    <span>${category.name}</span>
+                    <button class="delete-cat-btn" data-id="${categoryId}" data-name="${category.name}">&times;</button>
+                `;
+                categoryListContainer.appendChild(itemDiv);
+            });
+        }
+
+        if (postDataToSelect) {
+            postCategorySelect.value = postDataToSelect;
+            postDataToSelect = null;
+        } else {
+            postCategorySelect.selectedIndex = 0;
+        }
+    });
+};
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         console.log("Pengguna terautentikasi. UID:", currentUser.uid);
-        // Jika ada postId di URL (mode edit), ambil datanya.
+        loadCategories();
         if (postId) {
             fetchPostAndPopulateForm(postId);
         }
     } else {
-        // Jika tidak ada user, arahkan ke halaman login.
-        currentUser = null;
         window.location.href = '/admin/login.html';
     }
 });
 
-// Fungsi untuk mengambil data postingan (saat mode edit) dan mengisinya ke form
 const fetchPostAndPopulateForm = async (postId) => {
     try {
         const postRef = doc(db, "posts", postId);
         const postSnap = await getDoc(postRef);
-
         if (postSnap.exists()) {
             const postData = postSnap.data();
             createPostForm['postTitle'].value = postData.title;
-            createPostForm['postCategory'].value = postData.category;
             createPostForm['postDescription'].value = postData.description || '';
-            // Jika keywords adalah array (format penyimpanan baru), gabungkan jadi string.
             if (Array.isArray(postData.keywords)) {
                 createPostForm['postKeywords'].value = postData.keywords.join(', ');
-            } else {
-                createPostForm['postKeywords'].value = postData.keywords || '';
             }
-            
-            // --- PERUBAHAN 2: Isi konten ke editor Quill ---
-            // Gunakan metode Quill untuk mengisi konten, bukan elemen form biasa.
             quill.root.innerHTML = postData.content;
-            
-            // Ubah teks tombol dan judul halaman untuk menandakan mode edit.
+            postDataToSelect = postData.category;
             document.querySelector('.btn-generate').innerText = 'Perbarui Postingan';
             document.title = 'Edit Postingan - ENoted';
         } else {
-            alert("Postingan tidak ditemukan.");
             window.location.href = '/admin/dashboard.html';
         }
     } catch (error) {
-        console.error("Error mengambil postingan untuk diedit:", error);
-        alert("Gagal memuat postingan untuk diedit.");
+        console.error("Error mengambil postingan:", error);
     }
 };
 
-// Event listener untuk form submit (baik untuk buat baru maupun update)
+// --- Logika untuk menampilkan dan menyembunyikan modal ---
+const showModal = (modal) => modal.classList.add('show');
+const hideModal = (modal) => modal.classList.remove('show');
+
+manageCategoriesBtn.addEventListener('click', () => showModal(categoryModal));
+closeCategoryModal.addEventListener('click', () => hideModal(categoryModal));
+cancelDeleteBtn.addEventListener('click', () => hideModal(confirmModal));
+window.addEventListener('click', (e) => {
+    if (e.target === categoryModal) hideModal(categoryModal);
+    if (e.target === confirmModal) hideModal(confirmModal);
+});
+
+// --- Logika Kategori (Tambah & Hapus) ---
+addCategoryBtn.addEventListener('click', async () => {
+    const newCategoryName = newCategoryInput.value.trim();
+    if (newCategoryName) {
+        try {
+            await addDoc(collection(db, "categories"), { name: newCategoryName });
+            newCategoryInput.value = '';
+        } catch (error) {
+            console.error("Error menambah kategori:", error);
+        }
+    }
+});
+newCategoryInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addCategoryBtn.click(); }
+});
+
+categoryListContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-cat-btn')) {
+        categoryToDelete = {
+            id: e.target.dataset.id,
+            name: e.target.dataset.name
+        };
+        confirmMessage.textContent = `Apakah Anda yakin ingin menghapus kategori "${categoryToDelete.name}"?`;
+        showModal(confirmModal);
+    }
+});
+
+confirmDeleteBtn.addEventListener('click', async () => {
+    if (categoryToDelete) {
+        try {
+            await deleteDoc(doc(db, "categories", categoryToDelete.id));
+            hideModal(confirmModal);
+            categoryToDelete = null;
+        } catch (error) {
+            console.error("Error menghapus kategori:", error);
+            alert("Gagal menghapus kategori.");
+        }
+    }
+});
+
+// --- Logika Submit Form Utama ---
 createPostForm.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Mencegah halaman reload
+    e.preventDefault();
+    if (!currentUser) return;
 
-    if (!currentUser) {
-        responseMessage.style.display = 'block';
-        responseMessage.className = 'response-message error';
-        responseMessage.innerText = 'Anda harus login untuk menerbitkan postingan.';
+    const postDetails = {
+        title: createPostForm['postTitle'].value,
+        category: createPostForm['postCategory'].value,
+        description: createPostForm['postDescription'].value,
+        keywords: createPostForm['postKeywords'].value.split(',').map(item => item.trim()).filter(item => item),
+        content: quill.root.innerHTML,
+        author: 'Cecep Hardiansyah'
+    };
+
+    if (!postDetails.title.trim() || !postDetails.category || quill.getLength() <= 1) {
+        alert('Judul, Kategori, dan Isi Konten tidak boleh kosong.');
         return;
     }
 
-    // Ambil semua nilai dari form
-    const title = createPostForm['postTitle'].value;
-    const category = createPostForm['postCategory'].value;
-    const description = createPostForm['postDescription'].value;
-    // Ubah string keywords menjadi array agar lebih mudah dikelola di Firestore
-    const keywords = createPostForm['postKeywords'].value.split(',').map(item => item.trim()).filter(item => item);
-
-    // --- PERUBAHAN 3: Ambil konten HTML langsung dari Quill ---
-    const content = quill.root.innerHTML;
-    
-    // Validasi sederhana agar judul dan konten tidak kosong
-    if (!title.trim() || quill.getLength() <= 1) {
-        alert('Judul dan Isi Konten tidak boleh kosong.');
-        return;
-    }
-
-    // Penulis bisa di-hardcode atau diambil dari data user yang login
-    const author = 'Cecep Hardiansyah'; 
+    responseMessage.style.display = 'block';
+    responseMessage.className = 'response-message';
 
     try {
-        responseMessage.style.display = 'block';
-        responseMessage.className = 'response-message';
-
         if (postId) {
-            // Logika untuk MEMPERBARUI postingan yang sudah ada
             responseMessage.innerText = 'Memperbarui postingan...';
             const postRef = doc(db, "posts", postId);
-            await setDoc(postRef, {
-                title, category, description, keywords, content, author, 
-                // Kita tambahkan updatedAt untuk melacak kapan terakhir diubah
-                updatedAt: serverTimestamp() 
-            }, { merge: true }); // 'merge: true' memastikan field lain tidak terhapus
+            await setDoc(postRef, { ...postDetails, updatedAt: serverTimestamp() }, { merge: true });
         } else {
-            // Logika untuk MEMBUAT postingan baru
             responseMessage.innerText = 'Menerbitkan postingan...';
-            await addDoc(collection(db, "posts"), {
-                title, category, description, keywords, content, author, 
-                publishedAt: serverTimestamp()
-            });
+            await addDoc(collection(db, "posts"), { ...postDetails, publishedAt: serverTimestamp() });
         }
         
         responseMessage.className = 'response-message success';
         responseMessage.innerText = 'Postingan berhasil disimpan!';
         
-        // Setelah berhasil, tunggu sejenak lalu arahkan kembali ke dashboard
-        setTimeout(() => {
-            window.location.href = '/admin/dashboard.html';
-        }, 1500);
+        setTimeout(() => window.location.href = '/admin/dashboard.html', 1500);
         
     } catch (error) {
         responseMessage.className = 'response-message error';
-        responseMessage.innerText = 'Gagal menyimpan postingan. Coba lagi.';
+        responseMessage.innerText = 'Gagal menyimpan postingan.';
         console.error("Error menyimpan dokumen:", error);
     }
 });
+

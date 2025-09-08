@@ -4,12 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENoted - Buat Postingan</title>
-    <!-- Tambahkan stylesheet Quill.js -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="/admin/Style.css"> 
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4a90e2">
+    <!-- Style untuk Modal, Dropdown, & Ikon (Diperbarui) -->
+    <style>
+        .category-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        select#postCategory {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px 40px 10px 15px; /* Tambah padding kanan untuk ruang panah */
+            font-size: 16px;
+            border-radius: 8px; /* Lebih bulat */
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22m209.66%2C100.34l-72%2C72a8%2C8%200%200%201-11.32%2C0l-72-72a8%2C8%200%200%201%2011.32-11.32L128%2C154.69l66.34-65.67a8%2C8%200%200%201%2011.32%2C11.32Z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 1em auto;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        select#postCategory:hover {
+            border-color: #90bcf3; /* Soft blue border on hover */
+        }
+        select#postCategory:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Efek glow soft blue */
+        }
+        .btn-icon-manage {
+            background: none; border: none; padding: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: background-color 0.3s;
+        }
+        .btn-icon-manage:hover {
+            background-color: #e0eafc;
+        }
+        .btn-icon-manage i {
+            font-size: 18px; color: #888; transition: color 0.3s;
+        }
+        .btn-icon-manage:hover i {
+            color: #3b82f6;
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #f9fafb; padding: 0; border-radius: 12px; width: 90%;
+            max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            position: relative; overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 24px;
+            background-color: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .modal-close {
+            font-size: 28px; font-weight: normal; cursor: pointer; color: #888;
+            background: none; border: none;
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        #categoryListContainer {
+            max-height: 200px; overflow-y: auto; border: 1px solid #ddd;
+            padding: 10px; border-radius: 8px; margin-bottom: 15px; background-color: #fff;
+        }
+        .category-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 5px; border-bottom: 1px solid #eee;
+        }
+        .category-item:last-child { border-bottom: none; }
+        .delete-cat-btn {
+            background: #fee2e2; color: #ef4444; border: none; padding: 4px 8px;
+            font-size: 12px; border-radius: 5px; cursor: pointer;
+        }
+        .add-category-form { display: flex; gap: 10px; }
+        .add-category-form input { flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        .add-category-form button { 
+            background-color: #3b82f6; color: white; border-radius: 8px;
+            border: none; padding: 0 16px; font-weight: bold; cursor: pointer;
+        }
+        #confirmModal .modal-content { text-align: center; background-color: #fff; padding: 24px;}
+        .confirm-actions { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .confirm-actions button {
+            padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
+        }
+        #confirmDeleteBtn { background-color: #ef4444; color: white; }
+        #cancelDeleteBtn { background-color: #e5e7eb; color: #374151; }
+    </style>
 </head>
 
 <body>
@@ -24,12 +128,18 @@
 
             <div class="form-group">
                 <label for="postCategory">Kategori:</label>
-                <input type="text" id="postCategory" name="postCategory" required placeholder="Contoh: Belajar Koding" aria-label="Kategori">
+                <div class="category-input-group">
+                    <select id="postCategory" name="postCategory" required>
+                        <option value="" disabled selected>Memuat kategori...</option>
+                    </select>
+                    <button type="button" id="manageCategoriesBtn" class="btn-icon-manage" title="Kelola Kategori">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="postContent">Isi Konten:</label>
-                <!-- Container untuk Quill.js. Ini akan digantikan oleh textarea -->
                 <div id="editor-container"></div>
             </div>
 
@@ -51,11 +161,38 @@
         <div id="responseMessage" class="response-message"></div>
     </div>
     
-    <!-- Tambahkan skrip Quill.js di akhir body -->
+    <!-- Modal untuk Kelola Kategori -->
+    <div id="categoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Kelola Kategori</h2>
+                <button class="modal-close" id="closeCategoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="categoryListContainer"></div>
+                <form class="add-category-form">
+                    <input type="text" id="newCategoryInput" placeholder="Nama kategori baru...">
+                    <button type="button" id="addCategoryBtn">Tambah</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Konfirmasi Hapus</h3>
+            <p id="confirmMessage">Apakah Anda yakin ingin menghapus kategori ini?</p>
+            <div class="confirm-actions">
+                <button id="cancelDeleteBtn">Batal</button>
+                <button id="confirmDeleteBtn">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <!-- Muat skrip modul setelah library Quill dimuat -->
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/create-post-logic.js"></script>
-    <!-- Tidak ada lagi blok <script> inline di sini, semua logika sudah di file .js -->
 </body>
 </html>
+
