@@ -137,15 +137,20 @@
         #generalAlertYesBtn.danger { background-color: #ef4444; } /* Opsi untuk tombol merah */
         #generalAlertNoBtn { background-color: #e5e7eb; color: #374151; }
 
-        /* Dropdown Kategori */
-        select#postCategory {
-            flex-grow: 1; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+        /* [PEMBARUAN] Styling Dropdown Kategori & Status */
+        select#postCategory, select#postStatus {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
             background-color: #fff; border: 1px solid #ddd; padding: 10px 40px 10px 15px;
             font-size: 16px; border-radius: 8px; cursor: pointer;
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22m209.66%2C100.34l-72%2C72a8%2C8%200%200%201-11.32%2C0l-72-72a8%2C8%200%200%201%2011.32-11.32L128%2C154.69l66.34-65.67a8%2C8%200%200%201%2011.32%2C11.32Z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 1em auto;
             transition: border-color 0.3s, box-shadow 0.3s;
+            width: 100%;
         }
+        select#postCategory {
+            flex-grow: 1; /* Khusus untuk kategori agar bisa sejajar tombol */
+        }
+
         .btn-icon-manage { background: none; border: none; padding: 8px; cursor: pointer; }
 
         /* Media Query untuk Mobile */
@@ -193,6 +198,18 @@
                 <label for="postKeywords">Kata Kunci (pisahkan dengan koma):</label>
                 <input type="text" id="postKeywords" name="postKeywords" required placeholder="Contoh: tips & trik, manfaat, teknologi" aria-label="Kata Kunci">
             </div>
+
+            <!-- === [TAMBAHAN] Input untuk Status Postingan === -->
+            <div class="form-group">
+                <label for="postStatus">Status Postingan:</label>
+                <select id="postStatus" name="postStatus" required>
+                    <option value="Draft" selected>Draft (Disimpan, tidak tampil)</option>
+                    <option value="Published">Published (Tampil di halaman utama)</option>
+                    <option value="Archived">Archived (Disimpan, diarsipkan)</option>
+                </select>
+            </div>
+            <!-- === END TAMBAHAN === -->
+
             <div class="form-actions">
                 <button type="submit" class="btn-generate">Terbitkan Postingan</button>
                 <button type="reset" class="btn-reset">Reset Form</button>
@@ -240,3 +257,4 @@
 
 </body>
 </html>
+
