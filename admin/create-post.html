@@ -10,52 +10,63 @@
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4a90e2">
-    <!-- Style untuk Modal, Dropdown, & Ikon (Diperbarui) -->
     <style>
-        .category-input-group {
+        /* Tombol Kembali Melayang */
+        .btn-back-floating {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background-color: #ffffff;
+            color: #374151;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        select#postCategory {
-            flex-grow: 1;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 10px 40px 10px 15px; /* Tambah padding kanan untuk ruang panah */
-            font-size: 16px;
-            border-radius: 8px; /* Lebih bulat */
+            gap: 8px;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
             cursor: pointer;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22m209.66%2C100.34l-72%2C72a8%2C8%200%200%201-11.32%2C0l-72-72a8%2C8%200%200%201%2011.32-11.32L128%2C154.69l66.34-65.67a8%2C8%200%200%201%2011.32%2C11.32Z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 15px top 50%;
-            background-size: 1em auto;
-            transition: border-color 0.3s, box-shadow 0.3s;
         }
-        select#postCategory:hover {
-            border-color: #90bcf3; /* Soft blue border on hover */
+        .btn-back-floating:hover {
+            background-color: #f9fafb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
-        select#postCategory:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Efek glow soft blue */
+        .btn-back-floating i {
+            font-size: 12px;
         }
-        .btn-icon-manage {
-            background: none; border: none; padding: 8px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; transition: background-color 0.3s;
+
+        /* Notifikasi Popup */
+        .response-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            z-index: 2000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #6c757d;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(120%);
+            transition: all 0.4s ease-in-out;
         }
-        .btn-icon-manage:hover {
-            background-color: #e0eafc;
+        .response-message.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
         }
-        .btn-icon-manage i {
-            font-size: 18px; color: #888; transition: color 0.3s;
-        }
-        .btn-icon-manage:hover i {
-            color: #3b82f6;
-        }
+        .response-message.success { background-color: #28a745; }
+        .response-message.error { background-color: #dc3545; }
+        
+        /* Modal Overlay & Content Base */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6); display: flex;
@@ -70,23 +81,19 @@
         }
         .modal-header {
             padding: 16px 24px;
-            background-color: #fff;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .modal-header h2 {
-            margin: 0;
-            font-size: 18px;
-        }
+        .modal-header h2, .modal-header h3 { margin: 0; font-size: 18px; }
         .modal-close {
             font-size: 28px; font-weight: normal; cursor: pointer; color: #888;
             background: none; border: none;
         }
-        .modal-body {
-            padding: 24px;
-        }
+        .modal-body { padding: 24px; }
+        
+        /* Styling Khusus Kategori Modal */
         #categoryListContainer {
             max-height: 200px; overflow-y: auto; border: 1px solid #ddd;
             padding: 10px; border-radius: 8px; margin-bottom: 15px; background-color: #fff;
@@ -106,26 +113,63 @@
             background-color: #3b82f6; color: white; border-radius: 8px;
             border: none; padding: 0 16px; font-weight: bold; cursor: pointer;
         }
-        #confirmModal .modal-content { text-align: center; background-color: #fff; padding: 24px;}
-        .confirm-actions { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        .confirm-actions button {
+
+        /* Styling Modal Kustom Alert/Confirm */
+        .modal-content.custom-alert .modal-body p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .modal-footer button {
             padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;
         }
-        #confirmDeleteBtn { background-color: #ef4444; color: white; }
-        #cancelDeleteBtn { background-color: #e5e7eb; color: #374151; }
+        #generalAlertYesBtn { background-color: #3b82f6; color: white; }
+        #generalAlertSaveBtn { background-color: #16a34a; color: white; } /* Tombol Simpan (Hijau) */
+        #generalAlertYesBtn.danger { background-color: #ef4444; } /* Opsi untuk tombol merah */
+        #generalAlertNoBtn { background-color: #e5e7eb; color: #374151; }
+
+        /* Dropdown Kategori */
+        select#postCategory {
+            flex-grow: 1; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-color: #fff; border: 1px solid #ddd; padding: 10px 40px 10px 15px;
+            font-size: 16px; border-radius: 8px; cursor: pointer;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22m209.66%2C100.34l-72%2C72a8%2C8%200%200%201-11.32%2C0l-72-72a8%2C8%200%200%201%2011.32-11.32L128%2C154.69l66.34-65.67a8%2C8%200%200%201%2011.32%2C11.32Z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 1em auto;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .btn-icon-manage { background: none; border: none; padding: 8px; cursor: pointer; }
+
+        /* Media Query untuk Mobile */
+        @media (max-width: 768px) {
+            .btn-back-floating { display: none; }
+            .response-message { left: 20px; right: 20px; transform: translateY(-150%); }
+            .response-message.show { transform: translateY(0); }
+        }
     </style>
 </head>
 
 <body>
+    <button type="button" id="backButton" class="btn-back-floating" title="Kembali ke Dashboard">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kembali</span>
+    </button>
+    
     <div class="generator-container">
-        <h1>ENoted - New Post</h1>
-        
+        <h1 id="pageTitle">ENoted - New Post</h1>
         <form id="createPostForm">
             <div class="form-group">
                 <label for="postTitle">Judul Postingan:</label>
                 <input type="text" id="postTitle" name="postTitle" required placeholder="Contoh: Membuat AI Sendiri" aria-label="Judul Postingan">
             </div>
-
             <div class="form-group">
                 <label for="postCategory">Kategori:</label>
                 <div class="category-input-group">
@@ -137,22 +181,18 @@
                     </button>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="postContent">Isi Konten:</label>
                 <div id="editor-container"></div>
             </div>
-
             <div class="form-group">
                 <label for="postDescription">Deskripsi Singkat (untuk SEO):</label>
                 <textarea id="postDescription" name="postDescription" required rows="3" placeholder="Deskripsi yang akan muncul di hasil pencarian" aria-label="Deskripsi Singkat"></textarea>
             </div>
-
             <div class="form-group">
                 <label for="postKeywords">Kata Kunci (pisahkan dengan koma):</label>
                 <input type="text" id="postKeywords" name="postKeywords" required placeholder="Contoh: tips & trik, manfaat, teknologi" aria-label="Kata Kunci">
             </div>
-
             <div class="form-actions">
                 <button type="submit" class="btn-generate">Terbitkan Postingan</button>
                 <button type="reset" class="btn-reset">Reset Form</button>
@@ -161,7 +201,6 @@
         <div id="responseMessage" class="response-message"></div>
     </div>
     
-    <!-- Modal untuk Kelola Kategori -->
     <div id="categoryModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -178,14 +217,18 @@
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Hapus -->
-    <div id="confirmModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Konfirmasi Hapus</h3>
-            <p id="confirmMessage">Apakah Anda yakin ingin menghapus kategori ini?</p>
-            <div class="confirm-actions">
-                <button id="cancelDeleteBtn">Batal</button>
-                <button id="confirmDeleteBtn">Ya, Hapus</button>
+    <div id="generalAlertModal" class="modal-overlay">
+        <div class="modal-content custom-alert">
+            <div class="modal-header">
+                <h3 id="generalAlertTitle">Konfirmasi</h3>
+            </div>
+            <div class="modal-body">
+                <p id="generalAlertMessage">Apakah Anda yakin?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="generalAlertNoBtn">Batal</button>
+                <button id="generalAlertSaveBtn">Simpan</button>
+                <button id="generalAlertYesBtn">Ya</button>
             </div>
         </div>
     </div>
@@ -193,6 +236,7 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/create-post-logic.js"></script>
+    <script src="/js/bg-waktu.js"></script>
+
 </body>
 </html>
-
