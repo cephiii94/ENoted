@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - Bawa API Key Anda Sendiri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Menggunakan font Inter dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f7ff; /* Soft blue background */
+        }
+
+        /* Kustomisasi scrollbar untuk chat container */
+        #chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-container::-webkit-scrollbar-track {
+            background: #e0e8f0;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background-color: #a3c1e8; /* A slightly darker soft blue */
+            border-radius: 10px;
+            border: 2px solid #e0e8f0;
+        }
+        
+        /* Animasi untuk indikator pengetikan */
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            float: left;
+            margin: 0 1px;
+            background-color: #60a5fa; /* Blue from Tailwind's blue-400 */
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: 1s fade infinite 0.2s;
+        }
+        
+        .typing-indicator span:nth-of-type(2) {
+            animation: 1s fade infinite 0.4s;
+        }
+
+        .typing-indicator span:nth-of-type(3) {
+            animation: 1s fade infinite 0.6s;
+        }
+
+        @keyframes fade {
+            0% { opacity: 0.4 }
+            50% { opacity: 1 }
+            100% { opacity: 0.4 }
+        }
+
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-[#f0f7ff]">
+
+    <div class="w-full max-w-2xl h-[85vh] flex flex-col bg-white rounded-2xl shadow-xl border border-gray-200">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-4 border-b border-gray-200 bg-white rounded-t-2xl">
+            <h1 class="text-xl font-bold text-gray-800">AI Personal Chat</h1>
+            <button id="settings-button" title="Pengaturan API Key" class="text-gray-500 hover:text-blue-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </header>
+
+        <!-- Chat Container -->
+        <div id="chat-container" class="flex-1 p-6 overflow-y-auto space-y-4">
+            <!-- Pesan AI sambutan -->
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                    <p class="text-sm text-gray-800">Halo Tuan Cecep! Silakan masukkan API Key Anda untuk memulai percakapan. Klik ikon gerigi di pojok kanan atas.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="p-4 border-t border-gray-200 bg-white rounded-b-2xl">
+            <form id="chat-form" class="flex items-center gap-4">
+                <textarea id="message-input" rows="1" class="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-400 focus:outline-none transition" placeholder="Ketik pesan Anda..."></textarea>
+                <button type="submit" class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="api-key-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Masukkan API Key Anda</h2>
+            <p class="text-gray-600 mb-6">API key Anda disimpan di browser Anda dan tidak pernah dikirim ke server kami. Dapatkan API key gratis dari <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Google AI Studio</a>.</p>
+            <div class="flex flex-col gap-4">
+                <input type="password" id="api-key-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Masukkan Google AI API Key Anda">
+                <div class="flex justify-end gap-4">
+                    <button id="close-modal-button" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">Tutup</button>
+                    <button id="save-api-key-button" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatContainer = document.getElementById('chat-container');
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const apiKeyModal = document.getElementById('api-key-modal');
+            const apiKeyInput = document.getElementById('api-key-input');
+            const saveApiKeyButton = document.getElementById('save-api-key-button');
+            const settingsButton = document.getElementById('settings-button');
+            const closeModalButton = document.getElementById('close-modal-button');
+
+            const GEMINI_API_MODEL = 'gemini-2.5-flash-preview-05-20';
+            let apiKey = localStorage.getItem('geminiApiKey');
+
+            // Fungsi untuk menampilkan pesan di UI
+            const addMessageToChat = (sender, message) => {
+                const messageDiv = document.createElement('div');
+                let formattedMessage = message.replace(/\n/g, '<br>');
+
+                if (sender === 'user') {
+                    messageDiv.className = 'flex items-start gap-3 justify-end';
+                    messageDiv.innerHTML = `
+                        <div class="bg-blue-500 text-white rounded-lg p-3 max-w-md">
+                            <p class="text-sm">${formattedMessage}</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-sm">You</div>
+                    `;
+                } else if (sender === 'ai') {
+                    messageDiv.className = 'flex items-start gap-3';
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                        <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                            <p class="text-sm text-gray-800">${formattedMessage}</p>
+                        </div>
+                    `;
+                } else { // Untuk pesan error atau sistem
+                     messageDiv.className = 'flex items-start gap-3';
+                    messageDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm">!</div>
+                        <div class="bg-red-100 text-red-700 rounded-lg p-3 max-w-md">
+                            <p class="text-sm">${formattedMessage}</p>
+                        </div>
+                    `;
+                }
+
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            };
+
+            // Fungsi untuk menampilkan indikator pengetikan
+            const showTypingIndicator = () => {
+                const typingDiv = document.createElement('div');
+                typingDiv.id = 'typing-indicator';
+                typingDiv.className = 'flex items-start gap-3';
+                typingDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                    <div class="bg-gray-100 rounded-lg p-3 max-w-md">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                `;
+                chatContainer.appendChild(typingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            };
+            
+            // Fungsi untuk menghapus indikator pengetikan
+            const hideTypingIndicator = () => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            };
+
+            // Cek API Key saat halaman dimuat
+            if (!apiKey) {
+                apiKeyModal.classList.remove('hidden');
+            }
+
+            // Fungsi untuk membuka modal
+            const openModal = () => apiKeyModal.classList.remove('hidden');
+            // Fungsi untuk menutup modal
+            const closeModal = () => apiKeyModal.classList.add('hidden');
+
+            settingsButton.addEventListener('click', openModal);
+            closeModalButton.addEventListener('click', closeModal);
+            
+            // Simpan API Key
+            saveApiKeyButton.addEventListener('click', () => {
+                const newApiKey = apiKeyInput.value.trim();
+                if (newApiKey) {
+                    apiKey = newApiKey;
+                    localStorage.setItem('geminiApiKey', newApiKey);
+                    closeModal();
+                    addMessageToChat('ai', 'API Key berhasil disimpan! Anda bisa mulai mengobrol sekarang.');
+                } else {
+                    alert('Harap masukkan API Key yang valid.');
+                }
+            });
+            
+            // Logika pengiriman pesan
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                
+                if (!message) return;
+
+                if (!apiKey) {
+                    addMessageToChat('system', 'API Key belum diatur. Silakan klik ikon gerigi untuk memasukkan API Key Anda.');
+                    openModal();
+                    return;
+                }
+
+                addMessageToChat('user', message);
+                messageInput.value = '';
+                showTypingIndicator();
+                
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_API_MODEL}:generateContent?key=${apiKey}`;
+                    
+                    const payload = {
+                        contents: [{ parts: [{ text: message }] }]
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    hideTypingIndicator();
+                    
+                    const aiResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if(aiResponse){
+                       addMessageToChat('ai', aiResponse);
+                    } else {
+                       throw new Error("Tidak menerima respons yang valid dari API.");
+                    }
+
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    hideTypingIndicator();
+                    addMessageToChat('system', `Terjadi kesalahan: ${error.message}. Periksa kembali API Key Anda atau coba lagi nanti.`);
+                }
+            });
+
+            // Menyesuaikan tinggi textarea
+            messageInput.addEventListener('input', () => {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = (messageInput.scrollHeight) + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
