@@ -14,25 +14,30 @@
         /* Menggunakan font Inter sebagai default */
         body {
             font-family: 'Inter', sans-serif;
+            /* Memberi warna biru pastel sesuai preferensi Anda */
+            background-color: #f0f7ff; 
         }
         /* Style untuk transisi smooth */
         .transition-all {
             transition: all 0.3s ease-in-out;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-sky-50 text-gray-800">
+<body class="text-gray-800">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <!-- Header Dashboard -->
         <header class="mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-sky-800">Dashboard Postingan</h1>
+                    <h1 class="text-3xl font-bold" style="color: #2c5282;">Dashboard Postingan</h1>
                     <p class="text-gray-500 mt-1">Kelola semua postingan Anda di satu tempat.</p>
                 </div>
                 <!-- Tombol untuk membuat postingan baru, arahkan ke halaman yang sesuai -->
-                <a href="/admin/create-post.html" class="flex items-center gap-2 bg-sky-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-sky-700 transition-all">
+                <a href="/admin/create-post.html" class="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Buat Postingan Baru
                 </a>
@@ -43,12 +48,12 @@
         <div class="bg-white p-4 rounded-lg shadow-sm mb-6 flex flex-col sm:flex-row gap-4">
             <!-- Input Pencarian -->
             <div class="relative flex-grow">
-                <input type="text" id="searchInput" placeholder="Cari judul postingan..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none">
+                <input type="text" id="searchInput" placeholder="Cari judul postingan..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             <!-- Dropdown untuk Sort -->
             <div class="relative">
-                <select id="sortSelect" class="w-full sm:w-48 appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none">
+                <select id="sortSelect" class="w-full sm:w-48 appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     <option value="newest">Terbaru</option>
                     <option value="oldest">Terlama</option>
                 </select>
@@ -82,9 +87,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT ASLI ANDA DIKEMBALIKAN -->
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/dashboard-logic.js"></script>
 </body>
 </html>
-

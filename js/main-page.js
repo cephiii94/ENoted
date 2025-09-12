@@ -1,6 +1,5 @@
 // js/main-page.js
 
-// Impor modul yang dibutuhkan dari Firebase dan file koneksi kita
 import { collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { db } from "./firestore.js";
 
@@ -9,17 +8,26 @@ const postsContainer = document.getElementById('postsContainer');
 const fetchAndDisplayPosts = async (category = 'semua') => {
     try {
         postsContainer.innerHTML = '<h2>Memuat artikel...</h2>';
-        let postsQuery = collection(db, "posts");
+        let postsCollection = collection(db, "posts");
+        
+        // --- [PEMBARUAN UTAMA] ---
+        // Buat query dasar yang hanya akan mengambil postingan dengan status "Published".
+        // Ini memastikan Draft dan Archived tidak akan pernah muncul di halaman utama.
+        let q = query(postsCollection, where("status", "==", "Published"));
+        // -------------------------
 
+        // Jika ada filter kategori, tambahkan filter tersebut ke query yang sudah ada
         if (category !== 'semua') {
-            postsQuery = query(postsQuery, where("category", "==", category));
+            q = query(q, where("category", "==", category));
         }
 
-        postsQuery = query(postsQuery, orderBy('publishedAt', 'desc'));
+        // Terakhir, tambahkan pengurutan berdasarkan tanggal terbit
+        q = query(q, orderBy('publishedAt', 'desc'));
 
-        const querySnapshot = await getDocs(postsQuery);
+        const querySnapshot = await getDocs(q);
+        
         if (querySnapshot.empty) {
-            postsContainer.innerHTML = '<h2>Belum ada postingan yang tersedia.</h2>';
+            postsContainer.innerHTML = '<h2>Belum ada postingan yang tersedia di kategori ini.</h2>';
             return;
         }
 
@@ -32,7 +40,6 @@ const fetchAndDisplayPosts = async (category = 'semua') => {
             const postElement = document.createElement('article');
             postElement.classList.add('article');
 
-            // Hapus atribut onclick dan tambahkan data-post-id
             postElement.innerHTML = `
                 <div class="post" data-post-id="${postId}">
                     <div class="post-title">${postData.title}</div>
@@ -47,8 +54,18 @@ const fetchAndDisplayPosts = async (category = 'semua') => {
         });
 
     } catch (error) {
-        console.error("Error mengambil postingan:", error);
-        postsContainer.innerHTML = '<h2>Maaf, terjadi kesalahan saat memuat artikel.</h2>';
+        console.error("Error fetching posts:", error);
+        
+        // --- [TAMBAHAN] Penanganan Error untuk Composite Index ---
+        if (error.code === 'failed-precondition') {
+             postsContainer.innerHTML = `
+                <h2 style="color: red;">Terjadi Kesalahan Konfigurasi Database</h2>
+                <p style="color: grey;">(Catatan untuk Admin: Query membutuhkan 'Composite Index'. Silakan cek console browser untuk link pembuatan index di Firebase, lalu tunggu beberapa menit hingga index aktif).</p>
+             `;
+             console.log("Pesan error dari Firebase:", error.message);
+        } else {
+            postsContainer.innerHTML = '<h2>Maaf, terjadi kesalahan saat memuat artikel.</h2>';
+        }
     }
 };
 
@@ -57,17 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplayPosts();
 });
 
-// Event Delegation: Menambahkan satu listener untuk menangani semua klik pada postingan
+// Event Delegation
 postsContainer.addEventListener('click', (e) => {
     const postDiv = e.target.closest('.post');
     if (postDiv) {
         const postId = postDiv.dataset.postId;
-        // Panggil fungsi openPost dari script.js dengan URL baru
-        window.openPost(`/post-template.html?id=${postId}`);
+        // Panggil fungsi global dari script.js jika masih ada, atau handle langsung
+        if(window.openPost) {
+            window.openPost(`/post-template.html?id=${postId}`);
+        }
     }
 });
 
-// Fungsi untuk filter yang dipanggil dari index.html
+// Fungsi untuk filter
 window.filterArticles = (category) => {
     const filterLinks = document.querySelectorAll('.filter-link');
     filterLinks.forEach(link => {

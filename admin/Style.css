@@ -6,7 +6,6 @@ body {
     margin: 0;
     padding: 20px;
     background-color: var(--color-background);
-    background-image: url("/img/bg.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

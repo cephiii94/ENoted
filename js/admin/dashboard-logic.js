@@ -1,6 +1,5 @@
 // js/admin/dashboard-logic.js
 
-// VERSI DIKEMBALIKAN ke 9.23.0 agar cocok dengan firestore.js
 import { collection, onSnapshot, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { db, auth } from "../firestore.js";
@@ -30,14 +29,26 @@ const renderPosts = (posts) => {
     }
     
     posts.forEach(post => {
-        // Menggunakan publishedAt sesuai skrip asli Anda
         const postDate = post.publishedAt && post.publishedAt.toDate ? post.publishedAt.toDate() : new Date();
         const formattedDate = postDate.toLocaleDateString('id-ID', {
             day: 'numeric', month: 'long', year: 'numeric'
         });
 
         const status = post.status || 'Draft';
-        const statusBadgeColor = status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+
+        // --- [PEMBARUAN] Logika warna badge status yang lebih baik ---
+        let statusBadgeColor;
+        switch (status) {
+            case 'Published':
+                statusBadgeColor = 'bg-green-100 text-green-800'; // Hijau untuk Published
+                break;
+            case 'Archived':
+                statusBadgeColor = 'bg-gray-100 text-gray-800';   // Abu-abu untuk Archived
+                break;
+            default: // Draft
+                statusBadgeColor = 'bg-yellow-100 text-yellow-800'; // Kuning untuk Draft
+        }
+        // -----------------------------------------------------------
 
         const postCard = document.createElement('div');
         postCard.className = "bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-all";
@@ -99,7 +110,6 @@ const closeDeleteModal = () => {
 const handleDelete = async () => {
     if (!postToDeleteId) return;
     try {
-        // PATH DIKEMBALIKAN ke "posts"
         const postDocRef = doc(db, "posts", postToDeleteId);
         await deleteDoc(postDocRef);
     } catch (error) {
@@ -112,7 +122,6 @@ const handleDelete = async () => {
 // Listener utama untuk mengambil data dan inisialisasi
 const initializeDashboard = (userId) => {
     loadingIndicator.innerHTML = "<p>Memuat postingan...</p>";
-    // PATH DIKEMBALIKAN ke "posts"
     const postsCollectionRef = collection(db, "posts");
     const q = query(postsCollectionRef);
 
@@ -152,8 +161,6 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         initializeDashboard(user.uid);
     } else {
-        // Mengarahkan ke halaman login sesuai skrip asli Anda
         window.location.href = '/admin/login.html';
     }
 });
-
