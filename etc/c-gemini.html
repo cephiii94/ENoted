@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asisten AI Pribadi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #10a37f;
+            --secondary-color: #19c37d;
+            --bg-color: #f7f7f8;
+            --dark-bg: #212121;
+            --light-bg: #ffffff;
+            --text-primary: #2e2e2e;
+            --text-secondary: #6e6e80;
+            --border-color: #e5e5e5;
+            --hover-color: #f0f0f0;
+            --user-msg: #10a37f;
+            --ai-msg: #f7f7f8;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #212121;
+            --light-bg: #2f2f2f;
+            --text-primary: #ececf1;
+            --text-secondary: #c5c5d2;
+            --border-color: #4d4d4f;
+            --hover-color: #404040;
+            --ai-msg: #2f2f2f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar untuk Desktop */
+        .sidebar {
+            width: 280px;
+            background: var(--light-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .new-chat-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .new-chat-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .sidebar-menu {
+            padding: 8px;
+        }
+
+        .menu-section {
+            margin-bottom: 24px;
+        }
+
+        .menu-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding: 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .menu-item:hover {
+            background: var(--hover-color);
+        }
+
+        .menu-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--light-bg);
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--light-bg);
+        }
+
+        .chat-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--hover-color);
+            color: var(--text-primary);
+        }
+
+        /* Messages Container */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-content {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .message.user .message-content {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .user .message-avatar {
+            background: var(--user-msg);
+            color: white;
+        }
+
+        .ai .message-avatar {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .message-text {
+            flex: 1;
+            line-height: 1.5;
+            font-size: 15px;
+            padding: 12px 0;
+        }
+
+        .user .message-text {
+            text-align: right;
+            padding-right: 0;
+        }
+
+        .ai .message-text {
+            padding-left: 0;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .user .message-time {
+            text-align: right;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--light-bg);
+        }
+
+        .input-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--light-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary-color);
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15px;
+            line-height: 1.4;
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+            font-family: inherit;
+            color: var(--text-primary);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .input-btn:hover {
+            background: var(--hover-color);
+            color: var(--text-primary);
+        }
+
+        .input-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .input-btn.primary:hover {
+            background: var(--secondary-color);
+        }
+
+        .input-btn.recording {
+            background: #ef4444;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            margin-bottom: 24px;
+        }
+
+        .typing-content {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--ai-msg);
+            border-radius: 12px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* File Preview */
+        .file-preview {
+            display: none;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-info {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                display: none;
+            }
+
+            .mobile-overlay.show {
+                display: block;
+            }
+
+            .chat-area {
+                width: 100%;
+            }
+
+            .chat-header {
+                padding: 12px 16px;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .messages-container {
+                padding: 16px;
+            }
+
+            .input-area {
+                padding: 16px;
+            }
+
+            .quick-actions {
+                overflow-x: auto;
+                padding-bottom: 4px;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .quick-actions::-webkit-scrollbar {
+                display: none;
+            }
+
+            .message-text {
+                font-size: 14px;
+            }
+        }
+
+        /* Desktop-only elements */
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .mobile-overlay {
+                display: none !important;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Puter Integration Styles */
+        .puter-status {
+            padding: 8px 12px;
+            background: var(--bg-color);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .puter-connected {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            background: rgba(16, 163, 127, 0.1);
+        }
+
+        /* -- BARU: Modal API Key Styles -- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--light-bg);
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .modal-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .modal-description a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .modal-description a:hover {
+            text-decoration: underline;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .modal-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .modal-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        .modal-btn.secondary {
+            background: var(--hover-color);
+            color: var(--text-primary);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
+        <div class="modal-overlay" id="apiKeyModal">
+            <div class="modal-content">
+                <div class="modal-title">Atur Google Gemini API Key</div>
+                <div class="modal-description">
+                    Untuk menggunakan fitur AI, Anda memerlukan API Key dari Google AI Studio.
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank">Dapatkan API Key Anda di sini.</a>
+                </div>
+                <input type="password" id="apiKeyInput" class="modal-input" placeholder="Masukkan API Key Anda...">
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="closeApiKeyModal()">Tutup</button>
+                    <button class="modal-btn primary" onclick="saveApiKey()">Simpan & Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    <i class="fas fa-plus"></i>
+                    Chat Baru
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="puter-status" id="puterStatus">
+                    <i class="fas fa-circle" style="color: #ef4444;"></i>
+                    Puter Dinonaktifkan
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Fitur AI</div>
+                    <div class="menu-item active" onclick="setActiveFeature('chat', this)">
+                        <i class="fas fa-comments"></i>
+                        Chat Umum
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Puter Services</div>
+                    <div class="menu-item" onclick="openPuterFiles()">
+                        <i class="fas fa-folder"></i>
+                        File Manager
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-title">Pengaturan</div>
+                    <div class="menu-item" onclick="openApiKeyModal()">
+                        <i class="fas fa-key"></i>
+                        Atur API Key
+                    </div>
+                    <div class="menu-item" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                        Mode Gelap
+                    </div>
+                    <div class="menu-item" onclick="clearAllChats()">
+                        <i class="fas fa-trash"></i>
+                        Hapus Riwayat
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <button class="header-btn mobile-menu-btn" onclick="openMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-title">
+                    <i class="fas fa-robot"></i>
+                    Asisten AI Pribadi
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge">
+                        <div class="status-dot"></div>
+                        Online
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="message ai">
+                    <div class="message-content">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-text">
+                            <div>Halo! Saya adalah asisten AI pribadi Anda, didukung oleh Google Gemini.</div>
+                            <div>Silakan masukkan Google Gemini API Key Anda untuk memulai percakapan. Anda bisa mendapatkannya dari Google AI Studio.</div>
+                            <div class="message-time" id="welcomeTime"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-content">
+                    <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea class="message-input" id="messageInput" placeholder="Ketik pesan Anda di sini..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                        <div class="input-actions">
+                            <button class="input-btn primary" onclick="sendMessage()" title="Kirim Pesan">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+        window.GoogleGenerativeAI = GoogleGenerativeAI;
+    </script>
+    
+    <script>
+// --- LOGIKA API KEY & GEMINI ---
+let GEMINI_API_KEY = '';
+let genAI;
+let generativeModel;
+
+function loadApiKey() {
+    const savedKey = localStorage.getItem('geminiApiKey');
+    if (savedKey) {
+        GEMINI_API_KEY = savedKey;
+        initializeGemini();
+    } else {
+        openApiKeyModal();
+    }
+}
+
+function openApiKeyModal() {
+    document.getElementById('apiKeyModal').style.display = 'flex';
+    const savedKey = localStorage.getItem('geminiApiKey');
+    if (savedKey) {
+        document.getElementById('apiKeyInput').value = savedKey;
+    }
+}
+
+function closeApiKeyModal() {
+    document.getElementById('apiKeyModal').style.display = 'none';
+}
+
+function saveApiKey() {
+    const inputKey = document.getElementById('apiKeyInput').value.trim();
+    if (inputKey) {
+        localStorage.setItem('geminiApiKey', inputKey);
+        GEMINI_API_KEY = inputKey;
+        initializeGemini();
+        closeApiKeyModal();
+        addMessage("API Key berhasil disimpan. Anda sekarang dapat memulai percakapan.", "ai");
+    } else {
+        alert("API Key tidak boleh kosong.");
+    }
+}
+
+function initializeGemini() {
+    if (!GEMINI_API_KEY) return;
+    try {
+        genAI = new window.GoogleGenerativeAI(GEMINI_API_KEY);
+        // PERBAIKAN: Menggunakan model 'gemini-1.5-flash-latest'
+        generativeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        console.log("Gemini AI Initialized Successfully.");
+    } catch (error) {
+        console.error("Error initializing Gemini:", error);
+        addMessage("Gagal menginisialisasi model AI. Pastikan API Key Anda benar.", "ai");
+    }
+}
+
+async function getGeminiResponse(prompt) {
+    if (!generativeModel) {
+        return "Model AI belum siap. Mohon atur API Key Anda di pengaturan.";
+    }
+
+    try {
+        const result = await generativeModel.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
+    } catch (error) {
+        console.error("Error getting response from Gemini:", error);
+        return `Maaf, terjadi kesalahan saat menghubungi AI. Pastikan API Key Anda valid. (Error: ${error.message})`;
+    }
+}
+
+// --- FUNGSI PENGIRIMAN PESAN ---
+async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    if (!input) return;
+    
+    const message = input.value.trim();
+    if (!message) return;
+
+    if (!GEMINI_API_KEY) {
+        openApiKeyModal();
+        return;
+    }
+    
+    addMessage(message, 'user');
+    input.value = '';
+    autoResize(input);
+    
+    showTypingIndicator();
+
+    const aiResponse = await getGeminiResponse(message);
+    
+    hideTypingIndicator();
+    addMessage(aiResponse, 'ai');
+}
+
+
+// --- FUNGSI LAINNYA ---
+
+let puterInitialized = false;
+let currentTheme = 'light';
+let activeFeature = 'chat';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadApiKey();
+    // PERBAIKAN: Inisialisasi Puter.js dinonaktifkan untuk development lokal
+    // initializePuter(); 
+    updateWelcomeTime();
+    loadTheme();
+    setupAutoResize();
+});
+
+// Puter.js Integration
+async function initializePuter() {
+    try {
+        await puter.init(); // Fungsi ini mungkin tidak ada jika otentikasi gagal
+        puterInitialized = true;
+        updatePuterStatus(true);
+    } catch (error) {
+        console.error('Failed to initialize Puter:', error);
+        updatePuterStatus(false);
+    }
+}
+
+function updatePuterStatus(connected) {
+    const statusElement = document.getElementById('puterStatus');
+    if (connected) {
+        statusElement.innerHTML = '<i class="fas fa-circle" style="color: var(--primary-color);"></i> Puter Terhubung';
+        statusElement.classList.add('puter-connected');
+    } else {
+        statusElement.innerHTML = '<i class="fas fa-circle" style="color: #ef4444;"></i> Puter Terputus';
+        statusElement.classList.remove('puter-connected');
+    }
+}
+
+async function openPuterFiles() {
+    if (!puterInitialized) {
+        alert('Fitur Puter dinonaktifkan saat berjalan secara lokal.'); return;
+    }
+    try {
+        await puter.ui.launchApp('explorer');
+    } catch (error) {
+        addMessage('Gagal membuka file manager: ' + error.message, 'ai');
+    }
+}
+
+// UI Functions
+function updateWelcomeTime() {
+    const timeElement = document.getElementById('welcomeTime');
+    if (timeElement) {
+        timeElement.textContent = new Date().toLocaleTimeString('id-ID', {
+            hour: '2-digit', minute: '2-digit'
+        });
+    }
+}
+
+function openMobileSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('mobileOverlay').classList.add('show');
+}
+
+function closeMobileSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('mobileOverlay').classList.remove('show');
+}
+
+function setActiveFeature(feature, element) {
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    element.classList.add('active');
+    activeFeature = feature;
+}
+
+// Message Functions
+function addMessage(content, sender) {
+    const container = document.getElementById('messagesContainer');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    const currentTime = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const avatar = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+    
+    // Basic markdown formatting
+    let formattedContent = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')       
+        .replace(/`([^`]+)`/g, '<code style="background: var(--bg-color); padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>')
+        .replace(/\n/g, '<br>');
+
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-text">
+                <div>${formattedContent}</div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        </div>`;
+    
+    container.appendChild(messageDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+
+// Input Handling
+function handleKeyDown(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+}
+
+function setupAutoResize() {
+    const textarea = document.getElementById('messageInput');
+    if (textarea) {
+        textarea.addEventListener('input', () => autoResize(textarea));
+    }
+}
+
+// Typing Indicator
+function showTypingIndicator() {
+    document.getElementById('typingIndicator').style.display = 'block';
+    const container = document.getElementById('messagesContainer');
+    container.scrollTop = container.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    document.getElementById('typingIndicator').style.display = 'none';
+}
+
+// Theme Functions
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    const themeIcons = document.querySelectorAll('.fa-moon, .fa-sun');
+    themeIcons.forEach(icon => {
+        icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    });
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    currentTheme = savedTheme;
+    document.body.setAttribute('data-theme', currentTheme);
+    if (currentTheme === 'dark') {
+        document.querySelectorAll('.fa-moon').forEach(icon => icon.className = 'fas fa-sun');
+    }
+}
+
+// Utility Functions
+function startNewChat() {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = `
+        <div class="message ai">
+            <div class="message-content">
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-text">
+                    <div>Chat baru dimulai! Bagaimana saya bisa membantu Anda?</div>
+                    <div class="message-time">${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            </div>
+        </div>`;
+    closeMobileSidebar();
+}
+
+function clearAllChats() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua riwayat chat?')) {
+        startNewChat();
+    }
+}
+
+// Export functions for global access
+window.AI_Assistant = {
+    sendMessage,
+    toggleTheme,
+    accessPuterFiles: openPuterFiles,
+    setActiveFeature,
+    openApiKeyModal,
+    closeApiKeyModal,
+    saveApiKey
+};
+
+    </script>
+</body>
+</html>
