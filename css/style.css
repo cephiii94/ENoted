@@ -34,13 +34,21 @@
   
   /* ===== LAYOUT STYLES ===== */
   /* Style khusus untuk halaman utama (index) */
-  body.home-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100dvh;
-    background-attachment: fixed;
-  }
+body.home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh; /* Gunakan min-height untuk fleksibilitas */
+  background-attachment: fixed;
+  padding: 20px; /* Beri sedikit padding pada body */
+  box-sizing: border-box;
+  gap: 25px;
+}
+
+.main-wrapper {
+  position: relative; /* Ini adalah kunci utamanya! */
+  /* Wrapper ini tidak perlu style lain karena ukurannya akan mengikuti .container */
+}
   
   /* Style khusus untuk halaman post */
   body.post-page {
@@ -77,7 +85,7 @@
     box-shadow: var(--shadow-medium);
     text-align: center;
     padding: var(--spacing-large);
-    margin: 0 var(--spacing-large);
+    /*margin: 0 var(--spacing-large);*/
     overflow-y: auto;
     max-height: 80vh;
   }
@@ -642,3 +650,99 @@ pre code {
   overflow-x: auto; 
 }
     
+/* ===== GAYA UNTUK IKON USER & MODAL ===== */
+
+/* Tombol Aksi Melayang (Floating Action Button) untuk User */
+#userFab { /* Menggunakan ID selector */
+  position: absolute;   /* Mengacu pada .main-wrapper */
+  bottom: 20px;         /* 20px dari bawah wrapper */
+  right: 100%;          /* Posisikan tepi KANAN ikon di tepi KIRI wrapper */
+  margin-right: 15px;   /* Beri jarak 15px antara ikon dan container */
+  
+  /* Style visual tetap sama */
+  width: 50px;
+  height: 50px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-medium);
+  cursor: pointer;
+  z-index: 998;
+  transition: transform 0.2s ease-in-out;
+}
+
+.user-fab:hover {
+  transform: scale(1.1);
+}
+
+/* Menyesuaikan style dari popup-notification yang sudah ada */
+#loginModal, #userProfileModal {
+  text-align: left;
+}
+
+#loginModal h3, #userProfileModal h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: var(--spacing-large);
+}
+
+/* Styling untuk form login */
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}
+
+#loginForm input {
+  padding: var(--spacing-small);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#loginForm button {
+  padding: var(--spacing-small);
+  border: none;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#loginForm button:hover {
+  background-color: #43A047;
+}
+
+.error-message {
+    color: #ff5252;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Tombol logout */
+.logout-btn {
+    width: 100%;
+    padding: var(--spacing-small);
+    border: none;
+    border-radius: 5px;
+    background-color: #ff5252;
+    color: var(--color-white);
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: var(--spacing-small);
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #ff1744;
+}
+
+/* Menyembunyikan modal secara default */
+#loginModal, #userProfileModal, .popup-overlay {
+    display: none;
+}

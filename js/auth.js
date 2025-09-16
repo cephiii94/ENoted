@@ -1,69 +1,112 @@
 // js/auth.js
 
-// Impor modul yang dibutuhkan dari Firebase
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { db } from "./firestore.js"; // Koneksi ke database, sudah dibuat
+// Impor fungsi yang diperlukan dari Firebase SDK
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const auth = getAuth();
-const loginForm = document.getElementById('loginForm');
-const responseMessage = document.getElementById('responseMessage');
-
-// Gunakan email dan password Anda yang sudah tersimpan
-const adminEmail = 'cecephard12@gmail.com';
-const adminPassword = 'password_yang_aman_anda_buat'; // Ganti dengan password yang aman
-
-// Fungsi untuk menangani login
-const handleLogin = async (e) => {
-    e.preventDefault();
-
-    const email = loginForm['email'].value;
-    const password = loginForm['password'].value;
-    
-    responseMessage.style.display = 'block';
-    responseMessage.className = 'response-message';
-    responseMessage.innerText = 'Memproses...';
-
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Jika login berhasil, alihkan ke halaman buat postingan
-        responseMessage.className = 'response-message success';
-        responseMessage.innerText = 'Login berhasil! Mengalihkan...';
-        console.log("Login berhasil! UID:", user.uid);
-
-        // Simpan UID admin di local storage atau sesi
-        localStorage.setItem('adminUID', user.uid);
-
-        window.location.href = '/admin/dashboard.html'; // Ganti dengan halaman admin Anda
-
-    } catch (error) {
-        responseMessage.className = 'response-message error';
-        responseMessage.innerText = 'Login gagal. Email atau password salah.';
-        console.error("Error login: ", error.code, error.message);
-    }
+// TODO: Ganti dengan konfigurasi Firebase proyek Anda
+const firebaseConfig = {
+  apiKey: "AIzaSyCb21XVRokKfyEXfPMtrrNAg5FF1mgAIYI",
+  authDomain: "enoted-07092025.firebaseapp.com",
+  projectId: "enoted-07092025",
+  storageBucket: "enoted-07092025.firebasestorage.app",
+  messagingSenderId: "221737324344",
+  appId: "1:221737324344:web:88e1626a7c6b85cfb37bcd",
+  measurementId: "G-K65TBCM8G5"
 };
 
-// Tambahkan event listener untuk form login
-if (loginForm) {
-    loginForm.addEventListener('submit', handleLogin);
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Ambil elemen-elemen dari DOM yang berhubungan dengan ikon melayang dan modal
+const userFab = document.getElementById('userFab');
+const loginModal = document.getElementById('loginModal');
+const userProfileModal = document.getElementById('userProfileModal');
+const modalOverlay = document.getElementById('modalOverlay');
+
+const closeLoginModalBtn = document.getElementById('closeLoginModal');
+const closeProfileModalBtn = document.getElementById('closeProfileModal');
+const loginForm = document.getElementById('loginForm'); // Form di dalam modal
+const logoutButton = document.getElementById('logoutButton');
+const userInfo = document.getElementById('userInfo');
+const loginError = document.getElementById('loginError');
+
+// --- LOGIKA UTAMA UNTUK IKON MELAYANG ---
+
+// Fungsi untuk menampilkan modal tertentu
+function showModal(modal) {
+    modalOverlay.style.display = 'block';
+    modal.style.display = 'block';
 }
 
-// Catatan: Ini adalah fungsi SEKALI-PAKAI untuk membuat akun admin pertama.
-// Setelah akun dibuat, hapus kode ini dari file js/auth.js.
-// Buka halaman login di browser untuk menjalankan fungsi ini.
+// Fungsi untuk menyembunyikan semua modal
+function hideModals() {
+    modalOverlay.style.display = 'none';
+    if (loginModal) loginModal.style.display = 'none';
+    if (userProfileModal) userProfileModal.style.display = 'none';
+}
 
-//const createAdminAccount = async () => {
-//    try {
-  //      const userCredential = await createUserWithEmailAndPassword(auth, adminEmail, adminPassword);
-    //    console.log("Akun admin berhasil dibuat. UID:", userCredential.user.uid);
-        // Penting: Salin UID ini dan masukkan ke aturan Firestore Anda!
-        // UID Anda akan terlihat seperti: "4lP8bJ1...Gk9"
-    //} catch (error) {
-      //  console.error("Error saat membuat akun admin:", error.code, error.message);
-  //  }
-//};
+// 👂 Pantau perubahan status otentikasi secara real-time
+onAuthStateChanged(auth, (user) => {
+    // Pastikan elemen userFab ada di halaman ini
+    if (!userFab) return; 
 
-// Jalankan fungsi pembuatan akun jika tidak ada pengguna yang login.
-// HAPUS ATAU KOMENTARI BARIS INI SETELAH AKUN DIBUAT
-// createAdminAccount();
+    if (user) {
+        // ✅ Pengguna sudah login
+        console.log("Pengguna terdeteksi:", user.email);
+        userInfo.textContent = `Selamat datang, ${user.email}`;
+        
+        // Atur agar klik pada ikon akan menampilkan profil pengguna
+        userFab.onclick = () => showModal(userProfileModal);
+
+    } else {
+        // ❌ Pengguna belum login atau sudah logout
+        console.log("Tidak ada pengguna yang login.");
+        
+        // Atur agar klik pada ikon akan menampilkan form login
+        userFab.onclick = () => showModal(loginModal);
+    }
+});
+
+// 🚀 Event listener untuk form login di dalam modal
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        if(loginError) loginError.textContent = ''; // Bersihkan pesan error
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Berhasil login
+                console.log("Login dari modal berhasil:", userCredential.user);
+                hideModals(); // Cukup tutup modal, tidak perlu redirect
+                loginForm.reset();
+            })
+            .catch((error) => {
+                // Gagal login
+                console.error("Error login dari modal:", error.message);
+                if(loginError) loginError.textContent = "Email atau password salah.";
+            });
+    });
+}
+
+// 🚪 Event listener untuk tombol logout
+if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            console.log("Logout berhasil.");
+            hideModals();
+        }).catch((error) => {
+            console.error("Error saat logout:", error);
+        });
+    });
+}
+
+
+// ❌ Event listener untuk menutup modal
+if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', hideModals);
+if (closeProfileModalBtn) closeProfileModalBtn.addEventListener('click', hideModals);
+if (modalOverlay) modalOverlay.addEventListener('click', hideModals);
