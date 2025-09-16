@@ -8,8 +8,10 @@
     <meta name="keywords" content="enoted, noted me, sedekah, tutorial, artikel inspiratif, berbagi">
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <title>ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="canonical" href="https://www.enoted.netifly.app">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="/css/style.css">    <link rel="canonical" href="https://www.enoted.netifly.app">
 
     <meta property="og:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
     <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
@@ -78,12 +80,42 @@
             <button class="close-popup" id="closeLoginModal">Tutup</button>
         </div>
 
-        <div id="userProfileModal" class="popup-notification">
-            <h3>Profil Pengguna</h3>
-            <p id="userInfo"></p>
-            <button id="logoutButton" class="logout-btn">Logout</button>
-            <button class="close-popup" id="closeProfileModal">Tutup</button>
+<div id="userProfileModal" class="popup-notification">
+    
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fa-solid fa-user-shield"></i>
         </div>
+        <div class="profile-info">
+            <p>Admin Panel</p>
+            <span id="userInfo">email.admin@contoh.com</span>
+        </div>
+    </div>
+
+    
+    <ul class="profile-menu">
+        <li>
+            <a href="/admin/dashboard.html">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Lihat Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/create-post.html">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Tambah Postingan Baru</span>
+            </a>
+        </li>
+        <li>
+            <button id="logoutButton" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+        </li>
+    </ul>
+
+    <button class="close-popup" id="closeProfileModal">Tutup</button>
+</div>
 
     </div> <div class="detail-container" id="detailContainer">
         <button class="close-btn" onclick="closePost()">X</button>
