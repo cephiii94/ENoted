@@ -1,5 +1,5 @@
 // js/chat.js
-import { db, auth } from './firestore.js';
+import { db, auth } from '../../../js/firestore.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
