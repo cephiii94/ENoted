@@ -26,14 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let userApiKeys = [];
     let activeApiKey = null;
     
-    // =================================================================================
-    // SOLUSI: Fungsi-fungsi ini didefinisikan di atas agar "siap" sebelum dipanggil.
-    // =================================================================================
-
     /**
      * Menambahkan pesan baru ke antarmuka chat.
-     * @param {string} content - Isi pesan.
-     * @param {string} sender - Pengirim pesan ('user' atau 'ai').
      */
     function addMessage(content, sender) {
         if (!messagesContainer) return;
@@ -63,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Mengatur status koneksi AI di UI.
-     * @param {('offline'|'online'|'error')} status - Status koneksi.
-     * @param {string} text - Pesan status.
      */
     function setAiStatus(status, text) {
         if (!statusDot || !statusText) return;
@@ -85,14 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
             userApiKeys = [];
             activeApiKey = null;
             generativeModel = null;
-            updateKeySelector(); // Mengosongkan selector
+            updateKeySelector();
             setAiStatus('offline', 'Silakan Login');
             addMessage("Silakan login untuk memulai atau melanjutkan percakapan.", "ai");
-            toggleInputs(true); // Nonaktifkan input
+            toggleInputs(true);
         }
     });
-
-    // ... sisa dari kode chat.js ... (tidak perlu diubah)
 
     const toggleInputs = (disabled) => {
         if(messageInput) messageInput.disabled = disabled;
@@ -162,16 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderApiKeyList();
     };
     
-    apiKeySelector.addEventListener('change', async (e) => {
-        const selectedKey = e.target.value;
-        if (selectedKey && currentUser) {
-            activeApiKey = selectedKey;
-            const userDocRef = doc(db, 'users', currentUser.uid);
-            await setDoc(userDocRef, { activeApiKey: selectedKey }, { merge: true });
-            initializeGemini(selectedKey);
-        }
-    });
-
     const renderApiKeyList = () => {
         if (!apiKeyListContainer) return;
         apiKeyListContainer.innerHTML = '';
@@ -187,54 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     };
-
-    apiKeyListContainer.addEventListener('click', async (e) => {
-        if (e.target.closest('.delete-key-btn')) {
-            const keyToDelete = e.target.closest('.delete-key-btn').dataset.key;
-            const keyNameToDelete = userApiKeys.find(k => k.key === keyToDelete).name;
-
-            if (!confirm(`Yakin ingin menghapus kunci "${keyNameToDelete}"?`)) return;
-
-            const userDocRef = doc(db, 'users', currentUser.uid);
-            const keyObjectToDelete = { name: keyNameToDelete, key: keyToDelete };
-            
-            await updateDoc(userDocRef, {
-                apiKeys: arrayRemove(keyObjectToDelete)
-            });
-
-            if (activeApiKey === keyToDelete) {
-                const newActiveKey = userApiKeys.length > 1 ? userApiKeys.find(k => k.key !== keyToDelete).key : null;
-                await setDoc(userDocRef, { activeApiKey: newActiveKey }, { merge: true });
-            }
-            await loadApiKeysFromFirestore();
-        }
-    });
-
-    addKeyForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const keyName = document.getElementById('keyNameInput').value.trim();
-        const keyValue = document.getElementById('keyValueInput').value.trim();
-
-        if (keyName && keyValue && currentUser) {
-            const userDocRef = doc(db, 'users', currentUser.uid);
-            const newKey = { name: keyName, key: keyValue };
-            
-            await updateDoc(userDocRef, {
-                apiKeys: arrayUnion(newKey)
-            }).catch(async (err) => {
-                if (err.code === 'not-found') {
-                    await setDoc(userDocRef, { apiKeys: [newKey] });
-                }
-            });
-
-            if (!activeApiKey) {
-                await setDoc(userDocRef, { activeApiKey: keyValue }, { merge: true });
-            }
-
-            addKeyForm.reset();
-            await loadApiKeysFromFirestore();
-        }
-    });
 
     const sendMessage = async () => {
         if (!messageInput || !generativeModel) return;
@@ -259,16 +191,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    sendMessageBtn.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    // --- Event Listeners (dengan Pengecekan Keamanan) ---
     
-    manageKeysBtn.addEventListener('click', () => apiKeyModal.style.display = 'flex');
-    closeModalBtn.addEventListener('click', () => apiKeyModal.style.display = 'none');
+    if (apiKeySelector) {
+        apiKeySelector.addEventListener('change', async (e) => {
+            const selectedKey = e.target.value;
+            if (selectedKey && currentUser) {
+                activeApiKey = selectedKey;
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await setDoc(userDocRef, { activeApiKey: selectedKey }, { merge: true });
+                initializeGemini(selectedKey);
+            }
+        });
+    }
+
+    if (apiKeyListContainer) {
+        apiKeyListContainer.addEventListener('click', async (e) => {
+            if (e.target.closest('.delete-key-btn')) {
+                const keyToDelete = e.target.closest('.delete-key-btn').dataset.key;
+                const keyObject = userApiKeys.find(k => k.key === keyToDelete);
+                if (!keyObject) return;
+
+                if (!confirm(`Yakin ingin menghapus kunci "${keyObject.name}"?`)) return;
+
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userDocRef, { apiKeys: arrayRemove(keyObject) });
+
+                if (activeApiKey === keyToDelete) {
+                    const remainingKeys = userApiKeys.filter(k => k.key !== keyToDelete);
+                    const newActiveKey = remainingKeys.length > 0 ? remainingKeys[0].key : null;
+                    await setDoc(userDocRef, { activeApiKey: newActiveKey }, { merge: true });
+                }
+                await loadApiKeysFromFirestore();
+            }
+        });
+    }
+
+    if (addKeyForm) {
+        addKeyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const keyNameInput = document.getElementById('keyNameInput');
+            const keyValueInput = document.getElementById('keyValueInput');
+            const keyName = keyNameInput.value.trim();
+            const keyValue = keyValueInput.value.trim();
+
+            if (keyName && keyValue && currentUser) {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const newKey = { name: keyName, key: keyValue };
+                
+                await updateDoc(userDocRef, {
+                    apiKeys: arrayUnion(newKey)
+                }).catch(async (err) => {
+                    if (err.code === 'not-found') {
+                        await setDoc(userDocRef, { apiKeys: [newKey] });
+                    }
+                });
+
+                if (!activeApiKey) {
+                    await setDoc(userDocRef, { activeApiKey: keyValue }, { merge: true });
+                }
+
+                addKeyForm.reset();
+                await loadApiKeysFromFirestore();
+            }
+        });
+    }
+
+    if (sendMessageBtn) {
+        sendMessageBtn.addEventListener('click', sendMessage);
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+    
+    // SOLUSI: Memastikan event listener untuk modal dipasang dengan benar
+    if (manageKeysBtn && apiKeyModal) {
+        manageKeysBtn.addEventListener('click', () => {
+            apiKeyModal.style.display = 'flex';
+        });
+    }
+
+    if (closeModalBtn && apiKeyModal) {
+        closeModalBtn.addEventListener('click', () => {
+            apiKeyModal.style.display = 'none';
+        });
+    }
     
     // Inisialisasi awal
     toggleInputs(true);
