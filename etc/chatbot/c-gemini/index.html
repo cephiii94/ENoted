@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asisten AI Pribadi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/etc/chatbot/c-gemini/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <div class="mobile-overlay" id="mobileOverlay"></div>
+
+        <!-- Modal untuk Mengelola (Tambah/Hapus) API Keys -->
+        <div class="modal-overlay" id="apiKeyManagerModal">
+            <div class="modal-content">
+                <span class="close-btn" id="closeApiManagerModal">&times;</span>
+                <div class="modal-title">Kelola API Keys Anda</div>
+                <div class="modal-description">Tambahkan nama yang mudah diingat untuk setiap key.</div>
+                
+                <div id="apiKeyListContainer">
+                    <!-- Daftar API Key akan dimuat di sini oleh JavaScript -->
+                </div>
+
+                <div class="form-title">Tambah API Key Baru</div>
+                <div class="api-key-form">
+                    <input type="text" id="newApiKeyName" placeholder="Nama Key (cth: Akun Utama)">
+                    <input type="password" id="newApiKeyValue" placeholder="Nilai API Key (AIza...)">
+                    <button id="addApiKeyBtn" class="modal-btn primary">
+                        <i class="fas fa-plus"></i> Tambah
+                    </button>
+                </div>
+                 <div id="apiKeyError" class="error-message"></div>
+            </div>
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i> Chat Baru
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-title">Pengaturan</div>
+                    <div class="menu-item">
+                        <i class="fas fa-key"></i>
+                        <select id="apiKeySelect" class="api-key-selector">
+                            <option value="">Pilih API Key...</option>
+                        </select>
+                    </div>
+                     <div class="menu-item" id="manageApiKeysBtn">
+                        <i class="fas fa-cog"></i>
+                        Kelola Daftar Key
+                    </div>
+                    <div class="menu-item" id="toggleThemeBtn">
+                        <i class="fas fa-moon"></i>
+                        <span>Mode Gelap</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bagian Footer Sidebar untuk Login/Profil Pengguna -->
+            <div class="sidebar-footer">
+                <div id="loginSection">
+                    <div class="menu-title">AKUN PENGGUNA</div>
+                    <form id="loginForm" class="login-form">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                        <p id="loginError" class="error-message"></p>
+                    </form>
+                </div>
+                <div id="profileSection" style="display: none;">
+                    <div class="menu-title">LOGIN SEBAGAI</div>
+                    <div class="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userInfo"></span>
+                        <button id="logoutButton" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <button class="header-btn mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-title">
+                    <i class="fas fa-robot"></i> Asisten AI Pribadi
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge">
+                        <div id="statusDot" class="status-dot"></div>
+                        <span id="statusText">Offline</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <!-- Pesan akan dimuat di sini -->
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <!-- ... -->
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea class="message-input" id="messageInput" placeholder="Ketik pesan Anda di sini..." rows="1" disabled></textarea>
+                        <button class="input-btn primary" id="sendMessageBtn" title="Kirim Pesan" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Skrip dimuat sebagai module untuk urutan yang benar -->
+    <script type="module" src="/js/firestore.js"></script>
+    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="/js/chat.js"></script>
+</body>
+</html>
+
