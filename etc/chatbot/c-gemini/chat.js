@@ -19,12 +19,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKeyListContainer = document.getElementById('apiKeyListContainer');
     const addKeyForm = document.getElementById('addKeyForm');
 
+    // --- [TAMBAHAN] Elemen untuk UI Login/Profil ---
+    const authView = document.getElementById('auth-view');
+    const profileView = document.getElementById('profile-view');
+    const userInfoSidebar = document.getElementById('userInfoSidebar');
+
     // --- Variabel State Aplikasi ---
     let genAI;
     let generativeModel;
     let currentUser = null;
     let userApiKeys = [];
     let activeApiKey = null;
+
+    // --- [TAMBAHAN] Fungsi untuk Mengelola Tampilan Login/Profil ---
+    /**
+     * Memperbarui tampilan UI di sidebar berdasarkan status login pengguna.
+     * @param {object|null} user Objek pengguna dari Firebase Auth.
+     */
+    function updateAuthUI(user) {
+        if (!authView || !profileView || !userInfoSidebar) return;
+
+        if (user) {
+            // Jika pengguna login:
+            authView.style.display = 'none'; // Sembunyikan form login
+            profileView.style.display = 'flex'; // Tampilkan bagian profil
+            userInfoSidebar.textContent = user.displayName || user.email; // Tampilkan info user
+        } else {
+            // Jika pengguna logout:
+            authView.style.display = 'flex'; // Tampilkan kembali form login
+            profileView.style.display = 'none'; // Sembunyikan bagian profil
+        }
+    }
     
     /**
      * Menambahkan pesan baru ke antarmuka chat.
@@ -33,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!messagesContainer) return;
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}`;
-        const currentTime = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         const avatar = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
         
         let formattedContent = content
@@ -44,11 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/\n/g, '<br>');
 
         messageDiv.innerHTML = `
-            <div class="message-content">
-                <div class="message-avatar">${avatar}</div>
-                <div class="message-text">
-                    <div>${formattedContent}</div>
-                </div>
+            <div class="message-avatar">${avatar}</div>
+            <div class="message-text">
+                <div>${formattedContent}</div>
             </div>`;
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -66,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Logika Utama Aplikasi ---
 
     onAuthStateChanged(auth, async (user) => {
+        updateAuthUI(user); // <-- [PERUBAHAN] Panggil fungsi untuk update UI di sini
+
         if (user) {
             currentUser = user;
             await loadApiKeysFromFirestore();
@@ -236,4 +260,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
     toggleInputs(true);
 });
-
