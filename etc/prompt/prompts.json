@@ -1,0 +1,56 @@
+[
+  {
+    "id": "prompt1",
+    "title": "Karakter ke Figura",
+    "promptText": "turn this photo into a character figure. Behind it, place a box with the character's image printed on it, and a computer showing the Blender modeling process on its screen. In front of the box, add a round plastic base with the character figure standing on it. set the scene indoors if possible",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Kucing+Biasa",
+    "inputAlt": "Input gambarmu",
+    "outputImage": "https://placehold.co/400x400/3B82F6/FFFFFF?text=Kucing+Astronot",
+    "outputAlt": "Output figura"
+  },
+  {
+    "id": "prompt2",
+    "title": "Hutan Ajaib",
+    "promptText": "Magical forest at night, glowing mushrooms and flowers, a sparkling river, aurora borealis in the sky, fantasy digital art, style of Studio Ghibli, vibrant colors.",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Hutan+Malam",
+    "inputAlt": "Input Gambar Hutan Malam",
+    "outputImage": "https://placehold.co/400x400/8B5CF6/FFFFFF?text=Hutan+Ajaib",
+    "outputAlt": "Output Gambar Hutan Ajaib"
+  },
+  {
+    "id": "prompt3",
+    "title": "Kota Cyberpunk",
+    "promptText": "A bustling cyberpunk city street, neon signs reflecting on wet pavement, flying cars, towering futuristic skyscrapers, Blade Runner aesthetic, cinematic, hyper-detailed.",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Jalan+Kota",
+    "inputAlt": "Input Gambar Jalan Kota",
+    "outputImage": "https://placehold.co/400x400/F43F5E/FFFFFF?text=Kota+Cyberpunk",
+    "outputAlt": "Output Gambar Kota Cyberpunk"
+  },
+  {
+    "id": "prompt4",
+    "title": "Burger Lezat",
+    "promptText": "A juicy, gourmet cheeseburger with melted cheddar cheese, fresh lettuce, tomato, and onions on a sesame seed bun, dramatic food photography, macro shot, shallow depth of field, delicious.",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Burger+Biasa",
+    "inputAlt": "Input Gambar Burger",
+    "outputImage": "https://placehold.co/400x400/F59E0B/FFFFFF?text=Burger+Gourmet",
+    "outputAlt": "Output Gambar Burger Gourmet"
+  },
+  {
+    "id": "prompt5",
+    "title": "Pemandangan Bawah Laut",
+    "promptText": "Vibrant underwater coral reef, teeming with colorful tropical fish, sea turtles, and rays, sunlight filtering through the water surface, creating god rays, National Geographic style photography.",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Dasar+Laut",
+    "inputAlt": "Input Gambar Dasar Laut",
+    "outputImage": "https://placehold.co/400x400/10B981/FFFFFF?text=Terumbu+Karang",
+    "outputAlt": "Output Gambar Terumbu Karang"
+  },
+  {
+    "id": "prompt6",
+    "title": "Mobil Vintage Klasik",
+    "promptText": "A classic vintage car from the 1950s, parked on a street in Havana, Cuba. Pastel colored buildings in the background, warm sunset light, nostalgic and cinematic film photography.",
+    "inputImage": "https://placehold.co/400x400/E0E0E0/333333?text=Mobil+Tua",
+    "inputAlt": "Input Gambar Mobil Tua",
+    "outputImage": "https://placehold.co/400x400/EF4444/FFFFFF?text=Mobil+Vintage",
+    "outputAlt": "Output Gambar Mobil Vintage"
+  }
+]
