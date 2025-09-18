@@ -1,6 +1,8 @@
-// js/chat.js
+// /etc/chatbot/c-gemini/chat.js
+
 import { db, auth } from '../../../js/firestore.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+// [PERBAIKAN] Impor fungsi yang diperlukan untuk login dan logout
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
@@ -19,11 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKeyListContainer = document.getElementById('apiKeyListContainer');
     const addKeyForm = document.getElementById('addKeyForm');
 
-    // --- [TAMBAHAN] Elemen untuk UI Login/Profil ---
-    const authView = document.getElementById('auth-view');
+    // --- [PERBAIKAN] Ambil Elemen UI Login/Profil dengan ID yang Benar ---
+    const loginView = document.getElementById('login-view');
     const profileView = document.getElementById('profile-view');
     const userInfoSidebar = document.getElementById('userInfoSidebar');
-
+    const loginFormSidebar = document.getElementById('loginFormSidebar');
+    const logoutButtonSidebar = document.getElementById('logoutButtonSidebar');
+    const loginErrorSidebar = document.getElementById('loginErrorSidebar');
+    
     // --- Variabel State Aplikasi ---
     let genAI;
     let generativeModel;
@@ -31,22 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let userApiKeys = [];
     let activeApiKey = null;
 
-    // --- [TAMBAHAN] Fungsi untuk Mengelola Tampilan Login/Profil ---
+    // --- [PERBAIKAN] Fungsi untuk Mengelola Tampilan Login/Profil ---
     /**
      * Memperbarui tampilan UI di sidebar berdasarkan status login pengguna.
      * @param {object|null} user Objek pengguna dari Firebase Auth.
      */
     function updateAuthUI(user) {
-        if (!authView || !profileView || !userInfoSidebar) return;
+        // Pastikan elemen ada sebelum dimanipulasi
+        if (!loginView || !profileView || !userInfoSidebar) return;
 
         if (user) {
             // Jika pengguna login:
-            authView.style.display = 'none'; // Sembunyikan form login
+            loginView.style.display = 'none'; // Sembunyikan form login
             profileView.style.display = 'flex'; // Tampilkan bagian profil
-            userInfoSidebar.textContent = user.displayName || user.email; // Tampilkan info user
+            // Tampilkan info user (gunakan email jika display name tidak ada)
+            userInfoSidebar.textContent = user.displayName || user.email; 
         } else {
             // Jika pengguna logout:
-            authView.style.display = 'flex'; // Tampilkan kembali form login
+            loginView.style.display = 'flex'; // Tampilkan kembali form login
             profileView.style.display = 'none'; // Sembunyikan bagian profil
         }
     }
@@ -88,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Logika Utama Aplikasi ---
 
     onAuthStateChanged(auth, async (user) => {
-        updateAuthUI(user); // <-- [PERUBAHAN] Panggil fungsi untuk update UI di sini
+        // [PERBAIKAN] Sekarang fungsi ini akan bekerja dengan benar
+        updateAuthUI(user); 
 
         if (user) {
             currentUser = user;
@@ -101,9 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateKeySelector();
             setAiStatus('offline', 'Silakan Login');
             toggleInputs(true);
+            if (messagesContainer) messagesContainer.innerHTML = ''; // Kosongkan chat saat logout
         }
     });
-
+    
     const toggleInputs = (disabled) => {
         if(messageInput) messageInput.disabled = disabled;
         if(sendMessageBtn) sendMessageBtn.disabled = disabled;
@@ -145,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setAiStatus('error', 'Gagal Memuat Kunci');
         }
     };
-
+    
     const updateKeySelector = () => {
         if (!apiKeySelector) return;
         apiKeySelector.innerHTML = '';
@@ -195,8 +204,33 @@ document.addEventListener('DOMContentLoaded', () => {
             messageInput.focus();
         }
     };
-
+    
     // --- Event Listeners ---
+    
+    // [TAMBAHAN] Event Listener untuk Form Login
+    if (loginFormSidebar) {
+        loginFormSidebar.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmailSidebar').value;
+            const password = document.getElementById('loginPasswordSidebar').value;
+            
+            if (loginErrorSidebar) loginErrorSidebar.textContent = '';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch((error) => {
+                    console.error("Login failed:", error);
+                    if (loginErrorSidebar) loginErrorSidebar.textContent = "Email atau password salah.";
+                });
+        });
+    }
+
+    // [TAMBAHAN] Event Listener untuk Tombol Logout
+    if (logoutButtonSidebar) {
+        logoutButtonSidebar.addEventListener('click', () => {
+            signOut(auth).catch(console.error);
+        });
+    }
+    
     if (apiKeySelector) {
         apiKeySelector.addEventListener('change', async (e) => {
             const selectedKey = e.target.value;
