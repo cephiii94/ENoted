@@ -4,29 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ENoted - Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta name="description" content="ENoted - Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspirasi.">
     <meta name="keywords" content="enoted, noted me, sedekah, tutorial, artikel inspiratif, berbagi">
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <title>ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
-    <!-- Memuat file CSS utama -->
     <link rel="stylesheet" href="/css/style.css">
-    <!-- Memuat file CSS khusus untuk popup -->
     <link rel="stylesheet" href="/css/popup.css">
     
     <link rel="canonical" href="https://www.enoted.netifly.app">
 
     <meta property="og:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
-    <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspirasi untuk kehidupan sehari-hari.">
     <meta property="og:image" content="https://www.enoted.netifly.app/img/og-image.jpg">
     <meta property="og:url" content="https://www.enoted.netifly.app">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
-    <meta name="twitter:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
+    <meta name="twitter:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspirasi untuk kehidupan sehari-hari.">
     <meta name="twitter:image" content="https://www.enoted.netifly.app/img/og-image.jpg">
 </head>
 
@@ -67,77 +65,70 @@
                 </p>
             </footer>
         </div>
-
-        <!-- Bagian Popup dan Modal -->
-        <div id="modalOverlay" class="popup-overlay"></div>
-
+        
         <div id="userFab" class="user-fab">
             <img src="/img/user-icon.png" alt="User" width="24"/>
         </div>
 
-        <!-- Modal Login (Contoh) -->
-        <div id="loginModal" class="popup-notification">
-            <h3>Login Admin</h3>
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
-                <button type="submit">Login</button>
-                <p id="loginError" class="error-message"></p>
-            </form>
-            <button class="close-popup" id="closeLoginModal">Tutup</button>
-        </div>
-
-        <!-- Modal Profil Pengguna yang sudah diperbaiki -->
-        <div id="userProfileModal" class="popup-notification profile-modal">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
-                <div class="profile-info">
-                    <p>Admin Panel</p>
-                    <span id="userInfo">cecephard12@gmail.com</span>
-                </div>
-                <button class="close-popup" id="closeProfileModal" aria-label="Tutup">&times;</button>
-            </div>
-            <nav>
-                <ul class="profile-menu">
-                    <li>
-                        <a href="/admin/dashboard.html">
-                            <i class="fa-solid fa-chart-line"></i>
-                            <span>Lihat Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/admin/create-post.html">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Tambah Postingan Baru</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/etc/chatbot/c-gemini/index.html">
-                            <i class="fa-solid fa-comment-dots"></i>
-                            <span>Chatbot</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/etc/prompt/index.html">
-                            <i class="fa-solid fa-lightbulb"></i>
-                            <span>Prompts</span>
-                        </a>
-                    </li>
-                    <li class="logout-item">
-                        <button id="logoutButton" class="logout-btn">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <span>Logout</span>
-                        </button>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <!-- Akhir dari blok modal profil -->
-
     </div> 
     
+    <div id="modalOverlay" class="popup-overlay"></div>
+    <div id="loginModal" class="popup-notification">
+        <h3>Login Admin</h3>
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <p id="loginError" class="error-message"></p>
+        </form>
+        <button class="close-popup" id="closeLoginModal">Tutup</button>
+    </div>
+    <div id="userProfileModal" class="popup-notification profile-modal">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="profile-info">
+                <p>Admin Panel</p>
+                <span id="userInfo">cecephard12@gmail.com</span>
+            </div>
+            <button class="close-popup" id="closeProfileModal" aria-label="Tutup">&times;</button>
+        </div>
+        <nav>
+            <ul class="profile-menu">
+                <li>
+                    <a href="/admin/dashboard.html">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Lihat Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/create-post.html">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Tambah Postingan Baru</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/etc/chatbot/c-gemini/index.html">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        <span>Chatbot</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/etc/prompt/index.html">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Prompts</span>
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <button id="logoutButton" class="logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
     <div class="detail-container" id="detailContainer">
         <button class="close-btn" onclick="closePost()">X</button>
         <button class="full-view-btn" id="fullViewBtn" onclick="openFullView()">Full View</button>

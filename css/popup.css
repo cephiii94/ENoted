@@ -22,6 +22,9 @@
 .popup-notification {
   display: none;
   position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(50%); /* Tambahkan ini untuk menggeser ke bawah */
   z-index: 1000;
   background-color: #fff;
   border-radius: 8px;
@@ -32,8 +35,8 @@
 /* Tombol Aksi Melayang (Floating Action Button) untuk User */
 #userFab {
   position: absolute;
-  bottom: 20px;
-  left: -65px; /* Posisikan di luar container utama (kiri) */
+  bottom: 10px;
+  left: -60px; /* Posisikan 20px dari tepi kiri agar terlihat */
   width: 50px;
   height: 50px;
   background-color: var(--color-primary);
@@ -111,11 +114,10 @@
 }
 
 
-/* ===== MODAL PROFIL PENGGUNA (Tampilan Pojok) ===== */
+/* ===== MODAL PROFIL PENGGUNA (Tampilan Tengah) ===== */
 .profile-modal {
-  position: absolute;
-  bottom: 85px;
-  left: -65px; /* Posisikan sejajar dengan FAB (kiri) */
+  /* Hapus properti posisi yang bertentangan (position, bottom, left) */
+  /* Agar mewarisi aturan dari .popup-notification */
   width: 320px;
   max-width: 90vw;
   right: auto;
@@ -275,3 +277,11 @@
   color: #333;
 }
 
+@media (max-width: 768px) {
+  #userFab {
+    top: -20px; /* Posisikan 20px dari tepi atas */
+    bottom: auto; /* Hilangkan konflik bottom */
+    left: auto;
+    right: 14px;
+  }
+}

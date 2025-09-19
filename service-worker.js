@@ -1,4 +1,4 @@
-const CACHE_NAME = "enoted-cache-v1.1.001"; // Naikkan versi cache
+const CACHE_NAME = "enoted-cache-v1.1.002"; // Naikkan versi cache
 const urlsToCache = [
   "/",
   "/index.html",
