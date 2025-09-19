@@ -9,9 +9,14 @@
     <link rel="icon" type="image/png" href="/img/favicon.ico">
     <title>ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
-    <link rel="stylesheet" href="/css/style.css">    <link rel="canonical" href="https://www.enoted.netifly.app">
+    <!-- Memuat file CSS utama -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Memuat file CSS khusus untuk popup -->
+    <link rel="stylesheet" href="/css/popup.css">
+    
+    <link rel="canonical" href="https://www.enoted.netifly.app">
 
     <meta property="og:title" content="ENoted - Portal Informasi, Tutorial, dan Artikel Inspiratif">
     <meta property="og:description" content="Kumpulan artikel bermanfaat tentang berbagi, tutorial, dan konten inspiratif untuk kehidupan sehari-hari.">
@@ -49,7 +54,7 @@
             </header>
             
             <main id="postsContainer">
-                </main>
+            </main>
             
             <footer>
                 <p>&copy; 2025 ENoted. All rights reserved. 
@@ -63,12 +68,14 @@
             </footer>
         </div>
 
+        <!-- Bagian Popup dan Modal -->
         <div id="modalOverlay" class="popup-overlay"></div>
 
         <div id="userFab" class="user-fab">
             <img src="/img/user-icon.png" alt="User" width="24"/>
         </div>
 
+        <!-- Modal Login (Contoh) -->
         <div id="loginModal" class="popup-notification">
             <h3>Login Admin</h3>
             <form id="loginForm">
@@ -80,51 +87,58 @@
             <button class="close-popup" id="closeLoginModal">Tutup</button>
         </div>
 
-<div id="userProfileModal" class="popup-notification">
-    
-    <div class="profile-header">
-        <div class="profile-avatar">
-            <i class="fa-solid fa-user-shield"></i>
+        <!-- Modal Profil Pengguna yang sudah diperbaiki -->
+        <div id="userProfileModal" class="popup-notification profile-modal">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="profile-info">
+                    <p>Admin Panel</p>
+                    <span id="userInfo">cecephard12@gmail.com</span>
+                </div>
+                <button class="close-popup" id="closeProfileModal" aria-label="Tutup">&times;</button>
+            </div>
+            <nav>
+                <ul class="profile-menu">
+                    <li>
+                        <a href="/admin/dashboard.html">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Lihat Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/create-post.html">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Tambah Postingan Baru</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/etc/chatbot/c-gemini/index.html">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span>Chatbot</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/etc/prompt/index.html">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Prompts</span>
+                        </a>
+                    </li>
+                    <li class="logout-item">
+                        <button id="logoutButton" class="logout-btn">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <div class="profile-info">
-            <p>Admin Panel</p>
-            <span id="userInfo">email.admin@contoh.com</span>
-        </div>
-    </div>
+        <!-- Akhir dari blok modal profil -->
 
+    </div> 
     
-    <ul class="profile-menu">
-        <li>
-            <a href="/admin/dashboard.html">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Lihat Dashboard</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/create-post.html">
-                <i class="fa-solid fa-pen-to-square"></i>
-                <span>Tambah Postingan Baru</span>
-            </a>
-        </li>
-                <li>
-            <a href="/etc/chatbot/c-gemini/index.html">
-                <i class="fa-solid fa-comment"></i>
-                <span>Chat</span>
-            </a>
-        </li>
-        <li>
-            <button id="logoutButton" class="logout-btn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-            </button>
-        </li>
-        
-    </ul>
-
-    <button class="close-popup" id="closeProfileModal">Tutup</button>
-</div>
-
-    </div> <div class="detail-container" id="detailContainer">
+    <div class="detail-container" id="detailContainer">
         <button class="close-btn" onclick="closePost()">X</button>
         <button class="full-view-btn" id="fullViewBtn" onclick="openFullView()">Full View</button>
         <iframe id="postFrame"></iframe>
@@ -138,5 +152,4 @@
     <script type="module" src="/js/auth.js"></script>
 
 </body>
-
 </html>

@@ -1,0 +1,276 @@
+/* ===== GAYA UNTUK POPUP, MODAL & FAB ===== */
+
+/* Overlay (Latar Belakang Gelap) */
+.popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  animation: fadeOverlay 0.3s ease-out;
+}
+
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Base untuk semua notifikasi popup */
+.popup-notification {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  font-family: 'Arial', sans-serif;
+}
+
+/* Tombol Aksi Melayang (Floating Action Button) untuk User */
+#userFab {
+  position: absolute;
+  bottom: 20px;
+  right: -65px; /* Posisikan di luar container utama */
+  width: 50px;
+  height: 50px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-medium);
+  cursor: pointer;
+  z-index: 998;
+  transition: transform 0.2s ease-in-out, background-color 0.2s;
+}
+
+#userFab:hover {
+  transform: scale(1.1);
+  background-color: #43A047;
+}
+
+/* ===== MODAL LOGIN (Tampilan Tengah) ===== */
+#loginModal {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  max-width: 90%;
+  padding: 25px;
+  text-align: left;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+#loginModal h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: var(--spacing-large);
+}
+
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}
+
+#loginForm input {
+  padding: var(--spacing-small);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#loginForm button {
+  padding: var(--spacing-small);
+  border: none;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#loginForm button:hover {
+  background-color: #43A047;
+}
+
+.error-message {
+    color: #ff5252;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+
+/* ===== MODAL PROFIL PENGGUNA (Tampilan Pojok) ===== */
+.profile-modal {
+  position: absolute;
+  bottom: 85px;
+  right: -65px; /* Posisikan sejajar dengan FAB */
+  width: 320px;
+  max-width: 90vw;
+  left: auto;
+  top: auto;
+  transform-origin: bottom right;
+  animation: popUpMenu 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  text-align: left;
+  overflow: hidden;
+}
+
+@keyframes popUpMenu {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-avatar {
+  font-size: 2rem;
+  color: var(--color-primary);
+  margin-right: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e8f5e9;
+  border-radius: 50%;
+}
+
+.profile-info {
+  flex-grow: 1;
+}
+
+.profile-info p {
+  font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.profile-info span {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  word-break: break-all;
+}
+
+.profile-menu {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+}
+
+.profile-menu li a,
+.profile-menu li button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-align: left;
+  font-family: inherit;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.profile-menu li a:hover,
+.profile-menu li button:hover {
+  background-color: #f7f7f7;
+}
+
+.profile-menu li i {
+  width: 35px;
+  font-size: 1rem;
+  color: #777;
+  margin-right: 8px;
+  text-align: center;
+}
+
+.profile-menu .logout-item {
+    border-top: 1px solid #f0f0f0;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+.profile-menu li .logout-btn {
+  color: #d32f2f;
+}
+
+.profile-menu li .logout-btn:hover {
+  background-color: #ffeeee;
+}
+
+.profile-menu li .logout-btn i {
+  color: #d32f2f;
+}
+
+/* ===== TOMBOL TUTUP UMUM & KHUSUS ===== */
+
+/* Tombol tutup umum (seperti di modal login) */
+.close-popup {
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+#loginModal .close-popup {
+  background-color: #f1f1f1;
+  color: #555;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 5px;
+  width: 100%;
+}
+
+#loginModal .close-popup:hover {
+  background-color: #ddd;
+}
+
+/* Tombol tutup 'x' di header modal profil */
+.profile-modal .close-popup {
+  background: transparent;
+  font-size: 1.5rem;
+  color: #999;
+  padding: 0 8px;
+  margin: 0;
+  line-height: 1;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-modal .close-popup:hover {
+  background-color: #f1f1f1;
+  color: #333;
+}

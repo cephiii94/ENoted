@@ -85,7 +85,6 @@ body.home-page {
     box-shadow: var(--shadow-medium);
     text-align: center;
     padding: var(--spacing-large);
-    /*margin: 0 var(--spacing-large);*/
     overflow-y: auto;
     max-height: 80vh;
   }
@@ -319,12 +318,10 @@ body.home-page {
     border-bottom: 0px solid #eee;
     padding: 0px 0;
     margin-bottom: 5px;
-    /* Sembunyikan semua artikel awalnya, tetapi akan ditampilkan oleh JS saat halaman dimuat */
     display: block;
-    transition: all 0.3s ease; /* Tambahkan animasi transisi saat tampil/sembunyi */
+    transition: all 0.3s ease;
   }
   
-   /* Untuk artikel terakhir, hapus border bawah */
   .article:last-child {
     border-bottom: none;
   }
@@ -549,289 +546,23 @@ body.home-page {
     }
   }
 
-  /* Custom popup styling - can be added to your existing CSS file */
-
-/* Modern popup with animation */
-.popup-notification {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  max-width: 320px;
-  text-align: center;
-  font-family: 'Arial', sans-serif;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -60%); }
-  to { opacity: 1; transform: translate(-50%, -50%); }
-}
-
-.popup-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  z-index: 999;
-  animation: fadeOverlay 0.3s ease-out;
-}
-
-@keyframes fadeOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Better button styling */
-.close-popup {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin-top: 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-.close-popup:hover {
-  background-color: #3d9140;
-}
-
-.close-popup:active {
-  transform: scale(0.98);
-}
-
-/* Popup text styling */
-#popupMessage {
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0 0 5px 0;
-  color: #333;
-}
-
-/* For smaller screens */
-@media (max-width: 480px) {
-  .popup-notification {
-      max-width: 280px;
-      padding: 20px;
+  blockquote { 
+    border-left: 4px solid #ccc; 
+    padding-left: 10px; 
+    color: #555; 
+    margin: 15px 0; 
   }
-}
 
-blockquote { 
-  border-left: 4px solid #ccc; 
-  padding-left: 10px; 
-  color: #555; 
-  margin: 15px 0; 
-}
+  code { 
+    background: #eee; 
+    padding: 2px 4px; 
+    border-radius: 4px; 
+  }
 
-code { 
-  background: #eee; 
-  padding: 2px 4px; 
-  border-radius: 4px; 
-
-}
-
-pre code { 
-  display: block; 
-  padding: 10px; 
-  background: #222; 
-  color: #fff; 
-  overflow-x: auto; 
-}
-    
-/* ===== GAYA UNTUK IKON USER & MODAL ===== */
-
-/* Tombol Aksi Melayang (Floating Action Button) untuk User */
-#userFab { /* Menggunakan ID selector */
-  position: absolute;   /* Mengacu pada .main-wrapper */
-  bottom: 20px;         /* 20px dari bawah wrapper */
-  right: 100%;          /* Posisikan tepi KANAN ikon di tepi KIRI wrapper */
-  margin-right: 15px;   /* Beri jarak 15px antara ikon dan container */
-  
-  /* Style visual tetap sama */
-  width: 50px;
-  height: 50px;
-  background-color: var(--color-primary);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: var(--shadow-medium);
-  cursor: pointer;
-  z-index: 998;
-  transition: transform 0.2s ease-in-out;
-}
-
-.user-fab:hover {
-  transform: scale(1.1);
-}
-
-/* Menyesuaikan style dari popup-notification yang sudah ada */
-#loginModal, #userProfileModal {
-  text-align: left;
-}
-
-#loginModal h3, #userProfileModal h3 {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: var(--spacing-large);
-}
-
-/* Styling untuk form login */
-#loginForm {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-medium);
-}
-
-#loginForm input {
-  padding: var(--spacing-small);
-  border: 1px solid var(--color-border);
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-#loginForm button {
-  padding: var(--spacing-small);
-  border: none;
-  border-radius: 5px;
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-#loginForm button:hover {
-  background-color: #43A047;
-}
-
-.error-message {
-    color: #ff5252;
-    font-size: 14px;
-    text-align: center;
-    margin-top: 10px;
-}
-
-/* Tombol logout */
-.logout-btn {
-    width: 100%;
-    padding: var(--spacing-small);
-    border: none;
-    border-radius: 5px;
-    background-color: #ff5252;
-    color: var(--color-white);
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: var(--spacing-small);
-    transition: background-color 0.2s;
-}
-
-.logout-btn:hover {
-    background-color: #ff1744;
-}
-
-/* Menyembunyikan modal secara default */
-#loginModal, #userProfileModal, .popup-overlay {
-    display: none;
-}
-
-/* ===== GAYA BARU UNTUK USER PROFILE MODAL ===== */
-
-/* Menyesuaikan popup agar lebih rapi */
-#userProfileModal {
-  padding: 0; /* Hapus padding default agar bisa kontrol penuh */
-  max-width: 350px;
-  text-align: left;
-}
-
-/* Header profil */
-.profile-header {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-large);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.profile-avatar {
-  font-size: 2.5rem; /* Ukuran ikon avatar */
-  color: var(--color-primary);
-  margin-right: var(--spacing-medium);
-}
-
-.profile-info p {
-  font-weight: bold;
-  margin: 0;
-  color: var(--color-text);
-}
-
-.profile-info span {
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-}
-
-/* Menu utama */
-.profile-menu {
-  list-style: none;
-  padding: var(--spacing-small) 0;
-  margin: 0;
-}
-
-.profile-menu li a,
-.profile-menu li button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: var(--spacing-medium) var(--spacing-large);
-  text-decoration: none;
-  color: var(--color-text);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: Arial, sans-serif;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.profile-menu li a:hover,
-.profile-menu li button:hover {
-  background-color: #f5f5f5;
-}
-
-.profile-menu li i {
-  width: 30px; /* Memberi ruang agar teks sejajar */
-  color: var(--color-text-light);
-  margin-right: var(--spacing-small);
-}
-
-/* Kustomisasi tombol logout agar tetap terlihat berbeda */
-.profile-menu li .logout-btn {
-  color: #ff5252; /* Warna merah untuk aksi logout */
-}
-
-.profile-menu li .logout-btn:hover {
-  background-color: #fff0f0;
-}
-
-.profile-menu li .logout-btn i {
-  color: #ff5252;
-}
-
-/* Tombol tutup diletakkan di tengah bawah */
-#userProfileModal .close-popup {
-    display: block;
-    margin: var(--spacing-small) auto var(--spacing-large);
-}
-
-/*chatbot*/
+  pre code { 
+    display: block; 
+    padding: 10px; 
+    background: #222; 
+    color: #fff; 
+    overflow-x: auto; 
+  }
