@@ -3,70 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin - ENoted</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" type="image/png" href="/img/favicon.ico">
+    <title>Login Admin</title>
     <style>
-        /* CSS khusus untuk halaman login */
-        .login-form {
-            text-align: left;
-            padding: 20px;
-        }
-
-        .login-form input[type="email"],
-        .login-form input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid var(--color-border);
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .login-form button {
-            width: 100%;
-            background: var(--color-secondary);
-            color: var(--color-white);
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .login-form button:hover {
-            background: #344e86;
-        }
-
-        .response-message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
+        /* Anda bisa menaruh CSS dari file /css/style.css di sini atau tetap memanggilnya */
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h1 { text-align: center; color: #333; }
+        form { display: flex; flex-direction: column; }
+        label { margin-bottom: 5px; color: #555; }
+        input { padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        button { background: #3a5b98; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; transition: background-color 0.2s; }
+        button:hover { background: #344e86; }
+        #loginError { margin-top: 15px; color: red; text-align: center; }
     </style>
 </head>
+<body>
 
-<body class="home-page">
     <div class="container">
-        <div class="login-form">
-            <h1 class="post-title" style="text-align: center;">Login Admin</h1>
-            <form id="loginForm">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+        <h1>Login Admin</h1>
+        <form id="loginForm">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" name="email" required autocomplete="email">
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
 
-                <button type="submit">Masuk</button>
-            </form>
-            <div id="responseMessage" class="response-message" style="display: none;"></div>
-        </div>
+            <button type="submit">Masuk</button>
+            <p id="loginError"></p>
+        </form>
     </div>
-    
-    <script type="module" src="/js/firestore.js"></script>
-    <script type="module" src="/js/auth.js"></script>
+
+<script type="module">
+        // Impor 'auth' dari file konfigurasi terpusat
+        import { auth } from '/js/firestore.js'; 
+        import { onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+
+        // --- Logika Inti Halaman Login ---
+
+        // 1. Cek status saat halaman dimuat
+        onAuthStateChanged(auth, (user) => {
+            // Jika pengguna sudah login, jangan biarkan mereka melihat form ini.
+            // Langsung arahkan ke dashboard.
+            if (user) {
+                window.location.href = '/admin/dashboard.html';
+            }
+        });
+
+        // 2. Tambahkan event listener untuk submit form
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginError.textContent = '';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Berhasil! 
+                    // onAuthStateChanged di atas akan mendeteksi perubahan ini
+                    // dan secara otomatis mengarahkan ke dashboard.
+                    console.log('Login berhasil, mengarahkan...', userCredential.user);
+                })
+                .catch((error) => {
+                    loginError.textContent = 'Email atau password salah.';
+                    console.error('Gagal login:', error);
+                });
+        });
+    </script>
 </body>
 </html>
