@@ -1,10 +1,13 @@
-// /etc/chatbot/c-gemini/chat.js
+// Dummy firestore.js untuk pengembangan lokal jika diperlukan
+// Pada production, file ini akan disediakan oleh environment
+const db = {};
+const auth = {};
+// import { db, auth } from '../../../js/firestore.js';
 
-import { db, auth } from '../../../js/firestore.js';
-// [PERBAIKAN] Impor fungsi yang diperlukan untuk login dan logout
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+// Impor fungsi yang diperlukan (jika menggunakan firebase)
+// import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+// import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -21,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKeyListContainer = document.getElementById('apiKeyListContainer');
     const addKeyForm = document.getElementById('addKeyForm');
 
-    // --- [PERBAIKAN] Ambil Elemen UI Login/Profil dengan ID yang Benar ---
+    // --- Ambil Elemen UI Login/Profil ---
     const loginView = document.getElementById('login-view');
     const profileView = document.getElementById('profile-view');
     const userInfoSidebar = document.getElementById('userInfoSidebar');
@@ -29,32 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButtonSidebar = document.getElementById('logoutButtonSidebar');
     const loginErrorSidebar = document.getElementById('loginErrorSidebar');
     
+    // --- Elemen Sidebar dan Hamburger ---
+    const sidebar = document.getElementById('sidebar');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+
     // --- Variabel State Aplikasi ---
     let genAI;
     let generativeModel;
     let currentUser = null;
     let userApiKeys = [];
     let activeApiKey = null;
+    let isSidebarLocked = localStorage.getItem('isSidebarLocked') === 'true';
 
-    // --- [PERBAIKAN] Fungsi untuk Mengelola Tampilan Login/Profil ---
     /**
      * Memperbarui tampilan UI di sidebar berdasarkan status login pengguna.
-     * @param {object|null} user Objek pengguna dari Firebase Auth.
      */
     function updateAuthUI(user) {
-        // Pastikan elemen ada sebelum dimanipulasi
         if (!loginView || !profileView || !userInfoSidebar) return;
 
         if (user) {
-            // Jika pengguna login:
-            loginView.style.display = 'none'; // Sembunyikan form login
-            profileView.style.display = 'flex'; // Tampilkan bagian profil
-            // Tampilkan info user (gunakan email jika display name tidak ada)
+            loginView.style.display = 'none';
+            profileView.style.display = 'flex';
             userInfoSidebar.textContent = user.displayName || user.email; 
         } else {
-            // Jika pengguna logout:
-            loginView.style.display = 'flex'; // Tampilkan kembali form login
-            profileView.style.display = 'none'; // Sembunyikan bagian profil
+            loginView.style.display = 'flex';
+            profileView.style.display = 'none';
         }
     }
     
@@ -94,24 +96,32 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Logika Utama Aplikasi ---
 
-    onAuthStateChanged(auth, async (user) => {
-        // [PERBAIKAN] Sekarang fungsi ini akan bekerja dengan benar
-        updateAuthUI(user); 
+    /**
+     * Memperbarui state sidebar (terbuka/tertutup) dan ikon tombol.
+     */
+    function updateSidebarState() {
+        const hamburgerIcon = hamburgerBtn.querySelector('i');
+        if (!sidebar || !hamburgerIcon) return;
 
-        if (user) {
-            currentUser = user;
-            await loadApiKeysFromFirestore();
+        if (isSidebarLocked) {
+            sidebar.classList.add('sidebar-locked');
+            hamburgerIcon.classList.remove('fa-bars');
+            hamburgerIcon.classList.add('fa-times');
         } else {
-            currentUser = null;
-            userApiKeys = [];
-            activeApiKey = null;
-            generativeModel = null;
-            updateKeySelector();
-            setAiStatus('offline', 'Silakan Login');
-            toggleInputs(true);
-            if (messagesContainer) messagesContainer.innerHTML = ''; // Kosongkan chat saat logout
+            sidebar.classList.remove('sidebar-locked');
+            hamburgerIcon.classList.remove('fa-times');
+            hamburgerIcon.classList.add('fa-bars');
         }
-    });
+    }
+
+    // Panggil saat halaman dimuat untuk set state awal
+    updateSidebarState();
+    
+    // Contoh dummy untuk auth state change, ganti dengan onAuthStateChanged dari Firebase
+    // onAuthStateChanged(auth, async (user) => {
+    //     updateAuthUI(user); 
+    //     // ... logika lainnya
+    // });
     
     const toggleInputs = (disabled) => {
         if(messageInput) messageInput.disabled = disabled;
@@ -119,40 +129,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initializeGemini = (key) => {
+        // Dummy logic
         if (!key) {
             setAiStatus('error', 'Kunci API tidak valid');
             generativeModel = null;
-            return;
-        }
-        try {
-            genAI = new GoogleGenerativeAI(key);
-            generativeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-            setAiStatus('online', 'Siap Menerima Perintah');
-            toggleInputs(false);
-        } catch (error) {
-            setAiStatus('error', 'Inisialisasi Gagal');
-            generativeModel = null;
             toggleInputs(true);
+        } else {
+             setAiStatus('online', 'Siap Menerima Perintah');
+             toggleInputs(false);
+             generativeModel = true; // Mark as initialized
         }
     };
 
     const loadApiKeysFromFirestore = async () => {
-        if (!currentUser) return;
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        try {
-            const docSnap = await getDoc(userDocRef);
-            if (docSnap.exists() && docSnap.data().apiKeys) {
-                userApiKeys = docSnap.data().apiKeys || [];
-                activeApiKey = docSnap.data().activeApiKey || (userApiKeys.length > 0 ? userApiKeys[0].key : null);
-            } else {
-                userApiKeys = [];
-                activeApiKey = null;
-            }
-            updateKeySelector();
-            initializeGemini(activeApiKey);
-        } catch (error) {
-            setAiStatus('error', 'Gagal Memuat Kunci');
-        }
+       // Dummy logic
+       userApiKeys = [{name: 'Kunci Contoh', key: 'dummy-key-123'}];
+       activeApiKey = 'dummy-key-123';
+       updateKeySelector();
+       initializeGemini(activeApiKey);
     };
     
     const updateKeySelector = () => {
@@ -193,95 +187,28 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = 'auto';
         toggleInputs(true);
 
-        try {
-            const result = await generativeModel.generateContent(message);
-            const response = await result.response;
-            addMessage(response.text(), 'ai');
-        } catch (error) {
-            addMessage(`Maaf, terjadi kesalahan: ${error.message}.`, 'ai');
-        } finally {
+        // Dummy AI response
+        setTimeout(() => {
+            addMessage(`Ini adalah balasan untuk: "${message}"`, 'ai');
             toggleInputs(false);
             messageInput.focus();
-        }
+        }, 1000);
     };
     
     // --- Event Listeners ---
     
-    // [TAMBAHAN] Event Listener untuk Form Login
-    if (loginFormSidebar) {
-        loginFormSidebar.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmailSidebar').value;
-            const password = document.getElementById('loginPasswordSidebar').value;
-            
-            if (loginErrorSidebar) loginErrorSidebar.textContent = '';
-
-            signInWithEmailAndPassword(auth, email, password)
-                .catch((error) => {
-                    console.error("Login failed:", error);
-                    if (loginErrorSidebar) loginErrorSidebar.textContent = "Email atau password salah.";
-                });
-        });
-    }
-
-    // [TAMBAHAN] Event Listener untuk Tombol Logout
-    if (logoutButtonSidebar) {
-        logoutButtonSidebar.addEventListener('click', () => {
-            signOut(auth).catch(console.error);
+    // Event listener untuk tombol hamburger
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', () => {
+            isSidebarLocked = !isSidebarLocked;
+            localStorage.setItem('isSidebarLocked', isSidebarLocked);
+            updateSidebarState();
         });
     }
     
     if (apiKeySelector) {
-        apiKeySelector.addEventListener('change', async (e) => {
-            const selectedKey = e.target.value;
-            if (selectedKey && currentUser) {
-                activeApiKey = selectedKey;
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await setDoc(userDocRef, { activeApiKey: selectedKey }, { merge: true });
-                initializeGemini(selectedKey);
-            }
-        });
-    }
-
-    if (apiKeyListContainer) {
-        apiKeyListContainer.addEventListener('click', async (e) => {
-            if (e.target.closest('.delete-key-btn')) {
-                const keyToDelete = e.target.closest('.delete-key-btn').dataset.key;
-                const keyObject = userApiKeys.find(k => k.key === keyToDelete);
-                if (!keyObject || !confirm(`Yakin ingin menghapus kunci "${keyObject.name}"?`)) return;
-
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, { apiKeys: arrayRemove(keyObject) });
-                
-                if (activeApiKey === keyToDelete) {
-                    const newActiveKey = (userApiKeys.filter(k => k.key !== keyToDelete)[0] || {}).key || null;
-                    await setDoc(userDocRef, { activeApiKey: newActiveKey }, { merge: true });
-                }
-                await loadApiKeysFromFirestore();
-            }
-        });
-    }
-
-    if (addKeyForm) {
-        addKeyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const keyName = e.target.elements.keyNameInput.value.trim();
-            const keyValue = e.target.elements.keyValueInput.value.trim();
-
-            if (keyName && keyValue && currentUser) {
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                const newKey = { name: keyName, key: keyValue };
-                
-                await updateDoc(userDocRef, { apiKeys: arrayUnion(newKey) }).catch(err => {
-                    if (err.code === 'not-found') setDoc(userDocRef, { apiKeys: [newKey] });
-                });
-
-                if (!activeApiKey) {
-                    await setDoc(userDocRef, { activeApiKey: keyValue }, { merge: true });
-                }
-                addKeyForm.reset();
-                await loadApiKeysFromFirestore();
-            }
+        apiKeySelector.addEventListener('change', (e) => {
+            initializeGemini(e.target.value);
         });
     }
 
@@ -292,5 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (manageKeysBtn) manageKeysBtn.addEventListener('click', () => apiKeyModal.style.display = 'flex');
     if (closeModalBtn) closeModalBtn.addEventListener('click', () => apiKeyModal.style.display = 'none');
     
+    // Inisialisasi awal (dummy)
+    setAiStatus('offline', 'Silakan Login');
     toggleInputs(true);
+    loadApiKeysFromFirestore(); // Load dummy keys
 });

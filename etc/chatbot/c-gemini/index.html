@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asisten AI Pribadi - Enoted</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="/etc/chatbot/c-gemini/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
+        <!-- Tombol Hamburger dipindahkan ke luar sidebar untuk posisi yang tetap -->
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -31,7 +36,6 @@
 
             <!-- Bagian Bawah Sidebar untuk Login/Profil -->
             <div class="sidebar-footer">
-                <!-- Akan diisi oleh auth.js -->
                 <div id="auth-container">
                     <!-- Tampilan Saat Logout -->
                     <div id="login-view" class="auth-view">
@@ -104,10 +108,8 @@
             </div>
         </div>
     </div>
-
-    <!-- Skrip dimuat sebagai module untuk urutan yang benar -->
-    <script type="module" src="/js/firestore.js"></script>
-    <script type="module" src="/etc/chatbot/c-gemini/chat.js"></script>
+    
+    <!-- Ganti path ke file lokal jika diperlukan -->
+    <script type="module" src="chat.js"></script>
 </body>
 </html>
-
