@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Tombol Hamburger dipindahkan ke luar sidebar untuk posisi yang tetap -->
+        <!-- Tombol Hamburger -->
         <button id="hamburgerBtn" class="hamburger-btn">
             <i class="fas fa-bars"></i>
         </button>
@@ -24,6 +24,14 @@
             </div>
 
             <div class="sidebar-menu">
+                <!-- Bagian Riwayat Chat Baru -->
+                <div class="menu-section">
+                    <div class="menu-title">Riwayat</div>
+                    <div id="chatHistoryContainer" class="chat-history-container">
+                        <!-- Riwayat chat akan dimuat di sini oleh JavaScript -->
+                    </div>
+                </div>
+
                 <div class="menu-section">
                     <div class="menu-title">Pengaturan AI</div>
                     <select id="apiKeySelector" class="api-key-selector"></select>
@@ -108,8 +116,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Konfirmasi Hapus</div>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmText">Apakah Anda yakin ingin menghapus percakapan ini?</p>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelDeleteBtn">Batal</button>
+                    <button class="btn-danger" id="confirmDeleteBtn">Ya, Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- Ganti path ke file lokal jika diperlukan -->
+    <!-- Skrip dimuat sebagai module untuk urutan yang benar -->
+    <script type="module" src="/js/firestore.js"></script>
+    <script type="module" src="chat-history.js"></script>
     <script type="module" src="chat.js"></script>
 </body>
 </html>
+

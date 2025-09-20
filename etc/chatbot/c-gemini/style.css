@@ -84,6 +84,7 @@ body {
 .sidebar-menu {
     padding: 8px;
     flex-grow: 1;
+    overflow-y: auto; /* Memungkinkan menu untuk scroll jika kontennya panjang */
 }
 
 .menu-section { margin-bottom: 16px; }
@@ -94,6 +95,56 @@ body {
     margin-bottom: 8px;
     padding: 0 12px;
 }
+
+/* Styling untuk Riwayat Chat */
+.chat-history-container {
+    max-height: 250px; /* Batasi tinggi dan aktifkan scroll */
+    overflow-y: auto;
+    padding-right: 5px; /* Ruang untuk scrollbar */
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    gap: 8px;
+}
+
+.history-item:hover {
+    background: var(--hover-color);
+}
+
+.history-item.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.history-item .delete-chat-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    visibility: hidden; /* Sembunyikan secara default */
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0; /* Mencegah tombol menyusut */
+}
+
+.history-item:hover .delete-chat-btn,
+.history-item.active .delete-chat-btn {
+    visibility: visible;
+    opacity: 1;
+    color: inherit; /* Warisi warna dari parent */
+}
+/* Akhir Styling Riwayat Chat */
 
 .api-key-selector {
     width: calc(100% - 16px);
@@ -175,7 +226,6 @@ body {
 
 .chat-header {
     padding: 16px 24px;
-    /* Padding kiri ditambah agar tidak tertimpa tombol hamburger di layar kecil */
     padding-left: 72px; 
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -223,7 +273,7 @@ body {
     color: white; cursor: pointer; font-size: 18px;
 }
 
-/* Modal API Key */
+/* Modal API Key & Konfirmasi */
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.6);
@@ -232,7 +282,14 @@ body {
 .modal-content {
     background: var(--light-bg); border-radius: 12px;
     width: 90%; max-width: 500px;
+    animation: modal-fade-in 0.3s ease-out;
 }
+
+@keyframes modal-fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .modal-header {
     padding: 16px; border-bottom: 1px solid var(--border-color);
     display: flex; justify-content: space-between; align-items: center;
@@ -252,4 +309,38 @@ body {
     padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
 }
 .add-key-form button { background: var(--primary-color); color: white; cursor: pointer; }
+
+/* Tombol Aksi Modal Konfirmasi */
+.modal-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary {
+    background-color: var(--hover-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+.btn-danger {
+    background-color: var(--error-color);
+    color: white;
+}
+.btn-danger:hover {
+    opacity: 0.9;
+}
 
