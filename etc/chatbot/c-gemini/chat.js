@@ -1,15 +1,7 @@
-// Impor semua fungsi dari modul riwayat chat
 import * as history from './chat-history.js';
-
-// Impor dari file konfigurasi Firebase Anda
-// Path telah diperbaiki sesuai permintaan
 import { db, auth } from '/js/firestore.js';
-
-// Impor fungsi-fungsi Firebase yang diperlukan
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-// Impor Google Generative AI SDK
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const loginFormSidebar = document.getElementById('loginFormSidebar');
     const logoutButtonSidebar = document.getElementById('logoutButtonSidebar');
+    const personalizeBtn = document.getElementById('personalizeBtn');
+    const personalizeModal = document.getElementById('personalizeModal');
+    const closePersonalizeModalBtn = document.getElementById('closePersonalizeModalBtn');
+    const customInstructionInput = document.getElementById('customInstructionInput');
+    const saveInstructionBtn = document.getElementById('saveInstructionBtn');
 
     // --- Variabel State Aplikasi ---
     let genAI;
@@ -40,11 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeApiKey = null;
     let isSidebarLocked = localStorage.getItem('isSidebarLocked') === 'true';
     let currentChat = null;
+    let userCustomInstruction = '';
 
-    /**
-     * Memuat seluruh sesi percakapan ke dalam area chat.
-     * @param {Object} chat - Objek chat dari modul riwayat.
-     */
     function loadChatIntoView(chat) {
         if (!chat) return;
         currentChat = chat;
@@ -55,9 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    /**
-     * Menambahkan satu pesan ke UI.
-     */
     function addMessage(content, sender, shouldScroll = true) {
         if (!messagesContainer) return;
         const messageDiv = document.createElement('div');
@@ -73,17 +64,53 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     }
-    
-    /**
-     * Mengirim pesan, mendapatkan balasan dari AI, dan menyimpan ke riwayat.
-     */
+
+    function addMessageWithTypingEffect(content, sender) {
+        return new Promise(resolve => {
+            if (!messagesContainer) {
+                resolve();
+                return;
+            }
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            const avatar = '<i class="fas fa-robot"></i>';
+            messageDiv.innerHTML = `<div class="message-avatar">${avatar}</div><div class="message-text"><div></div></div>`;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            const textContainer = messageDiv.querySelector('.message-text div');
+            let i = 0;
+            const typingSpeed = 20;
+            function type() {
+                if (i < content.length) {
+                    const char = content.charAt(i);
+                    textContainer.innerHTML += char === '\n' ? '<br>' : char;
+                    i++;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    setTimeout(type, typingSpeed);
+                } else {
+                    resolve();
+                }
+            }
+            type();
+        });
+    }
+
     const sendMessage = async () => {
-        if (!messageInput || !generativeModel) return;
+        if (!messageInput || !generativeModel) {
+            addMessage("Model AI belum siap. Pastikan kunci API valid.", 'ai');
+            return;
+        }
         const message = messageInput.value.trim();
         if (!message) return;
 
         addMessage(message, 'user');
         history.saveMessageToHistory('user', message);
+        
+        const currentFullHistory = history.getActiveChat().messages;
+        const formattedHistoryForAPI = currentFullHistory.map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }));
         
         const originalTitle = currentChat.title;
         messageInput.value = '';
@@ -91,15 +118,16 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleInputs(true);
 
         try {
-            const result = await generativeModel.generateContent(message);
+            const chat = generativeModel.startChat({ history: formattedHistoryForAPI.slice(0, -1) });
+            const result = await chat.sendMessage(message);
             const response = await result.response;
             const responseText = response.text();
 
-            addMessage(responseText, 'ai');
+            await addMessageWithTypingEffect(responseText, 'ai');
             history.saveMessageToHistory('ai', responseText);
         } catch (error) {
-            const errorMessage = `Maaf, terjadi kesalahan: ${error.message}.`;
-            addMessage(errorMessage, 'ai');
+            console.error("API Error:", error);
+            addMessage(`Maaf, terjadi kesalahan: ${error.message}.`, 'ai');
         } finally {
             toggleInputs(false);
             messageInput.focus();
@@ -109,15 +137,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Memperbarui UI otentikasi berdasarkan status login pengguna.
-     */
+    const initializeGemini = (key) => {
+        if (!key) {
+            setAiStatus('error', 'Kunci API tidak valid');
+            generativeModel = null;
+            toggleInputs(true);
+            return;
+        }
+        try {
+            genAI = new GoogleGenerativeAI(key);
+            const modelConfig = { model: "gemini-1.5-flash-latest" };
+            if (userCustomInstruction && userCustomInstruction.trim() !== '') {
+                modelConfig.systemInstruction = {
+                    role: "user",
+                    parts: [{ text: userCustomInstruction }]
+                };
+            }
+            generativeModel = genAI.getGenerativeModel(modelConfig);
+            setAiStatus('online', 'Siap Menerima Perintah');
+            toggleInputs(false);
+        } catch (error) {
+            setAiStatus('error', 'Inisialisasi Gagal');
+            generativeModel = null;
+            toggleInputs(true);
+        }
+    };
+
+    const loadApiKeysFromFirestore = async () => {
+        if (!currentUser) return;
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        try {
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                userApiKeys = data.apiKeys || [];
+                activeApiKey = data.activeApiKey || (userApiKeys.length > 0 ? userApiKeys[0].key : null);
+                userCustomInstruction = data.customInstruction || '';
+                if(customInstructionInput) customInstructionInput.value = userCustomInstruction;
+            } else {
+                userApiKeys = []; activeApiKey = null; userCustomInstruction = '';
+            }
+            updateKeySelector();
+            initializeGemini(activeApiKey);
+        } catch (error) {
+            setAiStatus('error', 'Gagal Memuat Kunci');
+        }
+    };
+
     function updateAuthUI(user) {
         const loginView = document.getElementById('login-view');
         const profileView = document.getElementById('profile-view');
         const userInfoSidebar = document.getElementById('userInfoSidebar');
         if (!loginView || !profileView || !userInfoSidebar) return;
-
         if (user) {
             loginView.style.display = 'none';
             profileView.style.display = 'flex';
@@ -133,12 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDot.className = `status-dot ${status}`;
         statusText.textContent = text;
     };
-    
+
     const toggleInputs = (disabled) => {
         if(messageInput) messageInput.disabled = disabled;
         if(sendMessageBtn) sendMessageBtn.disabled = disabled;
     };
-    
+
     const updateSidebarState = () => {
         const hamburgerIcon = hamburgerBtn.querySelector('i');
         if (!sidebar || !hamburgerIcon) return;
@@ -151,44 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const initializeGemini = (key) => {
-        if (!key) {
-            setAiStatus('error', 'Kunci API tidak valid');
-            generativeModel = null;
-            toggleInputs(true);
-            return;
-        }
-        try {
-            genAI = new GoogleGenerativeAI(key);
-            generativeModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-            setAiStatus('online', 'Siap Menerima Perintah');
-            toggleInputs(false);
-        } catch (error) {
-            setAiStatus('error', 'Inisialisasi Gagal');
-            generativeModel = null;
-            toggleInputs(true);
-        }
-    };
-
-    const loadApiKeysFromFirestore = async () => {
-        if (!currentUser) return;
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        try {
-            const docSnap = await getDoc(userDocRef);
-            if (docSnap.exists() && docSnap.data().apiKeys) {
-                userApiKeys = docSnap.data().apiKeys || [];
-                activeApiKey = docSnap.data().activeApiKey || (userApiKeys.length > 0 ? userApiKeys[0].key : null);
-            } else {
-                userApiKeys = [];
-                activeApiKey = null;
-            }
-            updateKeySelector();
-            initializeGemini(activeApiKey);
-        } catch (error) {
-            setAiStatus('error', 'Gagal Memuat Kunci');
-        }
-    };
-    
     const renderApiKeyList = () => {
         if (!apiKeyListContainer) return;
         apiKeyListContainer.innerHTML = '';
@@ -215,23 +248,18 @@ document.addEventListener('DOMContentLoaded', () => {
         renderApiKeyList();
     };
 
-    // --- Event Listeners ---
     onAuthStateChanged(auth, async (user) => {
         updateAuthUI(user);
         currentUser = user;
         history.setUserId(user ? user.uid : null);
-
         if (user) {
             await loadApiKeysFromFirestore();
         } else {
-            userApiKeys = [];
-            activeApiKey = null;
-            generativeModel = null;
+            userApiKeys = []; activeApiKey = null; generativeModel = null;
             updateKeySelector();
             setAiStatus('offline', 'Silakan Login');
             toggleInputs(true);
         }
-        
         const initialChat = history.initializeHistory(() => history.renderHistoryList(chatHistoryContainer, loadChatIntoView));
         loadChatIntoView(initialChat);
     });
@@ -247,11 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(err => { if (loginErrorSidebar) loginErrorSidebar.textContent = "Email atau password salah."; });
         });
     }
-
-    if (logoutButtonSidebar) {
-        logoutButtonSidebar.addEventListener('click', () => signOut(auth));
-    }
-
+    if (logoutButtonSidebar) logoutButtonSidebar.addEventListener('click', () => signOut(auth));
     if (newChatBtn) {
         newChatBtn.addEventListener('click', () => {
             const newChat = history.createNewChat();
@@ -259,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
             history.renderHistoryList(chatHistoryContainer, loadChatIntoView);
         });
     }
-
     if (hamburgerBtn) {
         hamburgerBtn.addEventListener('click', () => {
             isSidebarLocked = !isSidebarLocked;
@@ -267,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSidebarState();
         });
     }
-
     if (apiKeySelector) {
         apiKeySelector.addEventListener('change', async (e) => {
             const selectedKey = e.target.value;
@@ -279,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
     if (apiKeyListContainer) {
         apiKeyListContainer.addEventListener('click', async (e) => {
             const deleteButton = e.target.closest('.delete-key-btn');
@@ -298,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
     if (addKeyForm) {
         addKeyForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -316,14 +336,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
+    if(personalizeBtn) personalizeBtn.addEventListener('click', () => personalizeModal.style.display = 'flex');
+    if(closePersonalizeModalBtn) closePersonalizeModalBtn.addEventListener('click', () => personalizeModal.style.display = 'none');
+    if(saveInstructionBtn) {
+        saveInstructionBtn.addEventListener('click', async () => {
+            if (!currentUser) { alert("Anda harus login untuk menyimpan instruksi."); return; }
+            const newInstruction = customInstructionInput.value;
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            try {
+                await setDoc(userDocRef, { customInstruction: newInstruction }, { merge: true });
+                userCustomInstruction = newInstruction;
+                alert("Instruksi berhasil disimpan!");
+                personalizeModal.style.display = 'none';
+                initializeGemini(activeApiKey);
+            } catch (error) {
+                alert("Gagal menyimpan instruksi: " + error.message);
+            }
+        });
+    }
     if (sendMessageBtn) sendMessageBtn.addEventListener('click', sendMessage);
-    if (messageInput) messageInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
+    if (messageInput) messageInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
     if (manageKeysBtn) manageKeysBtn.addEventListener('click', () => apiKeyModal.style.display = 'flex');
     if (closeModalBtn) closeModalBtn.addEventListener('click', () => apiKeyModal.style.display = 'none');
-    
     updateSidebarState();
 });
-

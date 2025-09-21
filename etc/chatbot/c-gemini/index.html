@@ -9,12 +9,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Tombol Hamburger -->
-        <button id="hamburgerBtn" class="hamburger-btn">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <button class="new-chat-btn" id="newChatBtn">
@@ -24,12 +18,10 @@
             </div>
 
             <div class="sidebar-menu">
-                <!-- Bagian Riwayat Chat Baru -->
                 <div class="menu-section">
                     <div class="menu-title">Riwayat</div>
                     <div id="chatHistoryContainer" class="chat-history-container">
-                        <!-- Riwayat chat akan dimuat di sini oleh JavaScript -->
-                    </div>
+                        </div>
                 </div>
 
                 <div class="menu-section">
@@ -39,13 +31,15 @@
                         <i class="fas fa-key"></i>
                         Kelola Kunci API
                     </div>
+                    <div class="menu-item" id="personalizeBtn">
+                        <i class="fas fa-user-cog"></i>
+                        Personalisasi AI
+                    </div>
                 </div>
             </div>
 
-            <!-- Bagian Bawah Sidebar untuk Login/Profil -->
             <div class="sidebar-footer">
                 <div id="auth-container">
-                    <!-- Tampilan Saat Logout -->
                     <div id="login-view" class="auth-view">
                         <form id="loginFormSidebar">
                             <input type="email" id="loginEmailSidebar" placeholder="Email" required>
@@ -54,7 +48,6 @@
                             <p id="loginErrorSidebar" class="error-message"></p>
                         </form>
                     </div>
-                    <!-- Tampilan Saat Login -->
                     <div id="profile-view" class="auth-view" style="display: none;">
                         <p id="userInfoSidebar"></p>
                         <button id="logoutButtonSidebar">Logout</button>
@@ -63,9 +56,11 @@
             </div>
         </div>
 
-        <!-- Area Chat Utama -->
         <div class="chat-area">
             <div class="chat-header">
+                <button id="hamburgerBtn" class="hamburger-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="chat-title">
                     <i class="fas fa-robot"></i>
                     Asisten AI Pribadi
@@ -79,8 +74,7 @@
             </div>
 
             <div class="messages-container" id="messagesContainer">
-                <!-- Pesan akan ditambahkan oleh JavaScript -->
-            </div>
+                </div>
 
             <div class="input-area">
                 <div class="input-container">
@@ -97,7 +91,6 @@
         </div>
     </div>
 
-    <!-- Modal untuk Mengelola API Keys -->
     <div class="modal-overlay" id="apiKeyModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -105,9 +98,7 @@
                 <button class="close-btn" id="closeModalBtn">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="apiKeyListContainer">
-                    <!-- Daftar kunci akan dirender di sini -->
-                </div>
+                <div id="apiKeyListContainer"></div>
                 <form id="addKeyForm" class="add-key-form">
                     <input type="text" id="keyNameInput" placeholder="Nama Kunci (e.g., Akun Utama)" required>
                     <input type="password" id="keyValueInput" placeholder="Nilai API Key Anda" required>
@@ -117,7 +108,6 @@
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Hapus -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -133,10 +123,26 @@
         </div>
     </div>
     
-    <!-- Skrip dimuat sebagai module untuk urutan yang benar -->
+    <div class="modal-overlay" id="personalizeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Instruksi Khusus untuk AI</div>
+                <button class="close-btn" id="closePersonalizeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">
+                    Tuliskan informasi atau instruksi yang ingin AI selalu ingat setiap kali Anda memulai chat baru.
+                </p>
+                <textarea id="customInstructionInput" class="custom-instruction-textarea" placeholder="Contoh: Namaku Cecep. Aku adalah seorang web developer. Balas pesanku dengan gaya yang santai."></textarea>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="saveInstructionBtn">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="chat-history.js"></script>
     <script type="module" src="chat.js"></script>
 </body>
 </html>
-

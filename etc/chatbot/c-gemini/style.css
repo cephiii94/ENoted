@@ -8,15 +8,13 @@
 :root {
     --primary-color: #7289da; /* Soft Blue */
     --secondary-color: #99aab5;
-    --bg-color: #eef2f9; /* Latar belakang soft blue-gray */
-    --dark-bg: #2c2f33;
+    --bg-color: #eef2f9;
     --light-bg: #ffffff;
     --text-primary: #23272a;
     --text-secondary: #6e6e80;
     --border-color: #e3e5e8;
     --hover-color: #e9eaec;
     --user-msg-bg: #7289da;
-    --ai-msg-bg: #ffffff;
     --online-color: #43b581;
     --offline-color: #747f8d;
     --error-color: #f04747;
@@ -30,20 +28,13 @@ body {
     overflow: hidden;
 }
 
-/* Container utama untuk menengahkan area chat */
 .app-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding: 20px;
+    height: 100vh;
 }
 
-/* Sidebar (Overlay Behavior) */
+/* Sidebar */
 .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
     height: 100vh;
     z-index: 1000;
     width: 280px;
@@ -52,18 +43,17 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform: translateX(-100%);
+    transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    margin-left: -280px;
 }
 
 .sidebar.sidebar-locked {
-    transform: translateX(0);
+    margin-left: 0;
 }
 
 .sidebar-header {
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
-    margin-top: 60px;
 }
 
 .new-chat-btn {
@@ -84,7 +74,7 @@ body {
 .sidebar-menu {
     padding: 8px;
     flex-grow: 1;
-    overflow-y: auto; /* Memungkinkan menu untuk scroll jika kontennya panjang */
+    overflow-y: auto;
 }
 
 .menu-section { margin-bottom: 16px; }
@@ -96,11 +86,10 @@ body {
     padding: 0 12px;
 }
 
-/* Styling untuk Riwayat Chat */
 .chat-history-container {
-    max-height: 250px; /* Batasi tinggi dan aktifkan scroll */
+    max-height: 250px;
     overflow-y: auto;
-    padding-right: 5px; /* Ruang untuk scrollbar */
+    padding-right: 5px;
 }
 
 .history-item {
@@ -117,124 +106,72 @@ body {
     text-overflow: ellipsis;
     gap: 8px;
 }
-
-.history-item:hover {
-    background: var(--hover-color);
-}
-
-.history-item.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
+.history-item:hover { background: var(--hover-color); }
+.history-item.active { background-color: var(--primary-color); color: white; }
 .history-item .delete-chat-btn {
-    background: none;
-    border: none;
-    color: var(--secondary-color);
-    cursor: pointer;
-    visibility: hidden; /* Sembunyikan secara default */
-    opacity: 0;
-    transition: opacity 0.2s;
-    flex-shrink: 0; /* Mencegah tombol menyusut */
+    background: none; border: none; color: var(--secondary-color);
+    cursor: pointer; visibility: hidden; opacity: 0;
+    transition: opacity 0.2s; flex-shrink: 0;
 }
-
-.history-item:hover .delete-chat-btn,
-.history-item.active .delete-chat-btn {
-    visibility: visible;
-    opacity: 1;
-    color: inherit; /* Warisi warna dari parent */
+.history-item:hover .delete-chat-btn, .history-item.active .delete-chat-btn {
+    visibility: visible; opacity: 1; color: inherit;
 }
-/* Akhir Styling Riwayat Chat */
 
 .api-key-selector {
-    width: calc(100% - 16px);
-    margin: 0 8px 8px;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    width: calc(100% - 16px); margin: 0 8px 8px; padding: 8px;
+    border: 1px solid var(--border-color); border-radius: 6px;
     background-color: var(--bg-color);
 }
-
 .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px;
 }
 .menu-item:hover { background: var(--hover-color); }
-
-/* Sidebar Footer (Login/Auth) */
-.sidebar-footer {
-    padding: 16px;
-    border-top: 1px solid var(--border-color);
-}
+.sidebar-footer { padding: 16px; border-top: 1px solid var(--border-color); }
 .auth-view form { display: flex; flex-direction: column; gap: 8px; }
-.auth-view input, .auth-view button {
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-}
+.auth-view input, .auth-view button { padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
 .auth-view button { background: var(--primary-color); color: white; cursor: pointer; }
 #profile-view { display: flex; flex-direction: column; gap: 8px; }
 #userInfoSidebar { font-size: 14px; }
 .error-message { font-size: 12px; color: var(--error-color); }
 
-/* Chat Area (Centered Panel) */
+/* Chat Area */
 .chat-area {
-    width: 100%;
-    max-width: 900px; /* Lebar maksimal area chat */
-    height: 100%;
-    max-height: 95vh; /* Tinggi tidak melebihi viewport */
+    flex-grow: 1;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background: var(--light-bg);
-    border-radius: 16px; /* Sudut membulat */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Efek bayangan */
-    overflow: hidden; /* Memastikan konten tetap di dalam sudut membulat */
-    border: 1px solid var(--border-color);
 }
 
 /* Hamburger Button */
 .hamburger-btn {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    background: var(--light-bg);
-    border: 1px solid var(--border-color);
+    position: relative; 
+    background: transparent;
+    border: none;
     width: 40px;
     height: 40px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1001;
     border-radius: 8px;
     transition: all 0.3s ease;
 }
-.hamburger-btn:hover {
-    background-color: var(--hover-color);
-    transform: scale(1.1);
-}
+.hamburger-btn:hover { background-color: var(--hover-color); }
+.hamburger-btn i { color: var(--text-primary); font-size: 18px; }
 
-.hamburger-btn i {
-    color: var(--text-primary);
-    font-size: 18px;
-}
-
+/* Chat Header */
 .chat-header {
     padding: 16px 24px;
-    padding-left: 72px; 
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
+    gap: 16px;
     justify-content: space-between;
     flex-shrink: 0;
 }
 .chat-title { font-size: 18px; font-weight: 600; }
-
 .status-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 .status-dot { width: 10px; height: 10px; border-radius: 50%; transition: background-color 0.3s; }
 .status-dot.online { background-color: var(--online-color); }
@@ -257,7 +194,12 @@ body {
     max-width: 70%; line-height: 1.5;
 }
 .user .message-text { background: var(--user-msg-bg); color: white; border-top-right-radius: 0; }
-.ai .message-text { background: var(--ai-msg-bg); border: 1px solid var(--border-color); border-top-left-radius: 0; }
+.ai .message-text {
+    background: transparent;
+    border: none;
+    max-width: 100%;
+    padding: 0;
+}
 
 /* Input Area */
 .input-area { padding: 24px; border-top: 1px solid var(--border-color); flex-shrink: 0; }
@@ -273,7 +215,7 @@ body {
     color: white; cursor: pointer; font-size: 18px;
 }
 
-/* Modal API Key & Konfirmasi */
+/* Modals */
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.6);
@@ -284,12 +226,10 @@ body {
     width: 90%; max-width: 500px;
     animation: modal-fade-in 0.3s ease-out;
 }
-
 @keyframes modal-fade-in {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .modal-header {
     padding: 16px; border-bottom: 1px solid var(--border-color);
     display: flex; justify-content: space-between; align-items: center;
@@ -309,38 +249,41 @@ body {
     padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
 }
 .add-key-form button { background: var(--primary-color); color: white; cursor: pointer; }
-
-/* Tombol Aksi Modal Konfirmasi */
 .modal-actions {
-    margin-top: 24px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    margin-top: 24px; display: flex;
+    justify-content: flex-end; gap: 12px;
 }
-
 .modal-actions button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
+    padding: 10px 20px; border: none;
+    border-radius: 6px; cursor: pointer; font-weight: 500;
     transition: background-color 0.2s;
 }
+.btn-secondary { background-color: var(--hover-color); color: var(--text-primary); }
+.btn-secondary:hover { background-color: var(--border-color); }
+.btn-danger { background-color: var(--error-color); color: white; }
+.btn-danger:hover { opacity: 0.9; }
 
-.btn-secondary {
-    background-color: var(--hover-color);
-    color: var(--text-primary);
+/* Modal Personalisasi */
+.modal-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.5;
 }
-
-.btn-secondary:hover {
-    background-color: var(--border-color);
+.custom-instruction-textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
 }
-
-.btn-danger {
-    background-color: var(--error-color);
+.btn-primary {
+    background-color: var(--primary-color);
     color: white;
 }
-.btn-danger:hover {
+.btn-primary:hover {
     opacity: 0.9;
 }
-
