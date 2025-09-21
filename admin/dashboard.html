@@ -9,135 +9,101 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Warna latar lebih netral seperti di gambar */
-        }
-        .transition-all {
-            transition: all 0.3s ease-in-out;
-        }
-        .hidden {
-            display: none;
-        }
-        /* Style untuk scrollbar yang lebih modern (opsional) */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 6px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .transition-all { transition: all 0.3s ease-in-out; }
+        .hidden { display: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
 </head>
 <body class="text-gray-800">
 
     <div class="flex h-screen bg-gray-100">
-        <aside class="w-64 flex-shrink-0 bg-white border-r">
-            <div class="p-6">
+        <aside class="hidden lg:flex w-64 flex-shrink-0 flex-col bg-white border-r">
+            <div class="h-16 flex items-center px-6">
+                <h1 class="text-2xl font-bold text-gray-800"><a href ="..">Enoted</a></h1>
+            </div>
+            <nav class="mt-4 px-4 flex-1">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg><span>Dashboard</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-white bg-blue-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg><span>Pos</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg><span>Statistik</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 6.79-1.26 9.3l-2.24 2.24a1 1 0 001.414 1.414l2.24-2.24 2.51.51 1.62 3.25.51 2.51-2.24 2.24a1 1 0 001.414 1.414l2.24-2.24 3.25 1.62 2.51.51L12 18.79l.51 2.51 2.24-2.24a1 1 0 001.414-1.414l-2.24-2.24-.51-2.51-1.62-3.25-.51-2.51 2.24-2.24a1 1 0 00-1.414-1.414l-2.24 2.24-3.25-1.62-2.51-.51L8.51 3.17zM10 8a2 2 0 100 4 2 2 0 000-4z" clip-rule="evenodd" /></svg><span>Pengaturan</span></a>
+            </nav>
+        </aside>
+
+        <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden"></div>
+        <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-64 bg-white z-30 transform -translate-x-full transition-transform duration-300 ease-in-out">
+             <div class="h-16 flex items-center justify-between px-6">
                 <h1 class="text-2xl font-bold text-gray-800">Enoted</h1>
+                <button id="close-mobile-menu" class="p-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
             <nav class="mt-4 px-4">
-                <a href="#" class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    Dashboard
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 mt-2 text-white bg-blue-600 rounded-lg">
-                    Pos
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    Statistik
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100">
-                    Pengaturan
-                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg><span>Dashboard</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-white bg-blue-600 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg><span>Pos</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg><span>Statistik</span></a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 mt-2 text-gray-700 rounded-lg hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L8 6.79-1.26 9.3l-2.24 2.24a1 1 0 001.414 1.414l2.24-2.24 2.51.51 1.62 3.25.51 2.51-2.24 2.24a1 1 0 001.414 1.414l2.24-2.24 3.25 1.62 2.51.51L12 18.79l.51 2.51 2.24-2.24a1 1 0 001.414-1.414l-2.24-2.24-.51-2.51-1.62-3.25-.51-2.51 2.24-2.24a1 1 0 00-1.414-1.414l-2.24 2.24-3.25-1.62-2.51-.51L8.51 3.17zM10 8a2 2 0 100 4 2 2 0 000-4z" clip-rule="evenodd" /></svg><span>Pengaturan</span></a>
             </nav>
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white border-b py-3 px-6">
                 <div class="flex items-center justify-between">
-                    <div class="relative flex-grow max-w-xs">
+                    <button id="open-mobile-menu" class="lg:hidden p-1 -ml-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+                    <div class="relative flex-grow max-w-xs hidden sm:block">
                          <input type="text" id="searchInput" placeholder="Cari Judul Postingan..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50">
-                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
-                    <div class="relative">
-                        <button class="flex items-center space-x-2">
-                            <span>Hi, User</span>
-                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
+                    <div class="relative"><button class="flex items-center space-x-2"><span>Hi, Tuan Cecep</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button></div>
                 </div>
             </header>
             
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold">POSTINGAN</h2>
-                    <a href="/admin/create-post.html" class="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Buat Postingan Baru
-                    </a>
+                    <a href="/admin/create-post.html" class="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span class="hidden sm:inline">Buat Postingan Baru</span><span class="sm:hidden">Baru</span></a>
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-sm mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <div class="flex gap-3 items-center">
-                        <select id="massActionSelect" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                            <option value="">Tindakan Massal</option>
-                            <option value="publish">Publish</option>
-                            <option value="draft">Jadikan Draft</option>
-                            <option value="delete">Hapus</option>
-                        </select>
+                        <select id="massActionSelect" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"><option value="">Tindakan Massal</option><option value="publish">Publish</option><option value="draft">Jadikan Draft</option><option value="delete">Hapus</option></select>
                         <button id="applyMassActionBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold">Terapkan</button>
                     </div>
                     <div class="flex gap-3 items-center">
-                        <select id="categoryFilter" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                            <option value="">Semua Kategori</option>
-                            </select>
-                        <select id="sortSelect" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                            <option value="newest">Terbaru</option>
-                            <option value="oldest">Terlama</option>
-                        </select>
-                        <div class="flex items-center gap-2 text-sm text-gray-600">
-                           <span>4 Item</span>
-                           <button>&lt;</button>
-                           <button>&gt;</button>
-                        </div>
+                        <select id="categoryFilter" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"><option value="">Semua Kategori</option></select>
+                        <select id="sortSelect" class="w-full sm:w-auto appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"><option value="newest">Terbaru</option><option value="oldest">Terlama</option></select>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-sm">
-                    <div id="post-list" class="flex flex-col">
-                        </div>
-                </div>
+                <div class="bg-white rounded-lg shadow-sm"><div id="post-list" class="flex flex-col"></div></div>
                 
-                <div id="loading" class="text-center py-10 text-gray-500">
-                    <p>Menghubungkan ke server...</p>
-                </div>
-                <div id="no-results" class="hidden text-center py-10 text-gray-500 bg-white rounded-lg shadow-sm">
-                    <p>Postingan tidak ditemukan.</p>
-                </div>
+                <div id="loading" class="text-center py-10 text-gray-500"><p>Menghubungkan ke server...</p></div>
+                <div id="no-results" class="hidden text-center py-10 text-gray-500 bg-white rounded-lg shadow-sm"><p>Postingan tidak ditemukan.</p></div>
             </main>
         </div>
     </div>
 
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
-            <h3 class="text-lg font-bold text-gray-800">Konfirmasi Hapus</h3>
-            <p class="text-gray-600 mt-2 mb-4">Apakah Anda yakin ingin menghapus postingan ini? Tindakan ini tidak dapat dibatalkan.</p>
-            <div class="flex justify-end gap-3">
-                <button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Batal</button>
-                <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Hapus</button>
-            </div>
-        </div>
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4"><h3 class="text-lg font-bold text-gray-800">Konfirmasi Hapus</h3><p class="text-gray-600 mt-2 mb-4">Apakah Anda yakin ingin menghapus postingan ini? Tindakan ini tidak dapat dibatalkan.</p><div class="flex justify-end gap-3"><button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Batal</button><button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Hapus</button></div></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script type="module" src="/js/firestore.js"></script>
     <script type="module" src="/js/admin/dashboard-logic.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const openBtn = document.getElementById('open-mobile-menu');
+            const closeBtn = document.getElementById('close-mobile-menu');
+            const sidebar = document.getElementById('mobile-sidebar');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            const openSidebar = () => { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); };
+            const closeSidebar = () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); };
+            openBtn.addEventListener('click', openSidebar);
+            closeBtn.addEventListener('click', closeSidebar);
+            overlay.addEventListener('click', closeSidebar);
+        });
+    </script>
 </body>
 </html>
