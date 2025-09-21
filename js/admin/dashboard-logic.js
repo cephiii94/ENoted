@@ -35,13 +35,14 @@ function renderPosts(posts, container) {
         const postCard = document.createElement('div');
         postCard.className = "flex items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors";
         
+        // === [DIPERBARUI] Tata letak disederhanakan untuk memperbaiki tumpang tindih di desktop ===
         postCard.innerHTML = `
             <div class="w-10 flex-shrink-0">
                 <input type="checkbox" class="post-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-id="${post.id}">
             </div>
 
             <div class="flex-1 min-w-0 mx-4">
-                <p class="font-bold text-gray-900" title="${post.title || ''}">${post.title || 'Tanpa Judul'}</p>
+                <p class="font-bold text-gray-900 truncate" title="${post.title || ''}">${post.title || 'Tanpa Judul'}</p>
                 <p class="text-sm text-gray-500">Kategori: ${post.category || '-'} | Diterbitkan: ${formattedDate}</p>
                 <div class="sm:hidden mt-2">
                      <span class="text-xs font-semibold px-3 py-1 rounded-full ${statusBadgeColor}">${status}</span>
@@ -190,66 +191,6 @@ function initializeApp() {
             if (post) {
                 Swal.fire({
                     title: `<strong style="font-size: 1.25rem;">${post.title || 'Tanpa Judul'}</strong>`,
-                    html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">${post.content || 'Tidak ada konten.'}</div>`,
-                    width: '800px', showCancelButton: true, confirmButtonText: 'Tutup',
-                    cancelButtonText: 'Edit', cancelButtonColor: '#ffc107'
-                }).then((result) => {
-                    if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = `/admin/create-post.html?id=${id}`;
-                    }
-                });
-            }
-        }
-        
-        if (targetButton.classList.contains('edit-btn')) {
-            window.location.href = `/admin/create-post.html?id=${id}`;
-        }
-        
-        if (targetButton.classList.contains('delete-btn')) {
-            Swal.fire({
-                title: 'Anda Yakin?', text: "Anda tidak akan bisa mengembalikan postingan ini!", icon: 'warning',
-                showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    postToDeleteId = id;
-                    handleDelete().then(() => Swal.fire('Terhapus!', 'Postingan Anda telah dihapus.', 'success'));
-                }
-            });
-        }
-    });
-
-    window.addEventListener('click', (e) => {
-        if (!e.target.closest('.kebab-menu-btn')) {
-            document.querySelectorAll('.kebab-menu-dropdown').forEach(d => d.classList.add('hidden'));
-        }
-    });
-
-    loadingIndicator.innerHTML = "<p>Memuat postingan...</p>";
-    const q = query(collection(db, "posts"));
-    onSnapshot(q, (querySnapshot) => {
-        allPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        loadingIndicator.classList.add('hidden');
-        populateCategoryFilter(allPosts, categoryFilter);
-        filterAndSortPosts();
-    }, (error) => {
-        console.error("Error fetching posts: ", error);
-        loadingIndicator.innerHTML = "<p class='text-red-500'>Gagal memuat postingan.</p>";
-    });
-}
-
-// ===============================================================
-// TITIK MASUK UTAMA APLIKASI (ENTRY POINT)
-// ===============================================================
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        initializeApp();
-    } else {
-        window.location.href = '/admin/login.html';
-    }
-});
-                Tanpa Judul'}</strong>`,
                     html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">${post.content || 'Tidak ada konten.'}</div>`,
                     width: '800px', showCancelButton: true, confirmButtonText: 'Tutup',
                     cancelButtonText: 'Edit', cancelButtonColor: '#ffc107'
