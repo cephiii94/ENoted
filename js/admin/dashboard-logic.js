@@ -35,19 +35,42 @@ function renderPosts(posts, container) {
         const postCard = document.createElement('div');
         postCard.className = "flex items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors";
         
+        // === [DIPERBARUI] Tata letak disederhanakan untuk memperbaiki tumpang tindih di desktop ===
         postCard.innerHTML = `
-            <div class="w-10 flex-shrink-0"><input type="checkbox" class="post-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-id="${post.id}"></div>
-            <div class="flex-1">
-                <p class="font-bold text-gray-900">${post.title || 'Tanpa Judul'}</p>
-                <p class="text-sm text-gray-500">Kategori: ${post.category || '-'} | Diterbitkan: ${formattedDate}</p>
+            <div class="w-10 flex-shrink-0">
+                <input type="checkbox" class="post-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-id="${post.id}">
             </div>
-            <div class="w-48 flex-shrink-0 text-right"><span class="text-xs font-semibold px-3 py-1 rounded-full ${statusBadgeColor}">${status}</span></div>
-            <div class="w-48 flex-shrink-0 text-right text-sm font-medium">
-                <button data-id="${post.id}" class="view-btn text-gray-500 hover:text-gray-800">Lihat</button>
-                <span class="text-gray-300 mx-2">|</span>
-                <button data-id="${post.id}" class="edit-btn text-blue-600 hover:text-blue-800">Edit</button>
-                <span class="text-gray-300 mx-2">|</span>
-                <button data-id="${post.id}" class="delete-btn text-red-600 hover:text-red-800">Hapus</button>
+
+            <div class="flex-1 min-w-0 mx-4">
+                <p class="font-bold text-gray-900 truncate" title="${post.title || ''}">${post.title || 'Tanpa Judul'}</p>
+                <p class="text-sm text-gray-500">Kategori: ${post.category || '-'} | Diterbitkan: ${formattedDate}</p>
+                <div class="sm:hidden mt-2">
+                     <span class="text-xs font-semibold px-3 py-1 rounded-full ${statusBadgeColor}">${status}</span>
+                </div>
+            </div>
+
+            <div class="hidden sm:block w-40 text-center flex-shrink-0">
+                <span class="text-xs font-semibold px-3 py-1 rounded-full ${statusBadgeColor}">${status}</span>
+            </div>
+
+            <div class="w-32 flex-shrink-0 flex justify-end">
+                <div class="hidden sm:flex items-center text-sm font-medium gap-2">
+                    <button data-id="${post.id}" class="view-btn text-gray-500 hover:text-gray-800 p-1">Lihat</button>
+                    <span class="text-gray-300">|</span>
+                    <button data-id="${post.id}" class="edit-btn text-blue-600 hover:text-blue-800 p-1">Edit</button>
+                    <span class="text-gray-300">|</span>
+                    <button data-id="${post.id}" class="delete-btn text-red-600 hover:text-red-800 p-1">Hapus</button>
+                </div>
+                <div class="sm:hidden relative">
+                    <button data-id="${post.id}" class="kebab-menu-btn p-2 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+                    </button>
+                    <div class="kebab-menu-dropdown absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-10 hidden">
+                        <button data-id="${post.id}" class="view-btn block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Lihat</button>
+                        <button data-id="${post.id}" class="edit-btn block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</button>
+                        <button data-id="${post.id}" class="delete-btn block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Hapus</button>
+                    </div>
+                </div>
             </div>
         `;
         container.appendChild(postCard);
@@ -151,23 +174,27 @@ function initializeApp() {
     postListContainer.addEventListener('click', (e) => {
         const targetButton = e.target.closest('button');
         if (!targetButton) return;
-
+        
+        if (targetButton.classList.contains('kebab-menu-btn')) {
+            const dropdown = targetButton.nextElementSibling;
+            document.querySelectorAll('.kebab-menu-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.add('hidden');
+            });
+            dropdown.classList.toggle('hidden');
+            return;
+        }
+        
         const id = targetButton.dataset.id;
-
-        // === [DIPERBARUI] Logika untuk tombol LIHAT ditambahkan tombol Edit ===
+        
         if (targetButton.classList.contains('view-btn')) {
             const post = allPosts.find(p => p.id === id);
             if (post) {
                 Swal.fire({
                     title: `<strong style="font-size: 1.25rem;">${post.title || 'Tanpa Judul'}</strong>`,
                     html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">${post.content || 'Tidak ada konten.'}</div>`,
-                    width: '800px',
-                    showCancelButton: true, // Menampilkan tombol kedua
-                    confirmButtonText: 'Tutup',
-                    cancelButtonText: 'Edit', // Teks untuk tombol kedua
-                    cancelButtonColor: '#ffc107' // Memberi warna kuning pada tombol edit
+                    width: '800px', showCancelButton: true, confirmButtonText: 'Tutup',
+                    cancelButtonText: 'Edit', cancelButtonColor: '#ffc107'
                 }).then((result) => {
-                    // Cek jika tombol 'Edit' (yang merupakan 'cancel button' di sini) diklik
                     if (result.isDismissed && result.dismiss === Swal.DismissReason.cancel) {
                         window.location.href = `/admin/create-post.html?id=${id}`;
                     }
@@ -190,6 +217,12 @@ function initializeApp() {
                     handleDelete().then(() => Swal.fire('Terhapus!', 'Postingan Anda telah dihapus.', 'success'));
                 }
             });
+        }
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!e.target.closest('.kebab-menu-btn')) {
+            document.querySelectorAll('.kebab-menu-dropdown').forEach(d => d.classList.add('hidden'));
         }
     });
 
