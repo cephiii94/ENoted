@@ -4,7 +4,7 @@ trigger: manual
 
 struktur
 Next.js - React.js 
-database : SUpabase
+database : Supabase
 Auth : supabase.
 cloud image : cloudinary
 ai platform : fal.ai, together ai

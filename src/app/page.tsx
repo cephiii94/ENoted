@@ -1,59 +1,117 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useMemo } from "react";
+import Navbar from "@/components/Navbar";
+import ArticleCard from "@/components/ArticleCard";
+
+// Mock data for initial development (Tahap 4)
+const MOCK_ARTICLES = [
+  {
+    id: "1",
+    title: "Memulai Perjalanan Koding dengan Next.js",
+    summary: "Pelajari langkah-langkah awal membangun aplikasi web modern menggunakan Next.js 14, Tailwind CSS, dan TypeScript.",
+    category: "belajar-koding",
+    categoryLabel: "Koding",
+    date: "25 Maret 2024",
+    slug: "memulai-nextjs",
+  },
+  {
+    id: "2",
+    title: "Ketenangan Hati dalam Mengingat Allah",
+    summary: "Mencari kedamaian sejati melalui dzikir dan refleksi spiritual di tengah hiruk pikuk dunia modern yang serba cepat.",
+    category: "islam",
+    categoryLabel: "Islam",
+    date: "20 Maret 2024",
+    slug: "ketenangan-hati",
+  },
+  {
+    id: "3",
+    title: "10 Tips Produktivitas untuk Developer",
+    summary: "Bagaimana cara menjaga fokus dan efisiensi saat bekerja remote? Simak tips praktis yang bisa langsung Anda terapkan.",
+    category: "tutorial",
+    categoryLabel: "Tutorial",
+    date: "18 Maret 2024",
+    slug: "tips-produktivitas",
+  },
+  {
+    id: "4",
+    title: "Memahami Konsep Clean Code",
+    summary: "Menulis kode bukan hanya soal 'jalan', tapi soal kemudahan untuk dibaca dan dipelihara di masa depan.",
+    category: "belajar-koding",
+    categoryLabel: "Koding",
+    date: "15 Maret 2024",
+    slug: "clean-code",
+  },
+  {
+    id: "5",
+    title: "Adab Berinteraksi di Media Sosial",
+    summary: "Menerapkan nilai-nilai kesantunan dan etika dalam berkomunikasi secara digital sesuai tuntunan agama.",
+    category: "islam",
+    categoryLabel: "Islam",
+    date: "10 Maret 2024",
+    slug: "adab-medsos",
+  },
+  {
+    id: "6",
+    title: "Tutorial Glassmorphism dengan Tailwind",
+    summary: "Langkah demi langkah membuat efek kaca yang elegan dan modern hanya dengan utility classes dari Tailwind CSS.",
+    category: "tutorial",
+    categoryLabel: "Tutorial",
+    date: "05 Maret 2024",
+    slug: "tutorial-glassmorphism",
+  },
+];
 
 export default function Home() {
+  const [category, setCategory] = useState("semua");
+
+  const filteredArticles = useMemo(() => {
+    if (category === "semua") return MOCK_ARTICLES;
+    return MOCK_ARTICLES.filter((art) => art.category === category);
+  }, [category]);
+
   return (
-    <div className="w-full max-w-4xl px-4 py-20 flex flex-col items-center">
-      {/* Header / Brand */}
-      <div className="glass px-8 py-4 rounded-2xl mb-16 flex flex-col items-center animate-in fade-in slide-in-from-top-4 duration-700">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-softblue-600 to-softblue-400 bg-clip-text text-transparent">
-          ENoted
-        </h1>
-        <p className="text-softblue-500 font-medium tracking-wide">Portal Informasi & Tutorial</p>
-      </div>
-
-      {/* Hero Section */}
-      <section className="glass p-10 md:p-16 rounded-[2.5rem] flex flex-col items-center text-center relative overflow-hidden animate-in fade-in zoom-in duration-1000">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-softblue-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-softblue-300/20 rounded-full blur-3xl" />
-        
-        <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-slate-800 dark:text-slate-100">
-          Selamat Datang di <span className="text-softblue-500">Versi Baru</span>
-        </h2>
-        
-        <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl leading-relaxed">
-          Kami sedang memproses migrasi konten dari versi lama ke versi modern ini. 
-          Nikmati pengalaman membaca yang lebih cepat, bersih, dan menenangkan dengan ENoted.
-        </p>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          <button className="bg-softblue-500 hover:bg-softblue-600 text-white px-8 py-3 rounded-full font-medium shadow-lg shadow-softblue-500/25 transition-all hover:scale-105 active:scale-95">
-            Jelajahi Artikel
-          </button>
-          <button className="glass bg-white/20 hover:bg-white/30 border-white/40 text-softblue-700 dark:text-softblue-200 px-8 py-3 rounded-full font-medium transition-all hover:scale-105 active:scale-95">
-            Tentang Kami
-          </button>
-        </div>
-      </section>
-
-      {/* Categories Preview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 w-full">
-        {['Koding', 'Tutorial', 'Islam'].map((cat, i) => (
-          <div 
-            key={cat} 
-            className="glass p-6 rounded-3xl flex flex-col items-center hover:bg-white/30 transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-4 duration-700"
-            style={{ animationDelay: `${(i + 1) * 200}ms` }}
-          >
-            <div className="w-12 h-12 rounded-2xl bg-softblue-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <span className="text-softblue-600 font-bold text-xl">{cat[0]}</span>
-            </div>
-            <h3 className="font-semibold text-slate-800 dark:text-slate-200">{cat}</h3>
-          </div>
-        ))}
-      </div>
+    <>
+      <Navbar currentCategory={category} onCategoryChange={setCategory} />
       
-      <footer className="mt-20 text-slate-400 text-sm">
-        &copy; 2026 ENoted. Project Baru Berbasis Next.js.
-      </footer>
-    </div>
+      <div className="w-full max-w-6xl px-6 pb-20">
+        {/* Header Title Section */}
+        <div className="flex flex-col items-center text-center mb-16 animate-in fade-in slide-in-from-top-8 duration-1000">
+          <h2 className="text-sm font-bold text-softblue-600 uppercase tracking-[0.3em] mb-4">
+            Jelajahi Wawasan Baru
+          </h2>
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent mb-6 tracking-tight">
+            Artikel Terbaru & Terpopuler
+          </h1>
+          <div className="h-1.5 w-24 bg-gradient-to-r from-softblue-500 to-transparent rounded-full" />
+        </div>
+
+        {/* Articles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredArticles.length > 0 ? (
+            filteredArticles.map((art, index) => (
+              <div 
+                key={art.id} 
+                className="animate-in fade-in zoom-in duration-700 fill-mode-both"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <ArticleCard
+                  id={art.id}
+                  title={art.title}
+                  summary={art.summary}
+                  category={art.categoryLabel}
+                  date={art.date}
+                  slug={art.slug}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 flex flex-col items-center glass rounded-[3rem] border-dashed border-2">
+              <p className="text-slate-400 font-medium">Belum ada artikel di kategori ini.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
