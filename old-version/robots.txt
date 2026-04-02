@@ -1,0 +1,4 @@
+User-agent: *        # Berlaku untuk semua bot crawler
+Allow: /             # Izinkan akses ke semua halaman
+Disallow: /admin/    # Kecuali folder admin
+Sitemap: https://www.enoted.com/sitemap.xml  # Lokasi sitemap

@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Banjarmasin",
+			"country": {
+				"code": "ID",
+				"name": "Indonesia"
+			},
+			"subdivision": {
+				"code": "KS",
+				"name": "South Kalimantan"
+			},
+			"timezone": "Asia/Makassar",
+			"latitude": -3.3236,
+			"longitude": 114.589,
+			"postalCode": "70231"
+		},
+		"timestamp": 1775097301107
+	}
+}

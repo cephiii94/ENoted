@@ -22,41 +22,55 @@
     <meta name="twitter:description" id="twitterDescription" content="" />
     <meta name="twitter:image" id="twitterImage" content="https://www.enoted.netifly.app/img/default-thumbnail.jpg" />
 
-    <link rel="icon" type="image/png" href="/img/favicon.ico" />
     <title id="pageTitle">ENoted</title>
+    
+    <!-- Google Fonts: Outfit & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="/css/style.css" />
 </head>
 
 <body class="post-page">
-    <div class="content" id="mainContent">
-        <nav aria-label="breadcrumb" class="breadcrumb">
-            <ol id="breadcrumbList">
-                <li><a href="/index.html">Beranda</a></li>
-                <li id="breadcrumbCategory" class="category"></li>
-                <li id="breadcrumbTitle" aria-current="page"></li>
-            </ol>
-        </nav>
-        
-        <h1 id="postTitle"></h1>
-        
-        <div class="post-meta">
-            <time id="postDate" datetime="" class="post-date"></time>
-        </div>
+    <!-- Floating Back Button -->
+    <a href="/index.html" class="floating-back-btn" id="backButton" title="Kembali ke Beranda">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
-        <button class="share-btn" id="shareButton">Bagikan</button>
-        <div class="share-menu" id="shareMenu">
-            <a href="#" onclick="shareViaWhatsApp()">WhatsApp</a>
-            <a href="#" onclick="shareViaFacebook()">Facebook</a>
-            <a href="#" onclick="shareViaTelegram()">Telegram</a>
-            <a href="#" onclick="copyLink()">Salin Link</a>
-        </div>
-        
-        <div class="post-content" id="postContent">
+    <div class="content post-container" id="mainContent">
+        <header class="post-header">
+            <nav aria-label="breadcrumb" class="breadcrumb">
+                <ol id="breadcrumbList">
+                    <li><a href="/index.html">Beranda</a></li>
+                    <li id="breadcrumbCategory" class="category"></li>
+                    <li id="breadcrumbTitle" aria-current="page"></li>
+                </ol>
+            </nav>
+            
+            <h1 id="postTitle" class="gradient-text-post"></h1>
+            
+            <div class="post-meta-header">
+                <span id="postDate" class="post-date-badge"></span>
+                <button class="share-trigger-btn" id="shareButton">
+                    <i class="fas fa-share-alt"></i> Bagikan
+                </button>
             </div>
+        </header>
 
-        <button class="back-btn" id="backButton" onclick="goBack()">
-            Kembali
-        </button>
+        <div class="share-menu" id="shareMenu">
+            <a href="#" onclick="shareViaWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="#" onclick="shareViaFacebook()"><i class="fab fa-facebook-f"></i> Facebook</a>
+            <a href="#" onclick="shareViaTelegram()"><i class="fab fa-telegram-plane"></i> Telegram</a>
+            <a href="#" onclick="copyLink()"><i class="fas fa-link"></i> Salin Link</a>
+        </div>
+        
+        <article class="article-body">
+            <div class="post-content" id="postContent">
+                <!-- Content injected here -->
+            </div>
+        </article>
     </div>
 
     <div class="popup-overlay" id="popupOverlay"></div>

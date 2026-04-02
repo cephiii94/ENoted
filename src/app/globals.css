@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-softblue-50: #f0f7ff;
+  --color-softblue-100: #e0effe;
+  --color-softblue-200: #badcfe;
+  --color-softblue-300: #7dbefd;
+  --color-softblue-400: #3b9efb;
+  --color-softblue-500: #0b84f3;
+  --color-softblue-600: #0566cc;
+  --color-softblue-700: #0551a5;
+  --color-softblue-800: #094588;
+  --color-softblue-900: #0e3b71;
+  --color-softblue-950: #09254c;
+
+  --color-glass: rgba(255, 255, 255, 0.15);
+  --color-glass-border: rgba(255, 255, 255, 0.25);
+  
+  --backdrop-blur-glass: blur(12px);
+}
+
+:root {
+  --background: #f8fbff;
+  --foreground: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #020617;
+    --foreground: #f8fafc;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* Glassmorphism Utility Classes */
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+}
+
+.gradient-bg {
+  background: radial-gradient(circle at top left, #f0f7ff, #ffffff);
+}
+
+.dark .gradient-bg {
+  background: radial-gradient(circle at top left, #0f172a, #020617);
+}

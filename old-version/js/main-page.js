@@ -7,7 +7,7 @@ const postsContainer = document.getElementById('postsContainer');
 
 const fetchAndDisplayPosts = async (category = 'semua') => {
     try {
-        postsContainer.innerHTML = '<h2>Memuat artikel...</h2>';
+        showSkeleton();
         let postsCollection = collection(db, "posts");
         
         // --- [PEMBARUAN UTAMA] ---
@@ -68,6 +68,15 @@ const fetchAndDisplayPosts = async (category = 'semua') => {
         }
     }
 };
+
+function showSkeleton() {
+    postsContainer.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'skeleton skeleton-post';
+        postsContainer.appendChild(skeleton);
+    }
+}
 
 // Panggil fungsi saat halaman dimuat
 document.addEventListener('DOMContentLoaded', () => {
