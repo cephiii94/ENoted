@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-softblue-50: #f0f7ff;
@@ -13,8 +14,12 @@
   --color-softblue-900: #0e3b71;
   --color-softblue-950: #09254c;
 
-  --color-glass: rgba(255, 255, 255, 0.15);
-  --color-glass-border: rgba(255, 255, 255, 0.25);
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-indigo-500: #6366f1;
+
+  --color-glass: rgba(255, 255, 255, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.4);
   
   --backdrop-blur-glass: blur(12px);
 }
@@ -31,6 +36,10 @@
   }
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -41,11 +50,20 @@ body {
 /* Glassmorphism Utility Classes */
 @layer components {
   .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl;
   }
   
   .glass-dark {
-    @apply bg-black/20 backdrop-blur-md border border-white/10 shadow-xl;
+    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-xl;
+  }
+
+  .post-indicator {
+    content: '';
+    @apply absolute left-0 top-0 w-1 h-0 bg-softblue-500 transition-all duration-300 group-hover:h-full;
+  }
+
+  .post-indicator-emerald {
+    @apply bg-emerald-500;
   }
 }
 

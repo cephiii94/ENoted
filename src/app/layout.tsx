@@ -20,18 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${outfit.variable} antialiased`}>
-      <body className="font-outfit min-h-screen gradient-bg selection:bg-softblue-200 selection:text-softblue-900 flex flex-col">
+      <body className="font-outfit min-h-screen gradient-bg selection:bg-softblue-200 selection:text-softblue-900">
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--color-softblue-100),_transparent_50%)] opacity-50 pointer-events-none" />
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_left,_var(--color-softblue-50),_transparent_50%)] opacity-50 pointer-events-none" />
         
-        {/* Navbar akan diatur per halaman agar bisa menghandle filter State jika diperlukan, 
-            namun Footer diletakkan di global layout */}
-        
-        <main className="relative flex-grow flex flex-col items-center pt-32 md:pt-40">
+        <main className="w-full h-full">
           {children}
         </main>
-
-        <Footer />
       </body>
     </html>
   );
