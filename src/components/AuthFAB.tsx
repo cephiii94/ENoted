@@ -26,11 +26,11 @@ export default function AuthFAB({ className, isLoggedIn }: AuthFABProps) {
         title="Logout"
       >
         <div className="absolute inset-0 bg-rose-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-        <div className="relative w-14 h-14 bg-white/80 backdrop-blur-md border border-white/50 rounded-2xl flex items-center justify-center shadow-xl shadow-rose-500/10 group-hover:scale-110 group-hover:-rotate-6 group-active:scale-95 transition-all duration-300">
+        <div className="relative w-12 h-12 bg-white/80 backdrop-blur-md border border-white/50 rounded-xl flex items-center justify-center shadow-xl shadow-rose-500/10 group-hover:scale-110 group-hover:-rotate-6 group-active:scale-95 transition-all duration-300">
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            width="22" 
-            height="22" 
+            width="18" 
+            height="18" 
             viewBox="0 0 24 24" 
             fill="none" 
             stroke="currentColor" 
@@ -55,11 +55,11 @@ export default function AuthFAB({ className, isLoggedIn }: AuthFABProps) {
       title="Login Admin"
     >
       <div className="absolute inset-0 bg-indigo-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-      <div className="relative w-14 h-14 bg-white/80 backdrop-blur-md border border-white/50 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/10 group-hover:scale-110 group-hover:rotate-6 group-active:scale-95 transition-all duration-300">
+      <div className="relative w-12 h-12 bg-white/80 backdrop-blur-md border border-white/50 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/10 group-hover:scale-110 group-hover:rotate-6 group-active:scale-95 transition-all duration-300">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
-          width="22" 
-          height="22" 
+          width="18" 
+          height="18" 
           viewBox="0 0 24 24" 
           fill="none" 
           stroke="currentColor" 

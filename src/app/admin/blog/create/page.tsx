@@ -61,7 +61,10 @@ export default function CreateBlogPage() {
     }
   };
 
-  const insertMarkdown = (prefix: string, suffix: string = "") => {
+  const insertMarkdown = (e: React.MouseEvent, prefix: string, suffix: string = "") => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!contentRef.current) return;
 
     const textarea = contentRef.current;
@@ -81,7 +84,7 @@ export default function CreateBlogPage() {
 
     // Re-focus and set cursor position after update
     setTimeout(() => {
-      textarea.focus();
+      textarea.focus({ preventScroll: true }); // Mencegah layar melompat
       const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
       textarea.setSelectionRange(newCursorPos, newCursorPos);
     }, 0);
@@ -104,29 +107,57 @@ export default function CreateBlogPage() {
     setSuccess(false);
 
     try {
-      const { data, error } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sesi tidak valid. Silakan login kembali.");
+
+      const dateStr = new Date().toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      // Percobaan Pertama
+      let { data, error: insertError } = await supabase
         .from("articles")
-        .insert([
-          {
-            ...formData,
-            date: new Date().toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-          },
-        ])
+        .insert([{ ...formData, date: dateStr }])
         .select();
 
-      if (error) throw error;
+      // Jika Error Duplikasi (Unique Violation), coba dengan slug unik
+      if (insertError && insertError.code === "23505") {
+        console.warn("Slug duplikat terdeteksi, mencoba auto-unique slug...");
+        const uniqueSlug = `${formData.slug}-${Math.random().toString(36).substring(2, 6)}`;
+        
+        const retry = await supabase
+          .from("articles")
+          .insert([{ ...formData, slug: uniqueSlug, date: dateStr }])
+          .select();
+        
+        data = retry.data;
+        insertError = retry.error;
+        
+        if (!insertError) {
+          setError("Catatan: Judul sudah ada, URL artikel telah disesuaikan agar unik.");
+        }
+      }
+
+      if (insertError) {
+        console.error("Supabase Final Error:", insertError);
+        if (insertError.code === "42501") {
+          throw new Error("Akses ditolak (RLS). Pastikan Anda memiliki izin untuk menulis ke tabel 'articles'.");
+        } else if (insertError.code === "23505") {
+          throw new Error("Gagal menyimpan: Judul atau Slug masih duplikat. Silakan gunakan judul yang benar-benar berbeda.");
+        } else {
+          throw new Error(`${insertError.message} (Kode: ${insertError.code})`);
+        }
+      }
 
       setSuccess(true);
       setTimeout(() => {
         router.push("/");
       }, 2000);
     } catch (err: any) {
-      console.error("Error creating article:", err);
-      setError(err.message || "Gagal membuat artikel. Pastikan koneksi dan tabel database sudah benar.");
+      console.error("Save process failure:", err);
+      setError(err.message || "Terjadi kesalahan saat publikasi.");
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +250,7 @@ export default function CreateBlogPage() {
                   <button
                     key={index}
                     type="button"
-                    onClick={() => insertMarkdown(item.prefix, item.suffix)}
+                    onClick={(e) => insertMarkdown(e, item.prefix, item.suffix)}
                     title={item.title}
                     className="flex items-center gap-2 px-3 py-2 bg-white/70 hover:bg-white text-slate-600 hover:text-emerald-600 rounded-xl border border-transparent hover:border-emerald-500/20 shadow-sm transition-all active:scale-95 group"
                   >

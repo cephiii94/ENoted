@@ -102,7 +102,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden gradient-bg p-4 md:p-0">
+    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden gradient-bg p-4 md:p-6 md:px-20">
       
       {/* Click Outside Overlay Layer (Desktop) */}
       {isPreviewOpen && (
@@ -181,17 +181,17 @@ export default function Home() {
           {/* FAB Admin Control Panel */}
           {user && (
             <>
-              <AdminFAB className="absolute bottom-52 -left-20 z-50 group flex items-center justify-center invisible md:visible" />
-              <ManageFAB className="absolute bottom-32 -left-20 z-50 group flex items-center justify-center invisible md:visible" />
+              <AdminFAB className="absolute bottom-40 -left-14 z-50 group flex items-center justify-center invisible md:visible" />
+              <ManageFAB className="absolute bottom-26 -left-14 z-50 group flex items-center justify-center invisible md:visible" />
             </>
           )}
           <AuthFAB 
             isLoggedIn={!!user} 
-            className="absolute bottom-12 -left-20 z-50 group flex items-center justify-center invisible md:visible" 
+            className="absolute bottom-12 -left-14 z-50 group flex items-center justify-center invisible md:visible" 
           />
           
           {/* Mobile version */}
-          <div className="md:hidden flex flex-col gap-4 absolute -bottom-[12rem] left-0 z-50">
+          <div className="md:hidden flex flex-col gap-3 absolute -bottom-[12rem] left-0 z-50">
             {user && (
               <>
                 <AdminFAB className="relative" />

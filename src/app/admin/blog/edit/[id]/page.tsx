@@ -23,6 +23,9 @@ export default function EditBlogPage() {
     slug: "",
   });
 
+  // Melacak apakah user sudah MANUAL mengubah judul (bukan saat load awal)
+  const [titleChanged, setTitleChanged] = useState(false);
+
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   // Protection & Fetch Initial Data
@@ -65,8 +68,10 @@ export default function EditBlogPage() {
     checkAuthAndFetch();
   }, [id, router]);
 
-  // Auto-generate slug from title (optional, might want to keep original)
+  // Auto-generate slug dari title HANYA jika user secara manual mengubah judul
+  // (bukan saat data awal dimuat dari database)
   useEffect(() => {
+    if (!titleChanged) return; // Abaikan saat data awal dimuat
     if (!formData.title) return;
     const slug = formData.title
       .toLowerCase()
@@ -75,10 +80,14 @@ export default function EditBlogPage() {
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
     setFormData((prev) => ({ ...prev, slug }));
-  }, [formData.title]);
+  }, [formData.title, titleChanged]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Tandai bahwa user sudah mengubah judul secara manual
+    if (name === "title") setTitleChanged(true);
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
     
     if (name === "category") {
@@ -92,17 +101,29 @@ export default function EditBlogPage() {
     }
   };
 
-  const insertMarkdown = (prefix: string, suffix: string = "") => {
+  const insertMarkdown = (e: React.MouseEvent, prefix: string, suffix: string = "") => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!contentRef.current) return;
     const textarea = contentRef.current;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = formData.content;
     const selectedText = text.substring(start, end);
-    const newContent = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
+
+    const newContent = 
+      text.substring(0, start) + 
+      prefix + 
+      selectedText + 
+      suffix + 
+      text.substring(end);
+
     setFormData((prev) => ({ ...prev, content: newContent }));
+
+    // Re-focus and set cursor position after update
     setTimeout(() => {
-      textarea.focus();
+      textarea.focus({ preventScroll: true }); // Mencegah layar melompat
       const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
       textarea.setSelectionRange(newCursorPos, newCursorPos);
     }, 0);
@@ -125,22 +146,65 @@ export default function EditBlogPage() {
     setSuccess(false);
 
     try {
-      const { error } = await supabase
-        .from("articles")
-        .update({
-          ...formData,
-        })
-        .eq("id", id);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sesi tidak aktif. Silakan login kembali.");
 
-      if (error) throw error;
+      // Percobaan Pertama - Gunakan .select() untuk verifikasi apakah baris benar-benar diperbarui
+      let { data: updatedData, error: updateError } = await supabase
+        .from("articles")
+        .update({ ...formData })
+        .eq("id", id)
+        .select();
+
+      // Jika Error Duplikasi (Unique Violation), coba dengan slug unik
+      if (updateError && updateError.code === "23505") {
+        console.warn("Slug duplikat terdeteksi saat update, mencoba auto-unique slug...");
+        const uniqueSlug = `${formData.slug}-${Math.random().toString(36).substring(2, 6)}`;
+        
+        const retry = await supabase
+          .from("articles")
+          .update({ ...formData, slug: uniqueSlug })
+          .eq("id", id)
+          .select();
+        
+        updatedData = retry.data;
+        updateError = retry.error;
+        
+        if (!updateError) {
+          setError("Catatan: Judul bertabrakan dengan artikel lain, URL telah disesuaikan agar unik.");
+        }
+      }
+
+      if (updateError) {
+        console.error("Supabase Final Update Error:", updateError);
+        if (updateError.code === "23505") {
+          throw new Error("Gagal memperbarui: Judul atau Slug masih duplikat dengan artikel lain.");
+        } else if (updateError.code === "42501") {
+          throw new Error("Akses ditolak (RLS). Anda tidak diizinkan mengubah artikel ini.");
+        } else {
+          throw new Error(`${updateError.message} (Kode: ${updateError.code})`);
+        }
+      }
+
+      // Cek apakah ada baris yang BENAR-BENAR diperbarui
+      // Jika updatedData kosong tapi tidak ada error = RLS memblok update secara diam-diam
+      if (!updatedData || updatedData.length === 0) {
+        console.error("Update diam-diam gagal: 0 baris diperbarui. Kemungkinan kebijakan RLS memblok update.");
+        throw new Error(
+          "Artikel tidak berhasil disimpan. " +
+          "Pastikan kebijakan RLS di Supabase sudah mengizinkan UPDATE pada tabel 'articles' untuk pengguna yang login."
+        );
+      }
+
+      console.log("Update berhasil:", updatedData[0]);
 
       setSuccess(true);
       setTimeout(() => {
         router.push("/admin/blog/manage");
       }, 1500);
     } catch (err: any) {
-      console.error("Error updating article:", err);
-      setError(err.message || "Gagal memperbarui artikel.");
+      console.error("Update process failure:", err);
+      setError(err.message || "Terjadi kesalahan saat memperbarui artikel.");
     } finally {
       setIsUpdating(false);
     }
@@ -241,7 +305,7 @@ export default function EditBlogPage() {
                   <button
                     key={index}
                     type="button"
-                    onClick={() => insertMarkdown(item.prefix, item.suffix)}
+                    onClick={(e) => insertMarkdown(e, item.prefix, item.suffix)}
                     title={item.title}
                     className="flex items-center gap-2 px-3 py-2 bg-white/70 hover:bg-white text-slate-600 hover:text-emerald-600 rounded-xl border border-transparent hover:border-emerald-500/20 shadow-sm transition-all active:scale-95 group"
                   >
