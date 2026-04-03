@@ -3,12 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
-export default function CreateBlogPage() {
+export default function EditBlogPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,21 +23,51 @@ export default function CreateBlogPage() {
     slug: "",
   });
 
-  // Protection: Redirect if not logged in
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  // Protection & Fetch Initial Data
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndFetch = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.push("/login");
+        return;
+      }
+
+      if (!id) return;
+
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from("articles")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+        if (data) {
+          setFormData({
+            title: data.title,
+            summary: data.summary,
+            content: data.content,
+            category: data.category,
+            category_label: data.category_label,
+            slug: data.slug,
+          });
+        }
+      } catch (err: any) {
+        console.error("Error fetching article:", err);
+        setError("Gagal memuat artikel.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    checkAuth();
-  }, [router]);
+    checkAuthAndFetch();
+  }, [id, router]);
 
-  const contentRef = useRef<HTMLTextAreaElement>(null);
-
-  // Auto-generate slug from title
+  // Auto-generate slug from title (optional, might want to keep original)
   useEffect(() => {
+    if (!formData.title) return;
     const slug = formData.title
       .toLowerCase()
       .trim()
@@ -49,7 +81,6 @@ export default function CreateBlogPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     
-    // Update category_label if category changes
     if (name === "category") {
       const labels: Record<string, string> = {
         "belajar-koding": "Koding",
@@ -63,23 +94,13 @@ export default function CreateBlogPage() {
 
   const insertMarkdown = (prefix: string, suffix: string = "") => {
     if (!contentRef.current) return;
-
     const textarea = contentRef.current;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = formData.content;
     const selectedText = text.substring(start, end);
-
-    const newContent = 
-      text.substring(0, start) + 
-      prefix + 
-      selectedText + 
-      suffix + 
-      text.substring(end);
-
+    const newContent = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
     setFormData((prev) => ({ ...prev, content: newContent }));
-
-    // Re-focus and set cursor position after update
     setTimeout(() => {
       textarea.focus();
       const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
@@ -99,38 +120,39 @@ export default function CreateBlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsUpdating(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("articles")
-        .insert([
-          {
-            ...formData,
-            date: new Date().toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-          },
-        ])
-        .select();
+        .update({
+          ...formData,
+        })
+        .eq("id", id);
 
       if (error) throw error;
 
       setSuccess(true);
       setTimeout(() => {
-        router.push("/");
-      }, 2000);
+        router.push("/admin/blog/manage");
+      }, 1500);
     } catch (err: any) {
-      console.error("Error creating article:", err);
-      setError(err.message || "Gagal membuat artikel. Pastikan koneksi dan tabel database sudah benar.");
+      console.error("Error updating article:", err);
+      setError(err.message || "Gagal memperbarui artikel.");
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-bg p-4 md:p-12 flex flex-col items-center justify-start overflow-x-hidden custom-scrollbar py-12">
@@ -140,12 +162,12 @@ export default function CreateBlogPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-emerald-600 to-indigo-600 bg-clip-text text-transparent">
-                Buat Artikel Baru
+                Edit Artikel
               </h1>
-              <p className="text-xs text-slate-400 font-bold tracking-[0.2em] uppercase mt-1">ENoted Admin Panel</p>
+              <p className="text-[10px] text-slate-400 font-bold tracking-[0.2em] uppercase mt-1">Suntik Perubahan Baru</p>
             </div>
             <Link 
-              href="/"
+              href="/admin/blog/manage"
               className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all"
               title="Batalkan"
             >
@@ -176,7 +198,7 @@ export default function CreateBlogPage() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full px-6 py-4 bg-white/50 border border-white/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer"
+                  className="w-full px-6 py-4 bg-white/50 border border-white/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all appearance-none cursor-pointer text-slate-600"
                 >
                   <option value="tutorial">Tutorial</option>
                   <option value="belajar-koding">Koding</option>
@@ -267,7 +289,7 @@ export default function CreateBlogPage() {
             {success && (
               <div className="p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl text-sm flex items-center gap-3 animate-in fade-in">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Artikel berhasil dipublikasikan! Mengalihkan...
+                Perubahan berhasil disimpan! Mengalihkan...
               </div>
             )}
 
@@ -275,24 +297,24 @@ export default function CreateBlogPage() {
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"
-                disabled={isLoading}
-                className={`flex-1 py-4 bg-gradient-to-r from-emerald-500 to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                disabled={isUpdating}
+                className={`flex-1 py-4 bg-gradient-to-r from-emerald-500 to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 ${isUpdating ? "opacity-70 cursor-not-allowed" : ""}`}
               >
-                {isLoading ? (
+                {isUpdating ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                    Simpan & Publikasikan
+                    Simpan Perubahan
                   </>
                 )}
               </button>
               <button
-                type="reset"
-                onClick={() => setFormData({ title: "", summary: "", content: "", category: "tutorial", category_label: "Tutorial", slug: "" })}
+                type="button"
+                onClick={() => router.push("/admin/blog/manage")}
                 className="px-8 py-4 bg-white/50 border border-white/60 text-slate-500 font-bold rounded-2xl hover:bg-white transition-all active:scale-95"
               >
-                Reset
+                Batal
               </button>
             </div>
           </form>

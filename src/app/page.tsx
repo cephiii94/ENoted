@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import ArticleCard from "@/components/ArticleCard";
 import AdminFAB from "@/components/AdminFAB";
+import AuthFAB from "@/components/AuthFAB";
+import ManageFAB from "@/components/ManageFAB";
 import Link from "next/link";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/lib/supabase";
@@ -19,15 +21,27 @@ interface Article {
   created_at?: string;
 }
 
-// Mock data (Tahap 4)
-// MOCK_ARTICLES dihapus karena beralih ke Supabase
-
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [category, setCategory] = useState("semua");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -163,11 +177,29 @@ export default function Home() {
               )}
             </div>
           </div>
-          {/* FAB Admin outside glass box but aligned with the list panel */}
-          {/* FAB Admin outside on the left side, slightly down */}
-          <AdminFAB className="absolute bottom-12 -left-20 z-50 group flex items-center justify-center invisible md:visible" />
-          {/* Mobile version stays near the bottom for accessibility */}
-          <AdminFAB className="absolute -bottom-16 left-0 z-50 md:hidden" />
+          
+          {/* FAB Admin Control Panel */}
+          {user && (
+            <>
+              <AdminFAB className="absolute bottom-52 -left-20 z-50 group flex items-center justify-center invisible md:visible" />
+              <ManageFAB className="absolute bottom-32 -left-20 z-50 group flex items-center justify-center invisible md:visible" />
+            </>
+          )}
+          <AuthFAB 
+            isLoggedIn={!!user} 
+            className="absolute bottom-12 -left-20 z-50 group flex items-center justify-center invisible md:visible" 
+          />
+          
+          {/* Mobile version */}
+          <div className="md:hidden flex flex-col gap-4 absolute -bottom-[12rem] left-0 z-50">
+            {user && (
+              <>
+                <AdminFAB className="relative" />
+                <ManageFAB className="relative" />
+              </>
+            )}
+            <AuthFAB isLoggedIn={!!user} className="relative" />
+          </div>
         </div>
 
         {/* Panel Kanan: Detail Pratinjau (Desktop) */}
