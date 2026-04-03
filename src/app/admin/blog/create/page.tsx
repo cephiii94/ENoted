@@ -21,6 +21,8 @@ export default function CreateBlogPage() {
     slug: "",
   });
 
+  const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
+
   // Protection: Redirect if not logged in
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,9 +47,48 @@ export default function CreateBlogPage() {
     setFormData((prev) => ({ ...prev, slug }));
   }, [formData.title]);
 
+  // Sistem History (Undo/Redo)
+  const [history, setHistory] = useState<string[]>([""]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  const saveToHistory = (newContent: string) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(newContent);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const undo = (e?: React.MouseEvent | KeyboardEvent) => {
+    if (e) {
+      e.preventDefault();
+      if ('stopPropagation' in e) e.stopPropagation();
+    }
+    if (historyIndex > 0) {
+      const prevContent = history[historyIndex - 1];
+      setHistoryIndex(historyIndex - 1);
+      setFormData((prev) => ({ ...prev, content: prevContent }));
+    }
+  };
+
+  const redo = (e?: React.MouseEvent | KeyboardEvent) => {
+    if (e) {
+      e.preventDefault();
+      if ('stopPropagation' in e) e.stopPropagation();
+    }
+    if (historyIndex < history.length - 1) {
+      const nextContent = history[historyIndex + 1];
+      setHistoryIndex(historyIndex + 1);
+      setFormData((prev) => ({ ...prev, content: nextContent }));
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === "content") {
+      saveToHistory(value);
+    }
     
     // Update category_label if category changes
     if (name === "category") {
@@ -61,9 +102,11 @@ export default function CreateBlogPage() {
     }
   };
 
-  const insertMarkdown = (e: React.MouseEvent, prefix: string, suffix: string = "") => {
-    e.preventDefault();
-    e.stopPropagation();
+  const insertMarkdown = (e: React.MouseEvent | null, prefix: string, suffix: string = "") => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     if (!contentRef.current) return;
 
@@ -81,6 +124,7 @@ export default function CreateBlogPage() {
       text.substring(end);
 
     setFormData((prev) => ({ ...prev, content: newContent }));
+    saveToHistory(newContent);
 
     // Re-focus and set cursor position after update
     setTimeout(() => {
@@ -90,11 +134,36 @@ export default function CreateBlogPage() {
     }, 0);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Deteksi Ctrl atau Cmd
+    const isMod = e.ctrlKey || e.metaKey;
+    
+    if (isMod) {
+      switch (e.key.toLowerCase()) {
+        case 'b': insertMarkdown(null, "**", "**"); break;
+        case 'i': insertMarkdown(null, "*", "*"); break;
+        case 'j': insertMarkdown(null, '<div align="justify">\n', '\n</div>'); break;
+        case 'k': insertMarkdown(null, "[", "](url)"); break;
+        case 'h': insertMarkdown(null, "### ", ""); break;
+        case 'z': 
+          if (e.shiftKey) redo(); 
+          else undo(); 
+          break;
+        case 'y': redo(); break;
+        default: return; // Biarkan tombol lain berfungsi normal
+      }
+      e.preventDefault();
+    }
+  };
+
   const toolbarItems = [
-    { label: "B", prefix: "**", suffix: "**", icon: <><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></>, title: "Tebal" },
-    { label: "I", prefix: "*", suffix: "*", icon: <><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></>, title: "Miring" },
-    { label: "H", prefix: "### ", suffix: "", icon: <><path d="M4 12h16"/><path d="M4 18V6"/><path d="M20 18V6"/></>, title: "Heading" },
-    { label: "Link", prefix: "[", suffix: "](url)", icon: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>, title: "Tautan" },
+    { label: "Undo", prefix: "", suffix: "", icon: <><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></>, title: "Undo (Ctrl+Z)", action: (e: React.MouseEvent) => undo(e) },
+    { label: "Redo", prefix: "", suffix: "", icon: <><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/></>, title: "Redo (Ctrl+Y)", action: (e: React.MouseEvent) => redo(e) },
+    { label: "B", prefix: "**", suffix: "**", icon: <><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></>, title: "Tebal (Ctrl+B)" },
+    { label: "I", prefix: "*", suffix: "*", icon: <><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></>, title: "Miring (Ctrl+I)" },
+    { label: "J", prefix: '<div align="justify">\n', suffix: '\n</div>', icon: <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="11" x2="21" y2="11"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="3" y1="21" x2="21" y2="21"/></>, title: "Justify (Ctrl+J)" },
+    { label: "H", prefix: "### ", suffix: "", icon: <><path d="M4 12h16"/><path d="M4 18V6"/><path d="M20 18V6"/></>, title: "Heading (Ctrl+H)" },
+    { label: "Link", prefix: "[", suffix: "](url)", icon: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>, title: "Tautan (Ctrl+K)" },
     { label: "Code", prefix: "```\n", suffix: "\n```", icon: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>, title: "Blok Kode" },
     { label: "Quote", prefix: "> ", suffix: "", icon: <><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1 0 2.5 0 5-2 5"/><path d="M11 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2h-2c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1 0 2.5 0 5-2 5"/></>, title: "Kutipan" },
     { label: "List", prefix: "- ", suffix: "", icon: <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>, title: "Daftar" },
@@ -250,7 +319,13 @@ export default function CreateBlogPage() {
                   <button
                     key={index}
                     type="button"
-                    onClick={(e) => insertMarkdown(e, item.prefix, item.suffix)}
+                    onClick={(e) => {
+                      if (item.action) {
+                        item.action(e);
+                      } else {
+                        insertMarkdown(e, item.prefix, item.suffix);
+                      }
+                    }}
                     title={item.title}
                     className="flex items-center gap-2 px-3 py-2 bg-white/70 hover:bg-white text-slate-600 hover:text-emerald-600 rounded-xl border border-transparent hover:border-emerald-500/20 shadow-sm transition-all active:scale-95 group"
                   >
@@ -264,8 +339,29 @@ export default function CreateBlogPage() {
             </div>
 
             {/* Konten */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Isi Konten (Markdown)</label>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between px-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Isi Konten (Markdown)</label>
+                
+                {/* Mobile Preview Toggle */}
+                <div className="flex md:hidden bg-slate-100/80 p-1 rounded-xl border border-white/60">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('write')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === 'write' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                  >
+                    Tulis
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('preview')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${activeTab === 'preview' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                  >
+                    Pratinjau
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <textarea
                   ref={contentRef}
@@ -275,9 +371,10 @@ export default function CreateBlogPage() {
                   required
                   rows={12}
                   placeholder="Tulis isi artikel menggunakan format Markdown..."
-                  className="w-full px-6 py-4 bg-white/50 border border-white/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all placeholder:text-slate-300 custom-scrollbar"
+                  onKeyDown={handleKeyDown}
+                  className={`w-full px-6 py-4 bg-white/50 border border-white/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all placeholder:text-slate-300 custom-scrollbar ${activeTab === 'write' ? "block" : "hidden md:block"}`}
                 />
-                <div className="hidden md:block w-full h-[312px] px-6 py-4 bg-slate-50/50 border border-white/60 rounded-2xl overflow-y-auto custom-scrollbar">
+                <div className={`w-full h-[312px] px-6 py-4 bg-slate-50/50 border border-white/60 rounded-2xl overflow-y-auto custom-scrollbar ${activeTab === 'preview' ? "block" : "hidden md:block"}`}>
                   <h4 className="text-[10px] text-slate-300 font-bold uppercase tracking-widest mb-4">Preview</h4>
                   <MarkdownRenderer 
                     content={formData.content || "*Pratinjau konten akan muncul di sini...*"} 
