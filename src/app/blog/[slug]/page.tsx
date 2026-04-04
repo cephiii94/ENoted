@@ -125,7 +125,10 @@ export default function ArticleFullView() {
       <header className={`fixed top-4 left-0 w-full px-6 md:px-12 z-[90] transition-all duration-500 ${isHeaderVisible ? "translate-y-0 opacity-100" : "-translate-y-20 opacity-0"}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button 
-            onClick={() => router.push("/")}
+            onClick={() => {
+              playSound("close");
+              router.push("/");
+            }}
             className="group flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-xl border border-white/60 shadow-xl rounded-2xl text-slate-600 hover:text-emerald-600 font-bold transition-all hover:scale-105 active:scale-95"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
@@ -193,6 +196,7 @@ export default function ArticleFullView() {
                       </button>
                       <Link 
                         href="/"
+                        onClick={() => playSound("close")}
                         className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all text-sm"
                       >
                          Kembali berbagi

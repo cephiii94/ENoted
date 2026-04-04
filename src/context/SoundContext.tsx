@@ -35,16 +35,16 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     let url = "";
     switch (type) {
       case 'click':
-        url = "/public/audio/click.mp3";
+        url = "/audio/click.wav";
         break;
       case 'paper':
-        url = "/public/audio/paper.mp3";
+        url = "/audio/paper.wav";
         break;
       case 'close':
-        url = "/public/audio/close.mp3";
+        url = "/audio/close.wav";
         break;
       case 'expand':
-        url = "/public/audio/expand.mp3";
+        url = "/audio/expand.wav";
         break;
     }
 
