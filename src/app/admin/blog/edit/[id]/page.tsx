@@ -281,14 +281,14 @@ export default function EditBlogPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen gradient-bg p-4 md:p-12 flex flex-col items-center justify-start overflow-x-hidden custom-scrollbar py-12">
+    <div className="min-h-screen p-4 md:p-12 flex flex-col items-center justify-start overflow-x-hidden custom-scrollbar py-12">
       <div className="max-w-4xl w-full animate-in zoom-in duration-500">
         <div className="glass rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60">
           

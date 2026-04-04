@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { useSound } from "@/context/SoundContext";
 
 interface AuthFABProps {
   className?: string;
@@ -12,6 +13,7 @@ interface AuthFABProps {
 
 export default function AuthFAB({ className, isLoggedIn }: AuthFABProps) {
   const router = useRouter();
+  const { playSound } = useSound();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -21,7 +23,10 @@ export default function AuthFAB({ className, isLoggedIn }: AuthFABProps) {
   if (isLoggedIn) {
     return (
       <button
-        onClick={handleLogout}
+        onClick={() => {
+          playSound("click");
+          handleLogout();
+        }}
         className={className || "fixed bottom-8 left-8 z-50 group flex items-center justify-center"}
         title="Logout"
       >
@@ -51,6 +56,7 @@ export default function AuthFAB({ className, isLoggedIn }: AuthFABProps) {
   return (
     <Link
       href="/login"
+      onClick={() => playSound("click")}
       className={className || "fixed bottom-8 left-8 z-50 group flex items-center justify-center"}
       title="Login Admin"
     >

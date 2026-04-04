@@ -8,6 +8,8 @@ import ManageFAB from "@/components/ManageFAB";
 import Link from "next/link";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/lib/supabase";
+import { useSound } from "@/context/SoundContext";
+import SettingsFAB from "@/components/SettingsFAB";
 
 interface Article {
   id: string;
@@ -25,10 +27,10 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [category, setCategory] = useState("semua");
+  const { playSound } = useSound();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [bgImage, setBgImage] = useState("/img/default-bg.jpg");
   const [greeting, setGreeting] = useState("Selamat Datang");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -49,7 +51,6 @@ export default function Home() {
         text = "Selamat Sore 🌇";
       }
 
-      setBgImage(img);
       setGreeting(text);
     };
 
@@ -103,11 +104,13 @@ export default function Home() {
   }, [selectedId, articles]);
 
   const handleArticleClick = (id: string) => {
+    playSound("paper");
     setSelectedId(id);
     setIsPreviewOpen(true);
   };
 
   const closePreview = () => {
+    playSound("close");
     setIsPreviewOpen(false);
   };
 
@@ -132,8 +135,7 @@ export default function Home() {
 
   return (
     <div 
-      className="min-h-screen relative p-4 md:p-6 md:px-20 flex items-center justify-center overflow-hidden bg-fixed bg-cover bg-center transition-all duration-1000"
-      style={{ backgroundImage: `url('${bgImage}')` }}
+      className="min-h-screen relative p-4 md:p-6 md:px-20 flex items-center justify-center overflow-hidden transition-all duration-1000"
       onClick={() => setIsMobileMenuOpen(false)}
     >
       
@@ -271,6 +273,7 @@ export default function Home() {
           {/* FAB Control Group (Desktop ONLY) */}
           <div className="hidden md:flex absolute bottom-8 -left-14 z-50 flex-col-reverse gap-3 transition-all duration-500">
             <AuthFAB isLoggedIn={!!user} className="relative group transition-all" />
+            <SettingsFAB className="relative group transition-all" />
             {user && (
               <>
                 <ManageFAB className="relative group transition-all" />

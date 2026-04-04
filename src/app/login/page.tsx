@@ -34,7 +34,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <div className="max-w-[400px] w-full animate-in zoom-in duration-500">
         <div className="glass rounded-[2.5rem] p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60">
           <div className="text-center mb-10">

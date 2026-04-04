@@ -2,15 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
+import { useSound } from "@/context/SoundContext";
 
 interface AdminFABProps {
   className?: string;
 }
 
 export default function AdminFAB({ className }: AdminFABProps) {
+  const { playSound } = useSound();
+
   return (
     <Link
       href="/admin/blog/create"
+      onClick={() => playSound("click")}
       className={className || "fixed bottom-8 left-8 z-50 group flex items-center justify-center"}
     >
       <div className="absolute inset-0 bg-emerald-500 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />

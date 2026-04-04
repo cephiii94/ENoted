@@ -2,15 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
+import { useSound } from "@/context/SoundContext";
 
 interface ManageFABProps {
   className?: string;
 }
 
 export default function ManageFAB({ className }: ManageFABProps) {
+  const { playSound } = useSound();
+
   return (
     <Link
       href="/admin/blog/manage"
+      onClick={() => playSound("click")}
       className={className || "fixed bottom-8 left-8 z-50 group flex items-center justify-center"}
       title="Kelola Artikel"
     >
