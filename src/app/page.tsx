@@ -84,8 +84,15 @@ export default function Home() {
 
         if (error) throw error;
         setArticles(data || []);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching articles:", error);
+        // Memberikan pesan yang lebih informatif jika tersedia
+        if (error?.message) {
+          console.error("Error message detail:", error.message);
+        }
+        if (error?.details) {
+          console.error("Error details:", error.details);
+        }
       } finally {
         setIsLoading(false);
       }

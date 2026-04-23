@@ -42,8 +42,11 @@ export default function ManagePostsPage() {
 
       if (error) throw error;
       setArticles(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching articles:", error);
+      if (error?.message) {
+        console.error("Error message detail:", error.message);
+      }
     } finally {
       setIsLoading(false);
     }
