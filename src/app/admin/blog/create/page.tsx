@@ -263,9 +263,20 @@ export default function CreateBlogPage() {
         if (data.error) throw new Error(data.error);
 
         try {
-          // Bersihkan string dari kemungkinan backticks markdown
-          const jsonString = data.result.replace(/```json|```/g, "").trim();
-          const result = JSON.parse(jsonString);
+          // Ekstrak blok JSON menggunakan regex
+          const jsonMatch = data.result.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) throw new Error("Format JSON tidak ditemukan dalam respons AI.");
+          
+          let rawJson = jsonMatch[0];
+          
+          // Penanganan darurat: Ganti baris baru mentah di dalam string JSON (yang merusak JSON.parse)
+          // Ini adalah langkah berisiko tapi membantu jika AI gagal meng-escape \n
+          // Kita hanya ganti \n jika berada di antara tanda kutip
+          const cleanedJson = rawJson.replace(/"([^"]*)"/g, (match: string, p1: string) => {
+             return '"' + p1.replace(/\n/g, "\\n") + '"';
+          });
+
+          const result = JSON.parse(cleanedJson);
           
           setFormData(prev => ({
             ...prev,
@@ -278,7 +289,7 @@ export default function CreateBlogPage() {
           setAiMessages(prev => [...prev, { role: 'ai', content: 'Selesai tuan! Konten sudah saya masukkan ke dalam form. Silakan diperiksa kembali.' }]);
         } catch (parseError) {
           console.error("Parse Error:", parseError, data.result);
-          setAiMessages(prev => [...prev, { role: 'ai', content: 'Maaf tuan, terjadi kesalahan saat memproses format data. Tapi saya tetap di sini untuk membantu!' }]);
+          setAiMessages(prev => [...prev, { role: 'ai', content: 'Maaf tuan, terjadi kesalahan saat memproses data. AI terkadang mengirimkan format yang kurang tepat. Silakan coba lagi dengan topik yang lebih spesifik.' }]);
         }
       } else {
         // Chat biasa (opsional)
