@@ -26,6 +26,7 @@ export default function ArticleFullView() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showFloatingTitle, setShowFloatingTitle] = useState(false);
+  const [hasRewarded, setHasRewarded] = useState(false);
   const lastScrollY = useRef(0);
   const { playSound } = useSound();
 
@@ -80,6 +81,31 @@ export default function ArticleFullView() {
       } else {
         setIsHeaderVisible(true);
       }
+
+      // Reward Trigger
+      if (progress > 98 && !hasRewarded && article) {
+        setHasRewarded(true);
+        playSound("paper");
+
+        // Simpan ke Riwayat (LocalStorage)
+        const history = JSON.parse(localStorage.getItem("reading_history") || "[]");
+        const isAlreadyRead = history.find((h: any) => h.id === article.id);
+        
+        if (!isAlreadyRead) {
+          const newHistory = [
+            { 
+              id: article.id, 
+              title: article.title, 
+              date: article.date, 
+              category: article.category_label || article.category,
+              slug: article.slug 
+            },
+            ...history
+          ].slice(0, 20); // Simpan 20 terakhir
+          localStorage.setItem("reading_history", JSON.stringify(newHistory));
+        }
+      }
+
       lastScrollY.current = window.scrollY;
     };
 
@@ -124,9 +150,13 @@ export default function ArticleFullView() {
       {/* Reading Progress Bar (Fixed Top) */}
       <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-white/10 backdrop-blur-sm">
         <div 
-          className="h-full bg-gradient-to-r from-emerald-500 via-indigo-500 to-softblue-500 transition-all duration-300"
+          className={`h-full transition-all duration-300 relative ${hasRewarded ? "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-[0_0_20px_rgba(251,191,36,0.5)]" : "bg-gradient-to-r from-emerald-500 via-indigo-500 to-softblue-500"}`}
           style={{ width: `${scrollProgress}%` }}
-        />
+        >
+          {hasRewarded && (
+            <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-r from-transparent to-white/50 animate-pulse" />
+          )}
+        </div>
       </div>
 
       {/* Floating Back Button & Header */}
@@ -241,6 +271,27 @@ export default function ArticleFullView() {
       <footer className="py-20 text-center opacity-40">
          <p className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">© 2024 ENoted • Portal Inspirasi & Tutorial</p>
       </footer>
+
+      {/* Reward Achievement Card */}
+      <div className={`fixed bottom-8 left-8 z-[100] transition-all duration-700 transform ${hasRewarded ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}>
+        <div className="glass p-6 rounded-[2rem] shadow-2xl border border-white/60 flex items-center gap-5 max-w-sm group">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:rotate-12 transition-transform duration-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Reward Diperoleh!</h4>
+            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+              Inspirasi terkunci! +1 Pengetahuan untuk perjalanan Kamu hari ini.
+            </p>
+          </div>
+          <button 
+            onClick={() => setHasRewarded(false)}
+            className="absolute -top-2 -right-2 w-8 h-8 bg-white shadow-md rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
