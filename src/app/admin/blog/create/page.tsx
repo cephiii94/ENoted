@@ -232,6 +232,65 @@ export default function CreateBlogPage() {
     }
   };
 
+  // --- AI Assistant Logic ---
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [aiMessages, setAiMessages] = useState<{ role: 'ai' | 'user', content: string }[]>([
+    { role: 'ai', content: 'Halo tuan! Saya asisten cerdas ENoted. Ketik `/create [topik]` untuk saya bantu buatkan konten secara otomatis.' }
+  ]);
+  const [aiInput, setAiInput] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const handleAISend = async () => {
+    if (!aiInput.trim() || isAiLoading) return;
+
+    const userMsg = aiInput.trim();
+    setAiMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    setAiInput("");
+    setIsAiLoading(true);
+
+    try {
+      if (userMsg.startsWith("/create")) {
+        const prompt = userMsg.replace("/create", "").trim();
+        setAiMessages(prev => [...prev, { role: 'ai', content: 'Baik tuan, akan saya buatkan kontennya! Mohon tunggu sebentar...' }]);
+
+        const response = await fetch("/api/ai/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, command: "create" })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
+        try {
+          // Bersihkan string dari kemungkinan backticks markdown
+          const jsonString = data.result.replace(/```json|```/g, "").trim();
+          const result = JSON.parse(jsonString);
+          
+          setFormData(prev => ({
+            ...prev,
+            title: result.title || prev.title,
+            category: result.category || prev.category,
+            summary: result.summary || prev.summary,
+            content: result.content || prev.content,
+          }));
+
+          setAiMessages(prev => [...prev, { role: 'ai', content: 'Selesai tuan! Konten sudah saya masukkan ke dalam form. Silakan diperiksa kembali.' }]);
+        } catch (parseError) {
+          console.error("Parse Error:", parseError, data.result);
+          setAiMessages(prev => [...prev, { role: 'ai', content: 'Maaf tuan, terjadi kesalahan saat memproses format data. Tapi saya tetap di sini untuk membantu!' }]);
+        }
+      } else {
+        // Chat biasa (opsional)
+        setAiMessages(prev => [...prev, { role: 'ai', content: 'Maaf tuan, untuk saat ini saya paling ahli menggunakan perintah `/create [topik]`. Silakan dicoba!' }]);
+      }
+    } catch (err: any) {
+      setAiMessages(prev => [...prev, { role: 'ai', content: 'Maaf tuan, sepertinya ada gangguan pada koneksi saya: ' + err.message }]);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-12 flex flex-col items-center justify-start overflow-x-hidden custom-scrollbar py-12">
       <div className="max-w-4xl w-full animate-in zoom-in duration-500">
@@ -425,6 +484,83 @@ export default function CreateBlogPage() {
             </div>
           </form>
         </div>
+      </div>
+
+      {/* --- AI Assistant UI --- */}
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+        {/* Chat Window */}
+        <div className={`glass w-80 md:w-96 rounded-[2rem] shadow-2xl border border-white/60 overflow-hidden flex flex-col transition-all duration-500 origin-bottom-right ${isAIChatOpen ? "scale-100 opacity-100" : "scale-0 opacity-0 pointer-events-none"}`}>
+          <div className="bg-softblue-600 p-6 flex items-center justify-between text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+              </div>
+              <div>
+                <h3 className="font-black text-sm uppercase tracking-widest">Assistant AI</h3>
+                <p className="text-[10px] opacity-70 font-bold">Model: Llama-3-70b</p>
+              </div>
+            </div>
+            <button onClick={() => setIsAIChatOpen(false)} className="hover:rotate-90 transition-transform p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          
+          <div className="h-80 overflow-y-auto p-6 flex flex-col gap-4 bg-white/50 backdrop-blur-sm custom-scrollbar">
+            {aiMessages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] p-4 rounded-2xl text-xs font-medium shadow-sm ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'}`}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {isAiLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-slate-100 flex gap-1">
+                  <div className="w-1.5 h-1.5 bg-softblue-400 rounded-full animate-bounce" />
+                  <div className="w-1.5 h-1.5 bg-softblue-400 rounded-full animate-bounce delay-75" />
+                  <div className="w-1.5 h-1.5 bg-softblue-400 rounded-full animate-bounce delay-150" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4 bg-white/80 border-t border-slate-100">
+            <div className="relative">
+              <input 
+                type="text" 
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAISend()}
+                placeholder="Ketik /create [topik]..."
+                className="w-full pl-4 pr-12 py-3 bg-slate-50 border-none rounded-xl text-xs font-medium focus:ring-2 focus:ring-softblue-500 transition-all outline-none"
+              />
+              <button 
+                onClick={handleAISend}
+                disabled={isAiLoading}
+                className="absolute right-2 top-1.5 p-1.5 bg-softblue-600 text-white rounded-lg hover:scale-110 active:scale-95 transition-all disabled:opacity-50"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Button */}
+        <button 
+          onClick={() => setIsAIChatOpen(!isAIChatOpen)}
+          className={`w-16 h-16 rounded-full flex items-center justify-center shadow-[0_10px_40px_rgba(0,0,0,0.2)] border-2 border-white/60 transition-all duration-500 hover:scale-110 active:scale-90 group relative ${isAIChatOpen ? "bg-rose-500 rotate-90" : "bg-softblue-600 hover:bg-softblue-700"}`}
+        >
+          {isAIChatOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white group-hover:rotate-12 transition-transform"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-500 rounded-full border-2 border-white flex items-center justify-center">
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+              </div>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

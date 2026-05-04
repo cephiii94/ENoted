@@ -25,6 +25,7 @@ export default function ArticleFullView() {
   const [isLoading, setIsLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [showFloatingTitle, setShowFloatingTitle] = useState(false);
   const lastScrollY = useRef(0);
   const { playSound } = useSound();
 
@@ -65,6 +66,13 @@ export default function ArticleFullView() {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (window.scrollY / totalHeight) * 100;
       setScrollProgress(progress);
+
+      // Floating Title Visibility
+      if (window.scrollY > 400) {
+        setShowFloatingTitle(true);
+      } else {
+        setShowFloatingTitle(false);
+      }
 
       // Header Visibility (Hide on scroll down, show on scroll up)
       if (window.scrollY > lastScrollY.current && window.scrollY > 100) {
@@ -122,23 +130,32 @@ export default function ArticleFullView() {
       </div>
 
       {/* Floating Back Button & Header */}
-      <header className={`fixed top-4 left-0 w-full px-6 md:px-12 z-[90] transition-all duration-500 ${isHeaderVisible ? "translate-y-0 opacity-100" : "-translate-y-20 opacity-0"}`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className={`fixed top-4 left-0 w-full px-4 md:px-12 z-[90] transition-all duration-500 ${isHeaderVisible ? "translate-y-0 opacity-100" : "-translate-y-24 opacity-0"}`}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <button 
             onClick={() => {
               playSound("close");
               router.push("/");
             }}
-            className="group flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-xl border border-white/60 shadow-xl rounded-2xl text-slate-600 hover:text-emerald-600 font-bold transition-all hover:scale-105 active:scale-95"
+            className="group flex items-center gap-3 px-4 py-2.5 md:px-5 md:py-3 bg-white/80 backdrop-blur-xl border border-white/60 shadow-xl rounded-2xl text-slate-600 hover:text-softblue-600 font-bold transition-all hover:scale-105 active:scale-95 shrink-0"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform">
               <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
             </svg>
-            <span className="text-sm">Beranda</span>
+            <span className="text-sm hidden sm:inline">Beranda</span>
           </button>
 
-          <div className="hidden md:flex items-center gap-4">
-             <span className="px-5 py-2.5 bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] rounded-2xl">
+          {/* Floating Title */}
+          <div className={`flex-1 flex justify-center transition-all duration-500 ${showFloatingTitle ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
+            <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg px-6 py-2.5 rounded-2xl max-w-md w-full md:w-auto">
+              <h2 className="text-sm font-black text-slate-800 truncate text-center tracking-tight">
+                {article.title}
+              </h2>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0">
+             <span className="hidden md:block px-5 py-2.5 bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] rounded-2xl">
                 {article.date}
              </span>
           </div>
@@ -146,33 +163,45 @@ export default function ArticleFullView() {
       </header>
 
       {/* Hero Section (Title Area) */}
-      <section className="pt-32 pb-16 px-6 md:px-12 text-center max-w-4xl mx-auto">
-         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-           <span className="px-4 py-2 bg-emerald-500/10 text-emerald-600 text-[10px] font-black rounded-xl border border-emerald-500/10 uppercase tracking-[0.3em] mb-8 inline-block">
-              {article.category_label || article.category}
-           </span>
-           <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] md:leading-[1.15] mb-8 tracking-tight">
-              {article.title}
-           </h1>
-           <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed italic opacity-80">
-              {article.summary}
-           </p>
-         </div>
+      <section className="pt-32 pb-8 px-4 md:px-6">
+        <div className="max-w-4xl mx-auto relative">
+          <div className="glass rounded-[3rem] p-8 md:p-16 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.05)] border border-white/60 animate-in fade-in slide-in-from-bottom-8 duration-700 text-center relative z-10">
+            <span className="px-4 py-2 bg-softblue-500/10 text-softblue-600 text-[10px] font-black rounded-xl border border-softblue-500/10 uppercase tracking-[0.3em] mb-8 inline-block">
+               {article.category_label || article.category}
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] md:leading-[1.15] mb-8 tracking-tight">
+               {article.title}
+            </h1>
+            <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed italic opacity-80">
+               {article.summary}
+            </p>
+          </div>
+
+          {/* Chain Connectors */}
+          <div className="absolute -bottom-12 left-12 md:left-24 flex flex-col items-center gap-1 z-0">
+             <div className="w-3 h-8 rounded-full border-[3px] border-softblue-200/50 bg-white/20 shadow-sm" />
+             <div className="w-3 h-8 rounded-full border-[3px] border-softblue-200/50 bg-white/20 shadow-sm -mt-3" />
+          </div>
+          <div className="absolute -bottom-12 right-12 md:right-24 flex flex-col items-center gap-1 z-0">
+             <div className="w-3 h-8 rounded-full border-[3px] border-softblue-200/50 bg-white/20 shadow-sm" />
+             <div className="w-3 h-8 rounded-full border-[3px] border-softblue-200/50 bg-white/20 shadow-sm -mt-3" />
+          </div>
+        </div>
       </section>
 
       {/* Main Content Area */}
-      <main className="px-4 md:px-6 pb-32">
+      <main className="px-4 md:px-6 pb-32 relative">
         <div className="max-w-4xl mx-auto">
            <div className="glass rounded-[3rem] p-8 md:p-20 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-white/60 animate-in fade-in slide-in-from-bottom-12 duration-1000">
              
              {/* Article Separator */}
              <div className="flex items-center gap-4 mb-16 opacity-30">
-                <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent to-indigo-500" />
-                <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                <div className="h-0.5 flex-1 bg-gradient-to-r from-indigo-500 to-transparent" />
+                <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent to-softblue-500" />
+                <div className="w-2 h-2 rounded-full bg-softblue-500" />
+                <div className="h-0.5 flex-1 bg-gradient-to-r from-softblue-500 to-transparent" />
              </div>
 
-             <article className="prose prose-slate max-w-none prose-p:text-lg md:prose-p:text-xl prose-p:leading-[1.9] prose-p:text-slate-700 prose-headings:font-black prose-headings:tracking-tight prose-a:text-emerald-600 prose-img:rounded-3xl prose-img:shadow-2xl">
+             <article className="prose prose-slate max-w-none prose-p:text-lg md:prose-p:text-xl prose-p:leading-[1.9] prose-p:text-slate-700 prose-headings:font-black prose-headings:tracking-tight prose-a:text-softblue-600 prose-img:rounded-3xl prose-img:shadow-2xl">
                 <MarkdownRenderer content={article.content} />
              </article>
 
