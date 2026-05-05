@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import ArticleCard from "@/components/ArticleCard";
 import AdminFAB from "@/components/AdminFAB";
 import AuthFAB from "@/components/AuthFAB";
@@ -20,6 +20,7 @@ interface Article {
   category_label: string;
   date: string;
   slug: string;
+  image_url?: string;
   created_at?: string;
 }
 
@@ -33,6 +34,11 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [greeting, setGreeting] = useState("Selamat Datang");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasRewarded, setHasRewarded] = useState(false);
+  const [rewardedIds, setRewardedIds] = useState<Set<string>>(new Set());
+  
+  const previewScrollRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateBgAndTime = () => {
@@ -114,6 +120,7 @@ export default function Home() {
     playSound("paper");
     setSelectedId(id);
     setIsPreviewOpen(true);
+    setHasRewarded(false); // Reset reward status untuk artikel baru
   };
 
   const closePreview = () => {
@@ -139,6 +146,50 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Monitor Scroll pada Preview Panel
+  useEffect(() => {
+    const checkScroll = (e: Event) => {
+      const target = e.target as HTMLDivElement;
+      const progress = (target.scrollTop / (target.scrollHeight - target.clientHeight)) * 100;
+      const article = selectedArticle;
+      
+      if (progress > 98 && !hasRewarded && article) {
+        setHasRewarded(true);
+        setRewardedIds(prev => new Set(prev).add(article.id));
+        playSound("paper");
+
+        // Simpan ke Riwayat (LocalStorage)
+        const history = JSON.parse(localStorage.getItem("reading_history") || "[]");
+        const isAlreadyRead = history.find((h: any) => h.id === article.id);
+        
+        if (!isAlreadyRead) {
+          const newHistory = [
+            { 
+              id: selectedId, 
+              title: selectedArticle.title, 
+              date: selectedArticle.date, 
+              category: selectedArticle.category_label || selectedArticle.category,
+              slug: selectedArticle.slug 
+            },
+            ...history
+          ].slice(0, 20);
+          localStorage.setItem("reading_history", JSON.stringify(newHistory));
+        }
+      }
+    };
+
+    const desktopContainer = previewScrollRef.current;
+    const mobileContainer = mobileScrollRef.current;
+
+    desktopContainer?.addEventListener("scroll", checkScroll);
+    mobileContainer?.addEventListener("scroll", checkScroll);
+
+    return () => {
+      desktopContainer?.removeEventListener("scroll", checkScroll);
+      mobileContainer?.removeEventListener("scroll", checkScroll);
+    };
+  }, [selectedId, hasRewarded, rewardedIds, playSound]);
 
   return (
     <div 
@@ -169,7 +220,18 @@ export default function Home() {
                 <p className="text-[10px] text-slate-400 font-bold tracking-[0.2em] uppercase mt-1">Portal Inspirasi & Tutorial</p>
               </div>
 
-              {/* Mobile Hamburger Menu */}
+              <div className="flex items-center gap-2">
+                <Link 
+                  href="/profile" 
+                  onClick={() => playSound("paper")}
+                  className="p-2 text-slate-400 hover:text-softblue-600 hover:bg-softblue-50 rounded-xl transition-all group relative"
+                  title="Lihat Profil & Pencapaian"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-500 border-2 border-white rounded-full animate-pulse" />
+                </Link>
+                
+                {/* Mobile Hamburger Menu */}
               <div className="md:hidden relative">
                 <button 
                   onClick={(e) => {
@@ -223,6 +285,7 @@ export default function Home() {
                   </div>
                 )}
               </div>
+              </div>
             </div>
 
             {/* Filter Navigation */}
@@ -265,6 +328,7 @@ export default function Home() {
                     summary={art.summary}
                     category={art.category_label || art.category}
                     date={art.date}
+                    image_url={art.image_url}
                     isSelected={selectedId === art.id}
                     onClick={() => handleArticleClick(art.id)}
                   />
@@ -315,7 +379,10 @@ export default function Home() {
                  </div>
               </div>
               
-              <div className="flex-grow overflow-y-auto p-8 bg-white/30 custom-scrollbar">
+              <div 
+                ref={previewScrollRef}
+                className="flex-grow overflow-y-auto p-8 bg-white/30 custom-scrollbar"
+              >
                 <div className="max-w-2xl mx-auto">
                   <div className="flex items-center gap-3 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <span className="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-600 text-[10px] font-bold rounded-xl uppercase tracking-widest border border-emerald-500/10">
@@ -326,6 +393,17 @@ export default function Home() {
                   <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-6 leading-[1.2] animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {selectedArticle.title}
                   </h2>
+                  
+                  {selectedArticle.image_url && (
+                    <div className="mb-8 rounded-3xl overflow-hidden shadow-2xl border border-white/60 animate-in fade-in zoom-in duration-1000">
+                      <img 
+                        src={selectedArticle.image_url} 
+                        alt={selectedArticle.title}
+                        className="w-full aspect-video object-cover"
+                      />
+                    </div>
+                  )}
+
                   <div className="prose prose-slate max-w-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     <p className="text-sm text-slate-500 leading-relaxed mb-6 italic font-medium text-left">
                       {selectedArticle.summary}
@@ -355,12 +433,26 @@ export default function Home() {
                     <Link href={`/blog/${selectedArticle.slug}`} className="px-5 py-2.5 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-xl shadow-emerald-600/20 active:scale-95 transition-all">Baca Penuh</Link>
                  </div>
               </div>
-              <div className="flex-grow overflow-y-auto p-8">
+              <div 
+                ref={mobileScrollRef}
+                className="flex-grow overflow-y-auto p-8"
+              >
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.15em]">{selectedArticle.category_label || selectedArticle.category}</span>
                   <span className="text-[10px] text-slate-400 font-medium opacity-60">• {selectedArticle.date}</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 mb-5 leading-tight">{selectedArticle.title}</h2>
+                
+                {selectedArticle.image_url && (
+                  <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-100">
+                    <img 
+                      src={selectedArticle.image_url} 
+                      alt={selectedArticle.title}
+                      className="w-full aspect-video object-cover"
+                    />
+                  </div>
+                )}
+
                 <p className="text-slate-500 font-medium leading-relaxed mb-6 italic text-base text-left">{selectedArticle.summary}</p>
                 <div className="h-px bg-slate-100 mb-6" />
                 <MarkdownRenderer 
@@ -370,6 +462,27 @@ export default function Home() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Reward Achievement Card */}
+      <div className={`fixed bottom-8 left-8 z-[110] transition-all duration-700 transform ${hasRewarded ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}>
+        <div className="glass p-6 rounded-[2rem] shadow-2xl border border-white/60 flex items-center gap-5 max-w-sm group">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:rotate-12 transition-transform duration-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Pratinjau Selesai!</h4>
+            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+              Kamu sangat bersemangat! +1 Inspirasi terkunci dari pratinjau ini.
+            </p>
+          </div>
+          <button 
+            onClick={() => setHasRewarded(false)}
+            className="absolute -top-2 -right-2 w-8 h-8 bg-white shadow-md rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
       </div>
     </div>
