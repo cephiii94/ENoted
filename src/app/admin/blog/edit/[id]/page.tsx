@@ -21,6 +21,7 @@ export default function EditBlogPage() {
     category: "tutorial",
     category_label: "Tutorial",
     slug: "",
+    image_url: "",
   });
 
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
@@ -65,6 +66,50 @@ export default function EditBlogPage() {
     }
   };
 
+  // --- AI Image Generator Logic ---
+  const [isImageLoading, setIsImageLoading] = useState(false);
+
+  const generateThumbnail = async () => {
+    if (!formData.title) {
+      alert("Tulis judul artikel terlebih dahulu sebagai dasar prompt gambar.");
+      return;
+    }
+
+    setIsImageLoading(true);
+    try {
+      // 1. Minta AI untuk membuat prompt bahasa Inggris yang lebih deskriptif
+      const aiPromptResponse = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          prompt: `Judul Artikel: "${formData.title}". Buatkan prompt gambar dalam bahasa Inggris (maks 30 kata) untuk thumbnail blog yang estetik. Fokus pada objek utama dan suasana. Jangan gunakan kata "JSON" atau format lain, hanya teks prompt.`,
+          command: "enhance_prompt" 
+        })
+      });
+
+      const aiPromptData = await aiPromptResponse.json();
+      const enhancedPrompt = aiPromptData.result || formData.title;
+
+      // 2. Kirim prompt yang sudah ditingkatkan ke Fal.ai
+      const response = await fetch("/api/ai/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          prompt: `A premium, high-quality digital art for a blog thumbnail: ${enhancedPrompt}. Professional lighting, minimalistic, vibrant colors.` 
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      setFormData(prev => ({ ...prev, image_url: data.url }));
+    } catch (err: any) {
+      alert("Gagal membuat gambar: " + err.message);
+    } finally {
+      setIsImageLoading(false);
+    }
+  };
+
   // Protection & Fetch Initial Data
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -93,6 +138,7 @@ export default function EditBlogPage() {
             category: data.category,
             category_label: data.category_label,
             slug: data.slug,
+            image_url: data.image_url || "",
           });
         }
       } catch (err: any) {
@@ -350,6 +396,65 @@ export default function EditBlogPage() {
                 readOnly
                 className="w-full px-6 py-3 bg-slate-100/50 border border-slate-200 rounded-2xl text-sm text-slate-500 focus:outline-none"
               />
+            </div>
+
+            {/* Thumbnail Selection */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Thumbnail Artikel</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2 relative group h-48 md:h-full bg-slate-100/50 rounded-[2rem] border-2 border-dashed border-slate-200 overflow-hidden flex items-center justify-center transition-all hover:border-softblue-400">
+                  {formData.image_url ? (
+                    <>
+                      <img 
+                        src={formData.image_url} 
+                        alt="Thumbnail Preview" 
+                        className="w-full h-full object-cover animate-in fade-in zoom-in duration-500"
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, image_url: "" }))}
+                        className="absolute top-4 right-4 p-2 bg-rose-500 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 text-slate-400">
+                      <div className="p-4 bg-white rounded-full shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Belum ada gambar</p>
+                    </div>
+                  )}
+                  {isImageLoading && (
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-10">
+                      <div className="w-10 h-10 border-4 border-softblue-200 border-t-softblue-600 rounded-full animate-spin" />
+                      <p className="text-[10px] font-black text-softblue-600 uppercase tracking-widest">Generating AI Image...</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                  <button
+                    type="button"
+                    onClick={generateThumbnail}
+                    disabled={isImageLoading}
+                    className="flex-1 py-4 bg-white border border-slate-200 text-slate-700 font-bold rounded-2xl hover:bg-softblue-50 hover:text-softblue-600 hover:border-softblue-200 transition-all flex flex-col items-center justify-center gap-2 group shadow-sm active:scale-95 disabled:opacity-50"
+                  >
+                    <div className="p-3 bg-softblue-50 rounded-xl group-hover:bg-softblue-100 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-softblue-600"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    </div>
+                    <span className="text-[10px] uppercase tracking-widest">AI Generate</span>
+                  </button>
+                  <input 
+                    type="text"
+                    placeholder="Atau tempel URL gambar..."
+                    value={formData.image_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/50 border border-slate-100 rounded-xl text-[10px] focus:outline-none focus:border-softblue-300 transition-all"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Ringkasan */}

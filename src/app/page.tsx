@@ -20,6 +20,7 @@ interface Article {
   category_label: string;
   date: string;
   slug: string;
+  image_url?: string;
   created_at?: string;
 }
 
@@ -327,6 +328,7 @@ export default function Home() {
                     summary={art.summary}
                     category={art.category_label || art.category}
                     date={art.date}
+                    image_url={art.image_url}
                     isSelected={selectedId === art.id}
                     onClick={() => handleArticleClick(art.id)}
                   />
@@ -391,6 +393,17 @@ export default function Home() {
                   <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-6 leading-[1.2] animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {selectedArticle.title}
                   </h2>
+                  
+                  {selectedArticle.image_url && (
+                    <div className="mb-8 rounded-3xl overflow-hidden shadow-2xl border border-white/60 animate-in fade-in zoom-in duration-1000">
+                      <img 
+                        src={selectedArticle.image_url} 
+                        alt={selectedArticle.title}
+                        className="w-full aspect-video object-cover"
+                      />
+                    </div>
+                  )}
+
                   <div className="prose prose-slate max-w-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     <p className="text-sm text-slate-500 leading-relaxed mb-6 italic font-medium text-left">
                       {selectedArticle.summary}
@@ -429,6 +442,17 @@ export default function Home() {
                   <span className="text-[10px] text-slate-400 font-medium opacity-60">• {selectedArticle.date}</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 mb-5 leading-tight">{selectedArticle.title}</h2>
+                
+                {selectedArticle.image_url && (
+                  <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-slate-100">
+                    <img 
+                      src={selectedArticle.image_url} 
+                      alt={selectedArticle.title}
+                      className="w-full aspect-video object-cover"
+                    />
+                  </div>
+                )}
+
                 <p className="text-slate-500 font-medium leading-relaxed mb-6 italic text-base text-left">{selectedArticle.summary}</p>
                 <div className="h-px bg-slate-100 mb-6" />
                 <MarkdownRenderer 

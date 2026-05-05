@@ -16,6 +16,7 @@ interface Article {
   category_label: string;
   date: string;
   slug: string;
+  image_url?: string;
 }
 
 export default function ArticleFullView() {
@@ -205,6 +206,16 @@ export default function ArticleFullView() {
             <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed italic opacity-80">
                {article.summary}
             </p>
+
+            {article.image_url && (
+              <div className="mt-12 rounded-[2rem] overflow-hidden shadow-2xl border border-white/60 animate-in fade-in zoom-in duration-1000">
+                <img 
+                  src={article.image_url} 
+                  alt={article.title}
+                  className="w-full aspect-video object-cover"
+                />
+              </div>
+            )}
           </div>
 
           {/* Chain Connectors */}

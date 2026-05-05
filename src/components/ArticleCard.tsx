@@ -8,6 +8,7 @@ interface ArticleCardProps {
   summary: string;
   category: string;
   date: string;
+  image_url?: string;
   isSelected?: boolean;
   onClick?: () => void;
 }
@@ -16,6 +17,7 @@ export default function ArticleCard({
   title,
   category,
   date,
+  image_url,
   isSelected,
   onClick,
 }: ArticleCardProps) {
@@ -27,11 +29,23 @@ export default function ArticleCard({
       }`}
     >
       {/* Post Indicator Strip (Emerald) */}
-      <div className={`absolute left-0 top-0 w-1.5 h-full transition-transform duration-500 origin-top ${
+      <div className={`absolute left-0 top-0 w-1.5 h-full transition-transform duration-500 origin-top z-10 ${
         isSelected ? "scale-y-100 bg-emerald-500" : "scale-y-0 group-hover:scale-y-100 bg-emerald-400"
       }`} />
       
-      <div className="flex flex-col gap-3 text-left">
+      <div className="flex flex-col gap-4 text-left">
+        {image_url && (
+          <div className="relative h-32 -mx-6 -mt-6 mb-2 overflow-hidden">
+            <img 
+              src={image_url} 
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
+          </div>
+        )}
+        
+        <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] opacity-80">
             {category}
@@ -48,5 +62,6 @@ export default function ArticleCard({
         {/* Small hint of summary if not selected? No, keeping it clean */}
       </div>
     </div>
+  </div>
   );
 }

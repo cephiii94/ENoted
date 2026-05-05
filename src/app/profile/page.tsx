@@ -24,6 +24,8 @@ export default function ProfilePage() {
   const [name, setName] = useState("E-Noter Sejati");
   const [bio, setBio] = useState("Menjelajahi dunia lewat kata-kata dan baris kode.");
   const [bgGradient, setBgGradient] = useState("from-softblue-500/10 to-transparent");
+  const [bgType, setBgType] = useState<"gradient" | "image">("gradient");
+  const [bgImage, setBgImage] = useState("");
 
   useEffect(() => {
     // Load profile from localStorage
@@ -31,6 +33,8 @@ export default function ProfilePage() {
     if (savedProfile.name) setName(savedProfile.name);
     if (savedProfile.bio) setBio(savedProfile.bio);
     if (savedProfile.bgGradient) setBgGradient(savedProfile.bgGradient);
+    if (savedProfile.bgType) setBgType(savedProfile.bgType);
+    if (savedProfile.bgImage) setBgImage(savedProfile.bgImage);
     // Load history from localStorage
     const savedHistory = JSON.parse(localStorage.getItem("reading_history") || "[]");
     setHistory(savedHistory);
@@ -51,7 +55,7 @@ export default function ProfilePage() {
   };
 
   const saveProfile = () => {
-    localStorage.setItem("user_profile", JSON.stringify({ name, bio, bgGradient }));
+    localStorage.setItem("user_profile", JSON.stringify({ name, bio, bgGradient, bgType, bgImage }));
     setIsEditing(false);
     playSound("paper");
   };
@@ -64,6 +68,14 @@ export default function ProfilePage() {
     { label: "Indigo", value: "from-indigo-500/10 to-transparent", preview: "bg-indigo-500" },
   ];
 
+  const images = [
+    { label: "Pagi", value: "/img/pagi.png" },
+    { label: "Siang", value: "/img/siang.png" },
+    { label: "Sore", value: "/img/sore.png" },
+    { label: "Malam", value: "/img/malam.png" },
+    { label: "Abstract", value: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000" },
+  ];
+
   // Map background for full page based on selection
   const getPageBg = () => {
     const color = bgGradient.split('-')[1]; // e.g. softblue, emerald
@@ -71,9 +83,16 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className={`min-h-screen p-6 md:p-12 transition-all duration-1000 bg-slate-50 relative overflow-hidden`}>
-      {/* Dynamic Page Background Glow */}
-      <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-br ${bgGradient} opacity-50 pointer-events-none transition-all duration-1000`} />
+    <div className={`min-h-screen p-6 md:p-12 transition-all duration-1000 relative overflow-hidden ${bgType === "image" ? "bg-slate-900" : "bg-slate-50"}`}>
+      {/* Dynamic Page Background Glow / Image */}
+      {bgType === "image" && bgImage ? (
+        <div 
+          className="fixed top-0 left-0 w-full h-full bg-cover bg-center bg-fixed pointer-events-none transition-all duration-1000 scale-100" 
+          style={{ backgroundImage: `url(${bgImage})` }}
+        />
+      ) : (
+        <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-br ${bgGradient} opacity-50 pointer-events-none transition-all duration-1000`} />
+      )}
       
       <div className="max-w-5xl mx-auto relative z-10">
         
@@ -94,7 +113,15 @@ export default function ProfilePage() {
           {/* Panel Kiri: Bio */}
           <div className="lg:col-span-1 flex flex-col gap-8">
             <div className="glass rounded-[3rem] p-10 text-center border border-white shadow-2xl relative overflow-hidden group">
-              <div className={`absolute top-0 left-0 w-full h-40 bg-gradient-to-b ${bgGradient} transition-all duration-700`} />
+              {/* Profile Background Preview */}
+              {bgType === "image" && bgImage ? (
+                <div 
+                  className="absolute top-0 left-0 w-full h-40 bg-cover bg-center opacity-60 transition-all duration-700" 
+                  style={{ backgroundImage: `url(${bgImage})` }}
+                />
+              ) : (
+                <div className={`absolute top-0 left-0 w-full h-40 bg-gradient-to-b ${bgGradient} transition-all duration-700`} />
+              )}
               
               {/* Edit Button */}
               <button 
@@ -132,15 +159,47 @@ export default function ProfilePage() {
                     />
                     
                     {/* Background Selection */}
-                    <div className="flex flex-wrap justify-center gap-3 mt-4">
-                       {gradients.map((g) => (
-                         <button
-                           key={g.value}
-                           onClick={() => setBgGradient(g.value)}
-                           className={`w-8 h-8 rounded-full border-2 transition-all shadow-sm ${bgGradient === g.value ? "border-slate-800 scale-125 z-10" : "border-white hover:scale-110"} ${g.preview}`}
-                           title={g.label}
-                         />
-                       ))}
+                    <div className="mt-4 pt-4 border-t border-slate-100/50">
+                       <p className="text-[9px] font-black uppercase text-slate-400 mb-3 tracking-widest">Tipe Background</p>
+                       <div className="flex justify-center gap-4 mb-4">
+                          <button 
+                            onClick={() => setBgType("gradient")}
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase transition-all ${bgType === "gradient" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" : "bg-slate-100 text-slate-400"}`}
+                          >
+                            Warna
+                          </button>
+                          <button 
+                            onClick={() => setBgType("image")}
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase transition-all ${bgType === "image" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" : "bg-slate-100 text-slate-400"}`}
+                          >
+                            Gambar
+                          </button>
+                       </div>
+
+                       {bgType === "gradient" ? (
+                         <div className="flex flex-wrap justify-center gap-3">
+                            {gradients.map((g) => (
+                              <button
+                                key={g.value}
+                                onClick={() => setBgGradient(g.value)}
+                                className={`w-8 h-8 rounded-full border-2 transition-all shadow-sm ${bgGradient === g.value ? "border-slate-800 scale-125 z-10" : "border-white hover:scale-110"} ${g.preview}`}
+                                title={g.label}
+                              />
+                            ))}
+                         </div>
+                       ) : (
+                         <div className="flex flex-wrap justify-center gap-2">
+                            {images.map((img) => (
+                              <button
+                                key={img.value}
+                                onClick={() => setBgImage(img.value)}
+                                className={`w-10 h-10 rounded-xl border-2 transition-all bg-cover bg-center shadow-sm ${bgImage === img.value ? "border-indigo-600 scale-110" : "border-white"}`}
+                                style={{ backgroundImage: `url(${img.value})` }}
+                                title={img.label}
+                              />
+                            ))}
+                         </div>
+                       )}
                     </div>
                   </div>
                 ) : (
