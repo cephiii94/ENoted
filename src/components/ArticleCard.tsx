@@ -34,34 +34,33 @@ export default function ArticleCard({
       }`} />
       
       <div className="flex flex-col gap-4 text-left">
-        {image_url && (
-          <div className="relative h-32 -mx-6 -mt-6 mb-2 overflow-hidden">
-            <img 
-              src={image_url} 
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
-          </div>
-        )}
-        
-        <div className="flex flex-col gap-3">
+        {/* Meta Info Top */}
         <div className="flex items-center justify-between gap-4">
           <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] opacity-80">
             {category}
           </span>
           <span className="text-[10px] text-slate-400 font-medium">{date}</span>
         </div>
-        
-        <h3 className={`text-base md:text-lg font-bold leading-tight transition-colors duration-300 ${
-          isSelected ? "text-emerald-800" : "text-slate-900 group-hover:text-emerald-600"
-        }`}>
-          {title}
-        </h3>
 
-        {/* Small hint of summary if not selected? No, keeping it clean */}
+        <div className="flex gap-4 items-center justify-between">
+          <h3 className={`flex-1 text-base md:text-lg font-bold leading-tight transition-colors duration-300 ${
+            isSelected ? "text-emerald-800" : "text-slate-900 group-hover:text-emerald-600"
+          }`}>
+            {title}
+          </h3>
+
+          {image_url && (
+            <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden shrink-0 shadow-sm border border-slate-100 group-hover:shadow-md transition-all duration-500">
+              <img 
+                src={image_url} 
+                alt={title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  </div>
   );
 }
