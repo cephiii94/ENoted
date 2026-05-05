@@ -7,4 +7,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('CRITICAL: Supabase URL atau Anon Key tidak ditemukan di variabel lingkungan!');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null as any; // Fallback to avoid crash during dev
+
