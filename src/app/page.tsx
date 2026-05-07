@@ -10,6 +10,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/lib/supabase";
 import { useSound } from "@/context/SoundContext";
 import SettingsFAB from "@/components/SettingsFAB";
+import { Session, AuthChangeEvent, User } from "@supabase/supabase-js";
 
 interface Article {
   id: string;
@@ -31,14 +32,27 @@ export default function Home() {
   const { playSound } = useSound();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [greeting, setGreeting] = useState("Selamat Datang");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasRewarded, setHasRewarded] = useState(false);
   const [rewardedIds, setRewardedIds] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const ARTICLES_PER_PAGE = 5;
   
   const previewScrollRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const listScrollRef = useRef<HTMLDivElement>(null);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [category]);
+
+  // Scroll to top of list when page changes
+  useEffect(() => {
+    listScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   useEffect(() => {
     const updateBgAndTime = () => {
@@ -67,12 +81,12 @@ export default function Home() {
 
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ?? null);
     });
 
     // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setUser(session?.user ?? null);
     });
 
@@ -111,6 +125,13 @@ export default function Home() {
     if (category === "semua") return articles;
     return articles.filter((art) => art.category === category);
   }, [category, articles]);
+
+  const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+  
+  const paginatedArticles = useMemo(() => {
+    const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+    return filteredArticles.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+  }, [filteredArticles, currentPage]);
 
   const selectedArticle = useMemo(() => {
     return articles.find(a => a.id === selectedId) || null;
@@ -156,7 +177,7 @@ export default function Home() {
       
       if (progress > 98 && !hasRewarded && article) {
         setHasRewarded(true);
-        setRewardedIds(prev => new Set(prev).add(article.id));
+        setRewardedIds((prev: Set<string>) => new Set(prev).add(article.id));
         playSound("paper");
 
         // Simpan ke Riwayat (LocalStorage)
@@ -214,7 +235,7 @@ export default function Home() {
             {/* Header didalam container */}
             <div className="mb-6 flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-softblue-600 to-indigo-600 bg-clip-text text-transparent">
                   ENoted
                 </h1>
                 <p className="text-[10px] text-slate-400 font-bold tracking-[0.2em] uppercase mt-1">Portal Inspirasi & Tutorial</p>
@@ -238,7 +259,7 @@ export default function Home() {
                     e.stopPropagation();
                     setIsMobileMenuOpen(!isMobileMenuOpen);
                   }}
-                  className="p-1 text-slate-400 hover:text-emerald-600 transition-all active:scale-95"
+                  className="p-1 text-slate-400 hover:text-softblue-600 transition-all active:scale-95"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     {isMobileMenuOpen ? (
@@ -259,7 +280,7 @@ export default function Home() {
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Admin</p>
                               <p className="text-[10px] font-black text-slate-700 truncate">{user.email}</p>
                            </div>
-                           <Link href="/admin/blog/create" className="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 rounded-xl transition-all">
+                           <Link href="/admin/blog/create" className="flex items-center gap-3 px-4 py-3 hover:bg-softblue-50 text-slate-600 hover:text-softblue-600 rounded-xl transition-all">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                               <span className="text-xs font-bold uppercase tracking-wider">Tulis Baru</span>
                            </Link>
@@ -276,7 +297,7 @@ export default function Home() {
                            </button>
                          </>
                        ) : (
-                         <Link href="/login" className="flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 rounded-xl transition-all">
+                         <Link href="/login" className="flex items-center gap-3 px-4 py-3 hover:bg-softblue-50 text-slate-600 hover:text-softblue-600 rounded-xl transition-all">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                             <span className="text-xs font-bold uppercase tracking-wider">Login Admin</span>
                          </Link>
@@ -296,7 +317,7 @@ export default function Home() {
                   onClick={() => setCategory(cat)}
                   className={`flex-1 py-3 px-1 rounded-xl text-[10px] font-bold capitalize transition-all duration-300 relative ${
                     category === cat
-                      ? "bg-white text-emerald-600 shadow-lg shadow-emerald-500/10 translate-y-[-1px]"
+                      ? "bg-white text-softblue-600 shadow-lg shadow-softblue-500/10 translate-y-[-1px]"
                       : "text-slate-500 hover:text-slate-800 hover:bg-white/20"
                   }`}
                 >
@@ -306,11 +327,14 @@ export default function Home() {
             </div>
 
             {/* List Scrollable / Skeleton */}
-            <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4">
+            <div 
+              ref={listScrollRef}
+              className="flex-grow overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4"
+            >
               {isLoading ? (
                 // Loading Skeleton
                 [...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-slate-100/50 dark:bg-slate-800/50 animate-pulse rounded-2xl p-6 h-32 flex flex-col gap-3">
+                  <div key={i} className="shrink-0 bg-slate-100/50 dark:bg-slate-800/50 animate-pulse rounded-2xl p-6 h-32 flex flex-col gap-3">
                     <div className="flex justify-between items-center h-4 w-full">
                        <div className="w-16 h-full bg-slate-200 dark:bg-slate-700 rounded-md" />
                        <div className="w-24 h-full bg-slate-200 dark:bg-slate-700 rounded-md" />
@@ -319,8 +343,8 @@ export default function Home() {
                     <div className="w-full h-4 bg-slate-200 dark:bg-slate-700 rounded-md" />
                   </div>
                 ))
-              ) : filteredArticles.length > 0 ? (
-                filteredArticles.map((art) => (
+              ) : paginatedArticles.length > 0 ? (
+                paginatedArticles.map((art) => (
                   <ArticleCard
                     key={art.id}
                     id={art.id}
@@ -339,6 +363,46 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-6 pt-4 border-t border-slate-100/50 flex items-center justify-between gap-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                    playSound("paper");
+                  }}
+                  disabled={currentPage === 1}
+                  className="p-2 text-slate-400 hover:text-softblue-600 hover:bg-softblue-50 rounded-xl transition-all disabled:opacity-20 disabled:pointer-events-none group"
+                  title="Halaman Sebelumnya"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-active:-translate-x-1 transition-transform"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Page</span>
+                  <div className="flex items-center gap-1">
+                    <span className="min-w-[2rem] h-8 flex items-center justify-center bg-white text-softblue-600 text-xs font-black rounded-lg border border-slate-200 shadow-sm">
+                      {currentPage}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">/</span>
+                    <span className="text-[10px] font-bold text-slate-400">{totalPages}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                    playSound("paper");
+                  }}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-slate-400 hover:text-softblue-600 hover:bg-softblue-50 rounded-xl transition-all disabled:opacity-20 disabled:pointer-events-none group"
+                  title="Halaman Berikutnya"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-active:translate-x-1 transition-transform"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            )}
           </div>
           
           {/* FAB Control Group (Desktop ONLY) */}
@@ -369,7 +433,7 @@ export default function Home() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                    </button>
                    {/* Full View */}
-                   <Link href={`/blog/${selectedArticle.slug}`} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all" title="Tampilan Penuh">
+                   <Link href={`/blog/${selectedArticle.slug}`} className="p-2 text-slate-400 hover:text-softblue-600 hover:bg-softblue-50 rounded-xl transition-all" title="Tampilan Penuh">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
                    </Link>
                    {/* Close */}
@@ -385,7 +449,7 @@ export default function Home() {
               >
                 <div className="max-w-2xl mx-auto">
                   <div className="flex items-center gap-3 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <span className="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-600 text-[10px] font-bold rounded-xl uppercase tracking-widest border border-emerald-500/10">
+                    <span className="px-3.5 py-1.5 bg-softblue-500/10 text-softblue-600 text-[10px] font-bold rounded-xl uppercase tracking-widest border border-softblue-500/10">
                       {selectedArticle.category_label || selectedArticle.category}
                     </span>
                     <span className="text-xs text-slate-400 font-medium">{selectedArticle.date}</span>
@@ -408,7 +472,7 @@ export default function Home() {
                     <p className="text-sm text-slate-500 leading-relaxed mb-6 italic font-medium text-left">
                       {selectedArticle.summary}
                     </p>
-                    <div className="h-0.5 w-16 bg-gradient-to-r from-emerald-500 to-indigo-500 rounded-full mb-8" />
+                    <div className="h-0.5 w-16 bg-gradient-to-r from-softblue-500 to-indigo-500 rounded-full mb-8" />
                     <MarkdownRenderer 
                       content={selectedArticle.content} 
                       className="prose-sm !text-slate-800"
@@ -430,7 +494,7 @@ export default function Home() {
                  </button>
                  <div className="flex items-center gap-3">
                     <button onClick={handleShare} className="p-2 text-slate-500 active:text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button>
-                    <Link href={`/blog/${selectedArticle.slug}`} className="px-5 py-2.5 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-xl shadow-emerald-600/20 active:scale-95 transition-all">Baca Penuh</Link>
+                    <Link href={`/blog/${selectedArticle.slug}`} className="px-5 py-2.5 bg-softblue-600 text-white rounded-2xl text-sm font-bold shadow-xl shadow-softblue-600/20 active:scale-95 transition-all">Baca Penuh</Link>
                  </div>
               </div>
               <div 
@@ -438,7 +502,7 @@ export default function Home() {
                 className="flex-grow overflow-y-auto p-8"
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.15em]">{selectedArticle.category_label || selectedArticle.category}</span>
+                  <span className="text-[10px] font-bold text-softblue-600 uppercase tracking-[0.15em]">{selectedArticle.category_label || selectedArticle.category}</span>
                   <span className="text-[10px] text-slate-400 font-medium opacity-60">• {selectedArticle.date}</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 mb-5 leading-tight">{selectedArticle.title}</h2>

@@ -62,8 +62,8 @@ body {
     @apply absolute left-0 top-0 w-1 h-0 bg-softblue-500 transition-all duration-300 group-hover:h-full;
   }
 
-  .post-indicator-emerald {
-    @apply bg-emerald-500;
+  .post-indicator-softblue {
+    @apply bg-softblue-500;
   }
 }
 

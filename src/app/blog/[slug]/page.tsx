@@ -136,7 +136,7 @@ export default function ArticleFullView() {
            <p className="text-slate-500 text-sm mb-8">Maaf, artikel yang Anda cari mungkin telah dipindahkan atau dihapus.</p>
            <button 
              onClick={() => router.push("/")}
-             className="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/20 active:scale-95 transition-all"
+             className="w-full py-4 bg-softblue-600 text-white font-bold rounded-2xl shadow-xl shadow-softblue-600/20 active:scale-95 transition-all"
            >
              Kembali ke Beranda
            </button>
@@ -151,7 +151,7 @@ export default function ArticleFullView() {
       {/* Reading Progress Bar (Fixed Top) */}
       <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-white/10 backdrop-blur-sm">
         <div 
-          className={`h-full transition-all duration-300 relative ${hasRewarded ? "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-[0_0_20px_rgba(251,191,36,0.5)]" : "bg-gradient-to-r from-emerald-500 via-indigo-500 to-softblue-500"}`}
+          className={`h-full transition-all duration-300 relative ${hasRewarded ? "bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-[0_0_20px_rgba(251,191,36,0.5)]" : "bg-gradient-to-r from-softblue-500 via-indigo-500 to-softblue-500"}`}
           style={{ width: `${scrollProgress}%` }}
         >
           {hasRewarded && (
@@ -267,7 +267,7 @@ export default function ArticleFullView() {
                       <Link 
                         href="/"
                         onClick={() => playSound("close")}
-                        className="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all text-sm"
+                        className="px-8 py-4 bg-softblue-600 text-white font-bold rounded-2xl shadow-xl shadow-softblue-600/20 hover:scale-105 active:scale-95 transition-all text-sm"
                       >
                          Kembali berbagi
                       </Link>

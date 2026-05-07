@@ -38,7 +38,7 @@ export default function LoginPage() {
       <div className="max-w-[400px] w-full animate-in zoom-in duration-500">
         <div className="glass rounded-[2.5rem] p-10 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-emerald-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-softblue-600 bg-clip-text text-transparent">
               Admin Login
             </h1>
             <p className="text-[10px] text-slate-400 font-bold tracking-[0.2em] uppercase mt-2">ENoted Porter</p>
@@ -79,7 +79,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-4 bg-gradient-to-r from-indigo-500 to-emerald-500 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`w-full py-4 bg-gradient-to-r from-indigo-500 to-softblue-500 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
