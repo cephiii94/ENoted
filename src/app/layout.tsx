@@ -33,6 +33,7 @@ export default function RootLayout({
           <main className="relative z-10 w-full h-full">
             {children}
           </main>
+          <Footer />
         </SoundProvider>
       </body>
     </html>
