@@ -14,7 +14,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="font-bold text-softblue-600 hover:text-softblue-700 transition-colors duration-300"
           >
-            Brich Digital (brichdigital.zone.id)
+            Brich Digital
           </a>
         </span>
       </div>
