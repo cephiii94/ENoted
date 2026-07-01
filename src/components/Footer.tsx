@@ -27,6 +27,17 @@ export default function Footer() {
         <p className="text-sm text-slate-400 font-medium">
           &copy; {new Date().getFullYear()} ENoted. All rights reserved.
         </p>
+        <p className="text-xs text-slate-400">
+          Powered by{" "}
+          <a
+            href="https://brichdigital.zone.id"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium hover:text-softblue-500 transition-colors duration-300"
+          >
+            Brich Digital (brichdigital.zone.id)
+          </a>
+        </p>
         <div className="h-px w-8 bg-softblue-200" />
       </div>
     </footer>
